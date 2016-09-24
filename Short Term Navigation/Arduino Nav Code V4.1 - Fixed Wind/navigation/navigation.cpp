@@ -1,17 +1,26 @@
-#include <Arduino.h>
-#include <math.h>
-#include <Servo.h>
-#include "sensors.h"
-#include "navigation.h"
+#include <Arduino.h> // Access Arduino library
+#include <math.h> // Access C++ standard math library
+#include <Servo.h> // Servo control 
+#include "sensors.h" // Access servo data
+#include "navigation.h" // Access navigation 
+#include "sailMode.h" // Set RC or autonomous control variables
+#include "WPlist" // list of various waypoints on CU Engineering Quad and Cayuga Lake to use for testing
 
-Servo tailServo;
-Servo sailServo;
+
+/* -------------------------- DEFINE VARIABLES --------------------------------- */
+
+// Servo motors
+Servo tailServo; // Tail servo 
+Servo sailServo; // Sail servo 
+
+
 float prevErr;
-coord_t wayPoints[MAX_WAYPOINTS];
-int wpNum;
-int numWP;
+coord_t wayPoints[MAX_WAYPOINTS]; // array storing latitude and longitude coordinates of waypoints along desired path
+int wpNum; // index of current waypoint 
+int numWP; // total number of waypoints along desired path 
 
-// Polar plot  which gives expected speed of boat at a given heading with respect to the wind. 0 degree heading represents sailing directly into the wind.
+// Polar plot: expected speed of boat at a given heading with respect to the wind. 
+//             0 degree heading represents sailing directly into the wind.
 float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0.1712,0.17325,0.17742,0.18336,0.19064,0.19882,0.20757,0.21661,
@@ -39,10 +48,10 @@ float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-/* Navigation Variables */
-float nextHeading;
+/* Navigation variables */
+float nextHeading; // next desired boat heading (set upon completing maneuver)
 float error;
-float command;
+float command; 
 int alpha;
 float n;
 float normr;
@@ -59,15 +68,15 @@ float d1;
 float d2;
 int opt = 0;
 int delalpha = 1;
-float rudderAngle;
-float sailAngle;
-float tailAngle; 
-float jibing;
-float tackpointx; 
-float tackpointy; 
-float avgWind;
+float rudderAngle; // rudder angle
+float sailAngle; // sail angle 
+float tailAngle; // tail angle
+float jibing; // jibe type 
+float tackPointX; // x-coordinate of next desired waypoint
+float tackPointY; // y-cooridnate of next desired waypoint
+float avgWind; // average windspeed
 
-/* Initializes Servo Motors */
+/* Initialize servo motors */
 void initServos(void) {
   tailServo.attach(tailServoPin);
   tailServo.write(tailMid);
@@ -98,7 +107,7 @@ void setWaypoints(void) {
   coord_t p2 = {42.444821, -76.483566};
   coord_t p3 = {100,100};
   
-  //Coordinates in and around the Engineering Quad, Cornell university
+  //Coordinates in and around the Engineering Quad, Cornell University
   coord_t olin = {42.445457, -76.484322}; //Olin Hall
   coord_t hollister = {42.444259, -76.484435}; //Hollister Hall
   coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
@@ -107,7 +116,8 @@ void setWaypoints(void) {
   coord_t bottomStairs = {42.444240, -76.483258}; //Bottom of stairs, outside West entrance to Duffield Hall
   coord_t engQuadRight = {42.4444792, -76.483244}; //Bottom of stair, to the left of North entrance to Duffield Hall
   coord_t topEngQuad = {42.444866, -76.483531};
-  //Coordinates in and around the Cornell Sailing Center
+  
+  //Coordinates in and around the Cornell Sailing Center, Cayuga Lake
   coord_t lakeOut = {42.471004,-76.506175}; //Out in the lake, close to the shore
   coord_t shore = {42.469033,-76.5040623}; //Far end of the docks
   
