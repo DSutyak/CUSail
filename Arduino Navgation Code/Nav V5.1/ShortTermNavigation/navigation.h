@@ -40,7 +40,7 @@ extern coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypo
 void initServos(void);
 
 /*Navigation algorithm setup.
-* Sets curretn waypoint number and total number of waypoints to 0*/
+* Sets current waypoint number and total number of waypoints to 0*/
 void initNavigation(void);
 
 /*Sets waypoints for navigation
