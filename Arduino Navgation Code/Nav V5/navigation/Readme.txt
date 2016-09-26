@@ -16,7 +16,7 @@ Compile/Upload Instructions:
 1. Install drivers for the Arduino Due in the Arduino IDE. You can do so by 
    going to Tools -> Boards -> Board Manager, and searching for the appropriate drivers
 2. Ensure ShortTermNavigation.ino, sensors.h, sensors.cpp, navigation.h,
-   navigation.cpp, TinyGPS++.h and TinyGPS++.cpp are in a folder named "ShortTermNavigation"
+   navigation.cpp, TinyGPS++.h and TinyGPS++.cpp are in a folder named "navigation"
 3. Open "ShortTermNavigation.ino". All files except TinyGPS++.cpp and
    TinyGPS++.h should open in tabs within the Arduino IDE. If not you can
    go to Sketch -> Add File... to add the missing files
