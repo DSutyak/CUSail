@@ -15,6 +15,7 @@ void setup() {
  
  Sail.attach(sailPin);
  Tail.attach(tailPin); 
+ //pour a bowl of Serial
  Serial.begin(9600);
  
 }
