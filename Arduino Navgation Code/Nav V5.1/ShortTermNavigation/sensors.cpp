@@ -2,25 +2,15 @@
 #include <SPI.h>
 #include "TinyGPS++.h"
 
-float IMUCorrection = 0; 
-
-// TO DO: replace 10 with variable, determine best value from testing 
-float windData[10];
-int numCallRS;     
-int RScount;
-unsigned int angle;
 TinyGPSPlus gps;
-
-// initialize data structure
 data_t sensorData;
-
-// Needed to convert the bytes from SPI to float
+// Type to convert the bytes from SPI to float (Used as part of the IMU code
 union u_types {
     byte b[4];
     float fval;
 } imu_data[3];  // Create 3 unions, one for each euler angle
 
-//function to transfer commands through SPI
+/*Transfers commands through SPI*/
 byte transferByte(byte byteToWrite) {
   byte Result = 0x00;
   digitalWrite(IMU_CSN,LOW);
@@ -41,9 +31,8 @@ void endianSwap(byte temp[4]) {
   temp[2] = myTemp;
 }
 
-/* Returns servo command for sail servo for inputted sail angle 
- * Precondition: Sail Angle in 0.. 360
- */
+/*Returns servo command for sail servo for inputted sail angle 
+* Precondition: Sail Angle in 0.. 360 w.r.t boat*/
 double sailMap(double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
@@ -61,9 +50,8 @@ double sailMap(double sailAngle){
   return newSailAngle;
 }
 
-/* Returns servo command tail servo for inputted sail angle and tail angle 
- * Precondition: Sail Angle in 0.. 360, Tail Angle in -180.. 180
- */
+/*Returns servo command tail servo for inputted sail angle and tail angle 
+* Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat*/
 double tailMap(double sailAngle, double tailAngle){
  
   if (sailAngle > 180){ //convert sail angle to -180.. 180
@@ -89,7 +77,7 @@ double tailMap(double sailAngle, double tailAngle){
   return newTailAngle;
 }
 
-/* Initializes sensors */
+/*Sensor setup*/
 void initSensors(void) {
   Serial.begin(9600);
   Serial2.begin(9600);
@@ -98,7 +86,7 @@ void initSensors(void) {
   
   // initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
-  sensorData = {}; // {NULL}; 
+  sensorData = {}; 
 
   //Set Pin Modes
   pinMode(RS_CSN, OUTPUT);
@@ -106,18 +94,16 @@ void initSensors(void) {
   pinMode(SI, OUTPUT);
   pinMode(SO, INPUT);
   pinMode(CLK, OUTPUT);
+  
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
   digitalWrite(IMU_CSN, HIGH);
+  
   //Initialize SPI 
   SPI.begin();
-
-  numCallRS = 0;     
-  RScount = 0;
-  sensorData.windDir = 0;
 }
 
-/* uses rotary sensor to update wind direction */
+/*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
   
@@ -130,65 +116,44 @@ void sRSensor(void) {
   //Read data frame
   digitalWrite(RS_CSN, LOW);
   delayMicroseconds(1);
-  angle = SPI.transfer16(0xC000);
+  unsigned int angle = SPI.transfer16(0xC000);
   digitalWrite(RS_CSN, HIGH);
   SPI.endTransaction();
 
   //mask the MSB and 14th bit
   angle = (angle & (0x3FFF));
 
-  //covert to a 360 degree scale
+  //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
-
+  
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
   sensorData.windDir = wind_wrtN;
 
-  //Averaging the wind reading (Incomplete!)
+  Serial.println("----------Rotary Sensor----------");
+  Serial1.println("----------Rotary Sensor----------");
   
-//
-//  // TO DO: error -- average will give 180 if wind hovers between 0 and 359; need avg to wrap around
-//  //    looked up how to average circular data; need to implement 
-//  
-//  // average wind over past 10 function calls 
-//  if (numCallRS >= 10) {
-//    // sensorData.windDir currently stores average of previous 10 
-//    // we want (sensorData.windDir * 10) - irrelevant data + latest reading / 10
-//    sensorData.windDir = ((sensorData.windDir * 10) - windData[RScount] + wind_wrtN) / 10; 
-//    
-//    // replace oldest data with current data 
-//    windData[RScount] = wind_wrtN;
-//    // increment count 
-//    RScount = (RScount + 1) % 10;
-//    
-//  }
-//  else { 
-//    // if less than 10, average over available wind data
-//    sensorData.windDir = (sensorData.windDir * numCallRS + wind_wrtN) / (numCallRS + 1);
-//    // save current reading 
-//    windData[numCallRS] = wind_wrtN; 
-//    // increment number of calls 
-//    numCallRS++;
-//  }
-//
-//  float avgWind = sensorData.windDir;
+  Serial.print("Wind direction w.r.t boat:  "); Serial.println(pos);
+  Serial.print("Wind direction w.r.t North: "); Serial.println(wind_wrtN);
   
-  //print angle to the screen
-  Serial.println("\n --- Rotary Sensor ---");   Serial1.println("\n --- Rotary Sensor ---");
-  Serial1.println("\n --- Rotary Sensor ---");   Serial1.println("\n --- Rotary Sensor ---");
-  
-  Serial.print("Current reading: "); Serial.println(pos);
-  Serial.print("Current angle wrt N: "); Serial.println(sensorData.windDir);
-  
-  Serial1.print("Current reading: "); Serial1.println(pos);
-  Serial1.print("Current angle wrt N: "); Serial1.println(sensorData.windDir);
+  Serial1.print("Wind direction w.r.t boat:  "); Serial1.println(pos);
+  Serial1.print("Wind direction w.r.t North: "); Serial1.println(wind_wrtN);
+
+  Serial.println("");
+  Serial1.println("");
+  Serial.println("--------------------");
+  Serial1.println("--------------------");
+  Serial.println("");
+  Serial1.println("");
   
 }
 
-
+/*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime 
+* to current lattitude, current longitude and current date/time respectively*/
 void sGPS(void) {
-  Serial.println("\n  ----- GPS -----");   Serial1.println("\n  ----- GPS -----");
+  Serial.println("-----------GPS-----------");
+  Serial1.println("-----------GPS-----------");
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
     sensorData.longi = gps.location.lng();
@@ -199,12 +164,11 @@ void sGPS(void) {
     sensorData.dateTime.hour = gps.time.hour();       // Hour (0-23) (u8)
     sensorData.dateTime.minute = gps.time.minute();   // Minute (0-59) (u8)
     sensorData.dateTime.seconds = gps.time.second();  // Second (0-59) (u8)
-    sensorData.boatDir = gps.course.deg();}  
+    }  
 
   
     Serial.print("Latitude                      "); Serial.println(sensorData.lati, 6);
     Serial.print("Longitude                     "); Serial.println(sensorData.longi, 6);
-    Serial.print("Course in degrees             "); Serial.println(sensorData.boatDir);
     Serial.print("Speed (mps)                   "); Serial.println(gps.speed.mps());
     Serial.print("Time (hr:min:sec)             "); Serial.print(sensorData.dateTime.hour);    Serial.print(":"); 
                                                     Serial.print(sensorData.dateTime.minute);  Serial.print(":");
@@ -217,8 +181,7 @@ void sGPS(void) {
     
     Serial1.print("Latitude                      "); Serial1.println(sensorData.lati, 6);
     Serial1.print("Longitude                     "); Serial1.println(sensorData.longi, 6);
-    Serial1.print("Course in degrees             "); Serial1.println(sensorData.boatDir);
-    Serial1.print("Speed (mps)                   "); Serial1.println(gps.speed.mps());
+    Serial1.print("Speed (m/s)                   "); Serial1.println(gps.speed.mps());
     Serial1.print("Time (hr:min:sec)             "); Serial1.print(sensorData.dateTime.hour);    Serial1.print(":"); 
                                                      Serial1.print(sensorData.dateTime.minute);  Serial1.print(":");
                                                      Serial1.print(sensorData.dateTime.seconds); Serial1.print(":");
@@ -227,10 +190,20 @@ void sGPS(void) {
                                                     Serial1.print(sensorData.dateTime.day);   Serial1.print("/");
                                                     Serial1.println(sensorData.dateTime.year);
     Serial1.print("Number of Satelites in use    "); Serial1.println(gps.satellites.value());     // Number of satellites in use (u32)
+
+    Serial.println("");
+    Serial1.println("");
+    Serial.println("--------------------");
+    Serial1.println("--------------------");
+    Serial.println("");
+    Serial1.println("");      
 }
 
+/*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll 
+* to current boat direction w.r.t North, current boat pitch and current boat roll*/
 void sIMU(void) {
-  Serial.println("\n  ----- IMU -----"); Serial1.println("\n  ----- IMU -----");
+  Serial.println("----------IMU----------");
+  Serial1.println("----------IMU----------");
   SPI.beginTransaction(SPISettings(6000000, MSBFIRST, SPI_MODE0 ));
 
   // Clear the internal data buffer on the IMU
@@ -240,25 +213,27 @@ void sIMU(void) {
 
   // Send start of packet:
   result = transferByte(0xF6);
-       Serial.print("Send start of packet. Result: "),Serial.println(result);
-       Serial1.print("Send start of packet. Result: "),Serial1.println(result);
+       Serial.print("Sent start of packet. Result: "),Serial.println(result);
+       Serial1.print("Sent start of packet. Result: "),Serial1.println(result);
   
   
   // Send command (tared euler angles)
   result = transferByte(0x01);
-       Serial.print("Send commmand 0x01. Result: "),Serial.println(result);
-       Serial1.print("Send commmand 0x01. Result: "),Serial1.println(result);
+       Serial.print("Sent commmand 0x01. Result: "),Serial.println(result);
+       Serial1.print("Sent commmand 0x01. Result: "),Serial1.println(result);
   
   // Get status of device:
   result = transferByte(0xFF);
        Serial.print("Status of device. Result: "),Serial.println(result);
        Serial1.print("Status of device. Result: "),Serial1.println(result);
 
-  while (result != 0x01) {  // Repeat until device is Ready
+  while (result != 0x01) {  //Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
     Serial.print("Status of device. Result: "),Serial.println(result);
     Serial1.print("Status of device. Result: "),Serial1.println(result);
+    digitalWrite(redLED1); //IMU is stuck. Not posting data. 
+    digitalWrite(redLED2);
   }
   
   // Get the 12 bytes of return data from the device:
@@ -275,7 +250,7 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  sensorData.boatDir =  ((imu_data[1].fval)*(180/PI)) + IMUCorrection;   // yaw
+  sensorData.boatDir =  ((imu_data[1].fval)*(180/PI));
   if (sensorData.boatDir < 0) {
     sensorData.boatDir += 360; 
   }
@@ -283,13 +258,19 @@ void sIMU(void) {
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
   
-  Serial.print("pitch: "), Serial.println(sensorData.pitch,4);
-  Serial.print("yaw:   "), Serial.print(sensorData.boatDir,4);  Serial.println("  <-- boat direction");
-  Serial.print("roll:  "), Serial.println(sensorData.roll,4);
+  Serial.print("Pitch:                      "), Serial.println(sensorData.pitch,4);
+  Serial.print("Boat direction w.r.t North: "), Serial.println(sensorData.boatDir,4);
+  Serial.print("Roll:                       "), Serial.println(sensorData.roll,4);
   
-  Serial1.print("pitch: "), Serial1.println(sensorData.pitch,4);
-  Serial1.print("yaw:   "), Serial1.print(sensorData.boatDir,4);  Serial1.println("  <-- boat direction");
-  Serial1.print("roll:  "), Serial1.println(sensorData.roll,4);
+  Serial1.print("Pitch:                      "), Serial1.println(sensorData.pitch,4);
+  Serial1.print("Boat direction w.r.t North: "), Serial1.println(sensorData.boatDir,4);
+  Serial1.print("Roll:                       "), Serial1.println(sensorData.roll,4);
 
+  Serial.println("");
+  Serial1.println("");
+  Serial.println("--------------------");
+  Serial1.println("--------------------");
+  Serial.println("");
+  Serial1.println("");
 }
 

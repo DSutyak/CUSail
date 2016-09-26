@@ -1,7 +1,8 @@
 #include "sensors.h"
 #include "navigation.h"
 
-// coord_t route[MAX_WAYPOINTS]; 
+/* Wind has been set to 315 degrees from North and Boat direction has been set to 245 degrees from North. 
+ IMU is not being run*/
 
 void setup() {
   initSensors();
@@ -16,8 +17,8 @@ void loop() {
   delay(1000);
   sGPS();
   delay(1000);
-  sIMU();
-  delay(1000);
+  //sIMU();
+  //delay(1000);
   nShort();
   delay(1000);
   nServos();
