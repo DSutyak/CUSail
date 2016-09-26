@@ -79,6 +79,7 @@ double tailMap(double sailAngle, double tailAngle){
 
 /*Sensor setup*/
 void initSensors(void) {
+  //pour a bowl of Serial
   Serial.begin(9600);
   Serial2.begin(9600);
   Serial1.begin(9600);
