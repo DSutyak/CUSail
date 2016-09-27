@@ -109,10 +109,6 @@ void setWaypoints(void) {
   Serial1.print("longitude: "); Serial.println(wayPoints[0].latitude,6);
 }
 
-void tack(void){
-  //Luey psuedo code
-
-}
 
 
 /*Returns angle (with respect to North) between two global coordinates.
