@@ -142,6 +142,14 @@ float toMeters(float lat1, float lon1, float lat2, float lon2){
   return d;
 }
 
+
+/*Tacking function.
+* */
+void tacking(void) {
+  //empty code
+}
+
+
 /*----------NAVIGATION ALGORITHM----------
 *
 *Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle. 
