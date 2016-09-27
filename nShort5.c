@@ -27,8 +27,8 @@
 // Note 2: parts of the code that usually interact with Arduino sensors have been commented out, and replaced
 // with code to interact with input parameters representing sensor information
 void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir, float wpNum, float waypointsize, float jibing, float tackpointx, float tackpointy, float *angles) {
-  
-    
+
+
   float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0.1712,0.17325,0.17742,0.18336,0.19064,0.19882,0.20757,0.21661,
@@ -55,10 +55,12 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
                         0.22575,0.21661,0.20757,0.19882,0.19064,0.18336,0.17742,0.17325,0.1712,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  
+
   printf("\n\n");
-  
+
   //Serial.println("Short Term Navigation");
+
+  // why are there 3 variables with type 'mwSize'?
   float nextHeading;
   float error;
   float command;
@@ -73,7 +75,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   float thetaBoat_L_max;
   float vB[2];
   float r[2];
-  
+
   float w[2];
   float d1;
   float d2;
@@ -136,7 +138,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   // printf("waypoint: %f, %f\n",wayPoints[wpNum],wayPoints[wpNum+1]);
 //   mwSize deg = (mwSize) floor(atan(r[1]/r[0])*(180.0/PI)) - windDir;
 //   if(deg < 0) { deg = deg + 360; }
-//   
+//
 //   if (polarPlot[(deg)] > 0 && floor(deg + windDir - boatDir) < -40000){
 //       deg = (mwSize) floor(deg + windDir);
 //       if(deg > 360){ deg = deg - 360; }
@@ -144,7 +146,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
 //   }
 
 
-    
+
 
   /*
       Next heading code start
@@ -192,7 +194,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   // 2anglewaypoint=anglewaypoint+360;
   // 2anglewaypoint=(float)((int)anglewaypoint%360);
   // float 2dirangle=2anglewaypoint-windDir;
- 
+
   boatDir=360-(boatDir-90);
   boatDir=(float)((int)boatDir%360);
   boatDir=boatDir+360;
@@ -305,12 +307,11 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   //checking what manuever
 
 
-  
+
   //if we are trying to go directly upwind or downwind
 
-  //JIBE CODE
-  //TODOneed to make sure boat doesnt go off course
-
+/*----------------------------------JIBE CODE-------------------------------*/
+  // TODO: need to make sure boat doesnt go off course
 
   //jibing 0: head directly there
   //jibing 1: turn back to get on heading
@@ -585,7 +586,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
     if(fabsf(differenceheading)<30){
       jibing=0;
     }
-              
+
     printf("jibe left\n");
     sailAngle=windboat;
     tailangle=windboat+tailangleofattack*2;
@@ -624,7 +625,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
                 tackpointx=0;
                 tackpointy=0;
                 sailAngle=windboat+angleofattack;
-              
+
                 //if the heading is to the left of the boat
                 if(differenceheading>0){
                   tailangle=windboat+tailangleofattack;
@@ -693,7 +694,7 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   tailangle=tailangle*-1;
   sailAngle=sailAngle*-1;
 
-  
+
   angles[0] = tailangle;
   angles[1] = sailAngle;
   angles[2] = jibing;
@@ -755,7 +756,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     float tackpointx;
     float tackpointy;
     float *angles;
-    
+
     //double multiplier;              /* input scalar */
     //double *inMatrix;               /* 1xN input matrix */
     //size_t ncols;                   /* size of matrix */
@@ -770,51 +771,51 @@ void mexFunction( int nlhs, mxArray *plhs[],
         else if(nlhs==0){mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","One output required. There were 0");}
         else{mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","One output required.");}
     }
-    
+
     /* make sure the first input argument is type float */
     if( mxIsComplex(prhs[0])) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notDouble","Input matrix must be type float.");
     }
-    
+
     /* check that number of rows in first input argument is 1 */
     if(mxGetM(prhs[0])!=1) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notRowVector","Input must be a row vector.");
     }
-    
+
     /* make sure the second input argument is type float */
     if( mxIsComplex(prhs[1])) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notDouble","Input matrix must be type float.");
     }
-    
+
     /* check that number of rows in second input argument is 1 */
     if(mxGetM(prhs[1])!=1) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notRowVector","Input must be a row vector.");
     }
-    
+
     /* make sure the third input argument is scalar */
     if( mxIsComplex(prhs[2]) ||
          mxGetNumberOfElements(prhs[2])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the fourth input argument is scalar */
     if( mxIsComplex(prhs[3]) ||
          mxGetNumberOfElements(prhs[3])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the fifth input argument is scalar */
     if( mxIsComplex(prhs[4]) ||
          mxGetNumberOfElements(prhs[4])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the sixth input argument is scalar */
     if( mxIsComplex(prhs[5]) ||
          mxGetNumberOfElements(prhs[5])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* get the value of the scalar inputs  */
     wDir = (float) mxGetScalar(prhs[2]);
     bDir = (float) mxGetScalar(prhs[3]);
