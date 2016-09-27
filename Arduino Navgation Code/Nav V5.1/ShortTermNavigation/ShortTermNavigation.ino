@@ -25,22 +25,19 @@
  Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
 
+// Code within setup() runs once on receiving power
 void setup() {
-  initSensors();
-  initNavigation();
-  initServos();
-  setWaypoints();
+  initSensors(); // Run setup code for all sensors
+  initNavigation(); // Set the number of waypoints and the current waypoint # to 0
+  initServos(); // attach the sail and tailvane servos
+  setWaypoints(); // create the course by means of a waypoint array
 }
 
+// Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
 void loop() {
-  delay(1000);
-  sRSensor();
-  delay(1000);
-  sGPS();
-  delay(1000);
-  sIMU();
-  delay(1000);
-  nShort();
-  delay(1000);
-  nServos();
+  sRSensor(); //Gather wind directio w.r.t North
+  sGPS(); //Gather global coordinates
+  sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
+  nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
+  nServos(); //Send acquired servo commands
 }
