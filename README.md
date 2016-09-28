@@ -10,8 +10,8 @@ The enclosed files contain the following elments of the navigation system of Sai
 
 -Simulators: This folder contains two kinds of MATLAB simulators made for testing the algorithm
 
--Short Term Navigation Algorithm: This folder contains code in C that evwntually populates the 
+-Short Term Navigation Algorithm: This folder contains code in C that eventually populates the 
 				  function, nShort() in the Arduino Code
 								  
--Arduino Navigation Code: This folder contains code that is uploaded to the microcontroler, and i
+-Arduino Navigation Code: This folder contains code that is uploaded to the microcontroler, and is
                           the culmination of the sensor code and the navigation algorithm
