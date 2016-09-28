@@ -1,6 +1,6 @@
-CU Sail
-Cornell University Autonomous Sailboat Team
-Navigation Project
+#CU Sail
+#Cornell University Autonomous Sailboat Team
+#Navigation Project
 
 The enclosed files contain the following elments of the navigation system of SailVane
 
