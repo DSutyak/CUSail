@@ -233,9 +233,12 @@ void sIMU(void) {
     result = transferByte(0xFF);
     Serial.print("Status of device. Result: "),Serial.println(result);
     Serial1.print("Status of device. Result: "),Serial1.println(result);
-    digitalWrite(redLED1); //IMU is stuck. Not posting data. 
-    digitalWrite(redLED2);
+    digitalWrite(redLED1, HIGH); //IMU is stuck. Not posting data. 
+    digitalWrite(redLED2, HIGH);
   }
+
+  digitalWrite(redLED1, LOW);
+  digitalWrite(redLED2, LOW);
   
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {

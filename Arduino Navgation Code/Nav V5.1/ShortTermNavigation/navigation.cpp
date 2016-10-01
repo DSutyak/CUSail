@@ -8,42 +8,10 @@
 Servo tailServo;
 Servo sailServo;
 
-
-/*----------Polar Plot of Sailvane----------
-* Gives expected speed of boat at a given heading with respect to the wind. 
-* The element number of array represents angle w.r.t wind.
-* 0 degrees heading represents sailing directly into the wind. Angle increases clockwise*/
-float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0.1712,0.17325,0.17742,0.18336,0.19064,0.19882,0.20757,0.21661,
-                        0.22575,0.23487,0.24389,0.25275,0.26143,0.26991,0.27818,0.28623,0.29407,0.3017,0.30912,0.31634,
-                        0.32337,0.33021,0.33687,0.34335,0.34966,0.35581,0.36179,0.36761,0.37329,0.37882,0.3842,0.38944,
-                        0.39455,0.39952,0.40437,0.40909,0.41368,0.41815,0.42251,0.42675,0.43087,0.43488,0.43878,0.44257,
-                        0.44626,0.44984,0.45332,0.4567,0.45998,0.46315,0.46624,0.46922,0.47211,0.47491,0.47761,0.48023,
-                        0.48275,0.48518,0.48753,0.48979,0.49196,0.49405,0.49605,0.49797,0.4998,0.50155,0.50322,0.50481,
-                        0.50632,0.50774,0.50909,0.51036,0.51155,0.51267,0.5137,0.51466,0.51555,0.51636,0.51709,0.51775,
-                        0.51833,0.51884,0.51927,0.51964,0.51992,0.52014,0.52028,0.52035,0.52035,0.52028,0.52013,0.51991,
-                        0.51962,0.51926,0.51883,0.51833,0.51775,0.51711,0.51639,0.5156,0.51474,0.51381,0.51281,0.51173,
-                        0.51059,0.50937,0.50808,0.50672,0.50529,0.50378,0.5022,0.50055,0.49882,0.49702,0.49514,0.49319,
-                        0.49117,0.48907,0.48689,0.48463,0.4823,0.47989,0.4774,0.47483,0.47218,0.46945,0.46663,0.46373,
-                        0.46075,0.46373,0.46663,0.46945,0.47218,0.47483,0.4774,0.47989,0.4823,0.48463,0.48689,0.48907,
-                        0.49117,0.49319,0.49514,0.49702,0.49882,0.50055,0.5022,0.50378,0.50529,0.50672,0.50808,0.50937,
-                        0.51059,0.51173,0.51281,0.51381,0.51474,0.5156,0.51639,0.51711,0.51775,0.51833,0.51883,0.51926,
-                        0.51962,0.51991,0.52013,0.52028,0.52035,0.52035,0.52028,0.52014,0.51992,0.51964,0.51927,0.51884,
-                        0.51833,0.51775,0.51709,0.51636,0.51555,0.51466,0.5137,0.51267,0.51155,0.51036,0.50909,0.50774,
-                        0.50632,0.50481,0.50322,0.50155,0.4998,0.49797,0.49605,0.49405,0.49196,0.48979,0.48753,0.48518,
-                        0.48275,0.48023,0.47761,0.47491,0.47211,0.46922,0.46624,0.46315,0.45998,0.4567,0.45332,0.44984,
-                        0.44626,0.44257,0.43878,0.43488,0.43087,0.42675,0.42251,0.41815,0.41368,0.40909,0.40437,0.39952,
-                        0.39455,0.38944,0.3842,0.37882,0.37329,0.36761,0.36179,0.35581,0.34966,0.34335,0.33687,0.33021,
-                        0.32337,0.31634,0.30912,0.3017,0.29407,0.28623,0.27818,0.26991,0.26143,0.25275,0.24389,0.23487,
-                        0.22575,0.21661,0.20757,0.19882,0.19064,0.18336,0.17742,0.17325,0.1712,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius=3; //how far away the boat marks a waypoint "reached"
+float detectionradius=5; //how far away the boat marks a waypoint "reached"
 coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint, 
@@ -128,18 +96,36 @@ float angleToTarget(float lat1, float long1, float lat2, float long2){
 
 /*Returns distance (in meters) between two global coordinates.
 * Coordinates must be given in latitude and longitude */
-float toMeters(float lat1, float lon1, float lat2, float lon2){
-  float R = 6371000;
-  float phi1 = lat1  *M_PI/180;
-  float phi2 = lat2 *M_PI/180;
-  float dphi1 = (lat2-lat1) *M_PI/180;
-  float dphi2 = (lon2-lon1) *M_PI/180;
+double havDist(coord_t  first, coord_t second) {
+  double x = first.longitude;
+  double y = first.latitude;
 
-  float a = sin(dphi1/2) * sin(dphi1/2) + cos(phi1) * cos(phi2) * sin(dphi2/2) * sin(dphi2/2);
-  float c = 2 * atan2(sqrt(a), sqrt(1-a));
+  double x1 = second.longitude;
+  double y1 = second.latitude;
 
-  float d = R * c;
-  return d;
+  const double conversion = M_PI / 180;// term to convert from degrees to radians
+  const double r = 6371.0;//radius of earth in km
+  x = x * conversion;// convert x to radians
+  y = y * conversion;// convert y to radians
+  x1 = x1 * conversion;
+  y1 = y1 * conversion;
+    
+  double half1 = (y-y1) / 2;
+  double half2 = (x-x1) / 2;
+        
+  double part1 = sin(half1) * sin(half1) + cos(y) * cos(y1) * sin(half2) * sin(half2);
+  double part2 = sqrt(part1);
+  double distance = 2 * r * asin(part2);// distance is in km due to units of earth's radius
+
+  distance = (distance*1000);
+
+  if (distance<30) {
+  double longDiff = wayPoints[wpNum].longitude - sensorData.longi;
+  double latDiff  = wayPoints[wpNum].latitude - sensorData.lati;
+  distance = sqrt(pow(longDiff,2)+pow(latDiff,2));
+  }
+
+  return distance;
 }
 
 /*----------NAVIGATION ALGORITHM----------
@@ -154,7 +140,8 @@ void nShort(void) {
   r[1] = wayPoints[wpNum].latitude - sensorData.lati;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
-  normr = sqrt(pow(r[0],2)+pow(r[1],2));
+  coord_t currentPosition = {sensorData.lati, sensorData.longi};
+  normr = havDist(wayPoints[wpNum], currentPosition);
 
   //Dummy normal distance
   float oldnormr=1000;
@@ -175,6 +162,7 @@ void nShort(void) {
   Serial.print(wayPoints[wpNum].latitude);
   Serial.print(", ");
   Serial.println(wayPoints[wpNum].longitude);
+  Serial.print("Distance to waypoint: ");Serial.println(normr);
 
   Serial1.print("Next Waypoint #");
   Serial1.print(wpNum);
@@ -182,6 +170,7 @@ void nShort(void) {
   Serial1.print(wayPoints[wpNum].latitude);
   Serial1.print(", ");
   Serial1.println(wayPoints[wpNum].longitude);
+  Serial.print("Distance to waypoint: ");Serial1.println(normr);
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
@@ -206,7 +195,8 @@ void nShort(void) {
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
     oldnormr=normr;
-    normr = sqrt(pow(r[0],2)+pow(r[1],2));
+    coord_t currentPosition = {sensorData.lati, sensorData.longi};
+    normr = havDist(wayPoints[wpNum], currentPosition); 
   }
 
   //dir is the direction to the next waypoint from the boat

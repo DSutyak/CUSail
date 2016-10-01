@@ -12,7 +12,6 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);
   sRSensor();
   delay(1000);
   sGPS();
@@ -22,6 +21,7 @@ void loop() {
   nShort();
   delay(1000);
   nServos();
+  delay(1000);
 }
 
 
