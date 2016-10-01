@@ -1,3 +1,4 @@
+//returns how far of course the boat is in kilometers
 double distanceError(coord_t currPos) {
   // current coordiantes
   double xa = currPos.longitude;
