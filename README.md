@@ -15,3 +15,5 @@ The enclosed files contain the following elments of the navigation system of Sai
 								  
 -Arduino Navigation Code: This folder contains code that is uploaded to the microcontroler, and is
                           the culmination of the sensor code and the navigation algorithm
+			  
+-Individual Functions for Arduino Code: Contains (mostly) helper functions used in the Arduino Code
