@@ -1,9 +1,9 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
-
 TinyGPSPlus gps;
 data_t sensorData;
+
 // Type to convert the bytes from SPI to float (Used as part of the IMU code
 union u_types {
     byte b[4];
@@ -31,8 +31,9 @@ void endianSwap(byte temp[4]) {
   temp[2] = myTemp;
 }
 
-/*Returns servo command for sail servo for inputted sail angle 
-* Precondition: Sail Angle in 0.. 360 w.r.t boat*/
+/* Returns servo command for sail servo for inputted sail angle 
+ * Precondition: Sail Angle in 0.. 360 w.r.t boat
+ */
 double sailMap(double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
@@ -50,8 +51,9 @@ double sailMap(double sailAngle){
   return newSailAngle;
 }
 
-/*Returns servo command tail servo for inputted sail angle and tail angle 
-* Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat*/
+/* Returns servo command tail servo for inputted sail angle and tail angle 
+ * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
+ */
 double tailMap(double sailAngle, double tailAngle){
  
   if (sailAngle > 180){ //convert sail angle to -180.. 180
@@ -79,7 +81,6 @@ double tailMap(double sailAngle, double tailAngle){
 
 /*Sensor setup*/
 void initSensors(void) {
-  //pour a bowl of Serial
   Serial.begin(9600);
   Serial2.begin(9600);
   Serial1.begin(9600);
@@ -95,6 +96,11 @@ void initSensors(void) {
   pinMode(SI, OUTPUT);
   pinMode(SO, INPUT);
   pinMode(CLK, OUTPUT);
+  pinMode(redLED1, OUTPUT);
+  pinMode(redLED2, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
   
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
@@ -126,11 +132,13 @@ void sRSensor(void) {
 
   //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
+
+  sensorData.boatDir = 60;
   
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
-  sensorData.windDir = wind_wrtN;
+  sensorData.windDir = 0;
 
   Serial.println("----------Rotary Sensor----------");
   Serial1.println("----------Rotary Sensor----------");
@@ -228,17 +236,12 @@ void sIMU(void) {
        Serial.print("Status of device. Result: "),Serial.println(result);
        Serial1.print("Status of device. Result: "),Serial1.println(result);
 
-  while (result != 0x01) {  //Repeat until device is Ready
+  while (result != 0x01) {  // Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
     Serial.print("Status of device. Result: "),Serial.println(result);
     Serial1.print("Status of device. Result: "),Serial1.println(result);
-    digitalWrite(redLED1, HIGH); //IMU is stuck. Not posting data. 
-    digitalWrite(redLED2, HIGH);
   }
-
-  digitalWrite(redLED1, LOW);
-  digitalWrite(redLED2, LOW);
   
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {

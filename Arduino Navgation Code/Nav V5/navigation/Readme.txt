@@ -32,5 +32,4 @@ Noteworthy details/Changes since previous iteration:
 
 - The Navigation Algorithm is a work in progress. The boat is not capable of executing any maneuvers
 - The IMU is not being run. IMU code has been commented out
-- Wind direction and boat direction is set to 315 w.r.t North and 245 w.r.t North
-- The Haversine formula is used to calculate distance b/w cooordinates
+- Wind direction and boat direction are hard coded in sRSensor() in sensors.cpp
