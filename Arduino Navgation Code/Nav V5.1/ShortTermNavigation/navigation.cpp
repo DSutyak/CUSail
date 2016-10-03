@@ -11,7 +11,7 @@ Servo sailServo;
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius=5; //how far away the boat marks a waypoint "reached"
+float detectionradius = 15; //how far away the boat marks a waypoint "reached"
 coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint, 
@@ -30,9 +30,10 @@ coord_t olin = {42.445457, -76.484322}; //Olin Hall
 coord_t hollister = {42.444259, -76.484435}; //Hollister Hall
 coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
 coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
-coord_t engQuadX = {42.444591, -76.483498}; //Center of Engineering Quad
+coord_t engQuadX = {42.444612, -76.483492}; //Center of Engineering Quad
 coord_t bottomStairs = {42.444240, -76.483258}; //Bottom of stairs, outside West entrance to Duffield Hall
-coord_t engQuadRight = {42.4444792, -76.483244}; //Bottom of stairs, to the left of North entrance to Duffield Hall
+coord_t northBottomStairs = {42.444735, -76.483275}; //Bottom of stairs, to the left of North entrance to Duffield Hall
+coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
 
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.468792,-76.5044053}; //Out in the lake, to the left of the Cornell Sailing Center
@@ -58,12 +59,13 @@ void initNavigation(void) {
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 1;
+  numWP = 2;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut2;
+  wayPoints[0] = engQuadX;
+  wayPoints[1] = outsideThurston;
   
   //Serial prints to Serial Monitor
   Serial.println("First coordinate: ");
@@ -75,8 +77,18 @@ void setWaypoints(void) {
   Serial1.println("First coordinate: ");
   Serial1.print("latitude: "); Serial.println(wayPoints[0].longitude,6);
   Serial1.print("longitude: "); Serial.println(wayPoints[0].latitude,6);
-}
 
+  //Serial prints to Serial Monitor
+  Serial.println("Second coordinate: ");
+  Serial.print("latitude: "); Serial.println(wayPoints[1].longitude,6);
+  Serial.print("longitude: "); Serial.println(wayPoints[1].latitude,6);
+
+  
+  //Serial1 print through the XBees
+  Serial1.println("Second coordinate: ");
+  Serial1.print("latitude: "); Serial.println(wayPoints[1].longitude,6);
+  Serial1.print("longitude: "); Serial.println(wayPoints[1].latitude,6);
+}
 
 
 /*Returns angle (with respect to North) between two global coordinates.
@@ -94,7 +106,7 @@ float angleToTarget(float lat1, float long1, float lat2, float long2){
   return brng;
 }
 
-/*Returns distance (in meters) between two global coordinates.
+/*Returns great circle distance (in meters) between two global coordinates.
 * Coordinates must be given in latitude and longitude */
 double havDist(coord_t  first, coord_t second) {
   double x = first.longitude;
@@ -118,12 +130,6 @@ double havDist(coord_t  first, coord_t second) {
   double distance = 2 * r * asin(part2);// distance is in km due to units of earth's radius
 
   distance = (distance*1000);
-
-  if (distance<30) {
-  double longDiff = wayPoints[wpNum].longitude - sensorData.longi;
-  double latDiff  = wayPoints[wpNum].latitude - sensorData.lati;
-  distance = sqrt(pow(longDiff,2)+pow(latDiff,2));
-  }
 
   return distance;
 }
@@ -163,6 +169,7 @@ void nShort(void) {
   Serial.print(", ");
   Serial.println(wayPoints[wpNum].longitude);
   Serial.print("Distance to waypoint: ");Serial.println(normr);
+  Serial.print("Detection Radius: ");Serial.println(detectionradius);
 
   Serial1.print("Next Waypoint #");
   Serial1.print(wpNum);
@@ -170,16 +177,38 @@ void nShort(void) {
   Serial1.print(wayPoints[wpNum].latitude);
   Serial1.print(", ");
   Serial1.println(wayPoints[wpNum].longitude);
-  Serial.print("Distance to waypoint: ");Serial1.println(normr);
+  Serial1.print("Distance to waypoint: ");Serial1.println(normr);
+  Serial1.print("Detection Radius: ");Serial1.println(detectionradius);
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
+    Serial.println("");
+    Serial.println("");
+    Serial.println("");
+    Serial.println("----------");
+    Serial.println("REACHED WAYPOINT");
+    Serial.println("----------");
+    Serial.println("");
+    Serial.println("");
+    Serial.println("");
+    
+    
     Serial.println("Reached waypoint #");
     Serial.print(wpNum);
     Serial.print(": ");
     Serial.print(wayPoints[wpNum].latitude);
     Serial.print(", ");
     Serial.println(wayPoints[wpNum].longitude);
+
+    Serial1.println("");
+    Serial1.println("");
+    Serial1.println("");
+    Serial1.println("----------");
+    Serial1.println("REACHED WAYPOINT");
+    Serial1.println("----------");
+    Serial1.println("");
+    Serial1.println("");
+    Serial1.println("");
     
     Serial1.println("Reached waypoint #");
     Serial1.print(wpNum);
@@ -187,17 +216,31 @@ void nShort(void) {
     Serial1.print(wayPoints[wpNum].latitude);
     Serial1.print(", ");
     Serial1.println(wayPoints[wpNum].longitude);
-    wpNum = wpNum+1;
+    wpNum = wpNum + 1 ;
 
     //reset variables because we have reached the old waypoint
     r[0] = wayPoints[wpNum].longitude - sensorData.longi;
     r[1] = wayPoints[wpNum].latitude - sensorData.lati;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    oldnormr=normr;
     coord_t currentPosition = {sensorData.lati, sensorData.longi};
-    normr = havDist(wayPoints[wpNum], currentPosition); 
+    normr = havDist(wayPoints[wpNum], currentPosition);
+
+    digitalWrite(redLED1, HIGH);
+    digitalWrite(redLED2, HIGH);
+    digitalWrite(yellowLED, HIGH);
+    digitalWrite(blueLED, HIGH);
+    digitalWrite(greenLED, HIGH);
+
+    delay(8000);
+    
   }
+
+    digitalWrite(redLED1, LOW);
+    digitalWrite(redLED2, LOW);
+    digitalWrite(yellowLED, LOW);
+    digitalWrite(blueLED, HIGH);
+    digitalWrite(greenLED, LOW);
 
   //dir is the direction to the next waypoint from the boat
   //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
@@ -233,48 +276,100 @@ void nShort(void) {
 
   Serial.println("Setting sail and tail");
   Serial1.println("Setting sail and tail");
-  
-  //Up right
-  if (dirangle<optpolartop && dirangle>0){
-    Serial.println("Heading up right");
-    Serial1.println("Heading up right");  
-    sailAngle=sensorData.windDir+angleofattack;
-    tailAngle=sensorData.windDir;
-  }
-  //Head directly to target to the right
-  else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-    Serial.println("Heading to target to the right");
-    Serial1.println("Heading to target to the right");
-    sailAngle=sensorData.windDir+angleofattack;
-    tailAngle=sensorData.windDir;
-  }
-  //Head directly to target to the right
-  else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-    Serial.println("Heading to target to the left");
-    Serial1.println("Heading to target to the left");
-    sailAngle=sensorData.windDir-angleofattack;
-    tailAngle=sensorData.windDir;
-  }
-  //Up left
-  else if (dirangle>360-optpolartop){
-    Serial.println("up left");
-    Serial1.println("up left");
-    sailAngle=sensorData.windDir-angleofattack;
-    tailAngle=sensorData.windDir;
-  }   
-  else if (dirangle < 180 + optpolarbot && dirangle > 180){
-    Serial.println("bottom left");
-    Serial1.println("bottom left");
-    sailAngle=sensorData.windDir-angleofattack;
-    tailAngle=sensorData.windDir;
-  }
-  else {
-    Serial.println("bottom right");
-    Serial1.println("bottom right");
-    sailAngle=optpolarbot + angleofattack;
-    tailAngle=optpolarbot;
-  }
 
+
+//write function that checks boat orientation and see if facing directly to waypoint, or if needs to turn
+
+//  boat initially facing right
+  if (sensorData.boatDir<180) {
+    //Up right
+    if (dirangle<optpolartop && dirangle>0){
+      Serial.println("Right up right");
+      Serial1.println("Right up right");  
+      sailAngle=sensorData.windDir+angleofattack ;
+      tailAngle=sensorData.windDir;
+    }
+    //Head directly to target to the right
+    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+      Serial.println("Right to target to the right");
+      Serial1.println("Right to target to the right");
+      sailAngle=sensorData.windDir+angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //Head directly to target to the left
+    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      Serial.println("Right to target to the left");
+      Serial1.println("Right to target to the left");
+      sailAngle=sensorData.windDir-angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //Up left
+    else if (dirangle>360-optpolartop){
+      Serial.println("Right up left");
+      Serial1.println("Right up left");
+      sailAngle=sensorData.windDir+angleofattack;
+      tailAngle=sensorData.windDir;
+    }   
+    //bottom left    
+    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+      Serial.println("Right bottom left");
+      Serial1.println("Right bottom left");
+      sailAngle=sensorData.windDir+angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //bottom right
+    else {
+      Serial.println("Right bottom right");
+      Serial1.println("Right bottom right");
+      sailAngle=optpolarbot + angleofattack;
+      tailAngle=optpolarbot;
+    }
+  }
+  //boat facing to left  
+  else{
+    //Up right
+    if (dirangle<optpolartop && dirangle>0){
+      Serial.println("Left up right");
+      Serial1.println("Left up right");  
+      sailAngle=sensorData.windDir-angleofattack ;
+      tailAngle=sensorData.windDir;
+    }
+    //Head directly to target to the right
+    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+      Serial.println("Left to target to the right");
+      Serial1.println("Left to target to the right");
+      sailAngle=sensorData.windDir+angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //Head directly to target to the left
+    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      Serial.println("Left to target to the left");
+      Serial1.println("Left to target to the left");
+      sailAngle=sensorData.windDir-angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //Up left
+    else if (dirangle>360-optpolartop){
+      Serial.println("Left up left");
+      Serial1.println("Left up left");
+      sailAngle=sensorData.windDir-angleofattack;
+      tailAngle=sensorData.windDir;
+    }   
+    //bottom left    
+    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+      Serial.println("Left bottom left");
+      Serial1.println("Left bottom left");
+      sailAngle=sensorData.windDir-angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+    //bottom right
+    else {
+      Serial.println("Left bottom right");
+      Serial1.println("Left bottom right");
+      sailAngle=sensorData.windDir - angleofattack;
+      tailAngle=sensorData.windDir;
+    }
+  }
   Serial.print("Sail angle (0 to 360) w.r.t North: ");   Serial.println(sailAngle);
   Serial.print("Tail angle (0 to 360) w.r.t North: ");   Serial.println(tailAngle);
   Serial1.print("Sail angle (0 to 360) w.r.t North: ");   Serial1.println(sailAngle);

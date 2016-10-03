@@ -12,7 +12,7 @@
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs 
 
- Last Updated: 9/25/2016 by Arjan Singh
+ Last Updated: 10/1/2016 by Arjan Singh
  
  Authors: Alex Pomerenk, Alec Dean, Arjan Singh, Stephanie Hogan
  

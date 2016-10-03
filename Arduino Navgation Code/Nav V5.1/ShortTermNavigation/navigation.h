@@ -10,7 +10,7 @@
  Sail Servo: HS-785HB by Hitec
  Tail Servo: HS-5646WP by Hitec
 
- Last Updated: 10/1/2016 by Arjan Singh
+ Last Updated: 9/25/2016 by Arjan Singh
  
  Authors: Alex Pomerenk, Alec Dean, Arjan Singh, Stephanie Hogan
  

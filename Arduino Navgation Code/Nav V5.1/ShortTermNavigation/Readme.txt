@@ -33,4 +33,4 @@ Noteworthy details/Changes since previous iteration:
 
 - The Navigation Algorithm is a work in progress. The boat is not capable of executing any maneuvers 
   like Jibing and Tacking
-- The Haversine formula is used to calculate distance b/w cooordinates
+

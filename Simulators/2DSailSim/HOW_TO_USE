@@ -1,0 +1,9 @@
+HOW TO USE THE SIMULATORS:
+
+	- Navigate to the Simulator Code Folder in matlab
+	- If Running nShort5.c:
+		- type "mex nShort5.c" to compile
+		- type "sail3" to run the simulator
+	- If running nav_v2_primitive:
+		- type "mex nav_v2_primitive.c" to compile
+		- type "sailn5"

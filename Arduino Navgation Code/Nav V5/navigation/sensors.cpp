@@ -96,6 +96,11 @@ void initSensors(void) {
   pinMode(SI, OUTPUT);
   pinMode(SO, INPUT);
   pinMode(CLK, OUTPUT);
+  pinMode(redLED1, OUTPUT);
+  pinMode(redLED2, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
   
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
@@ -128,12 +133,12 @@ void sRSensor(void) {
   //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
 
-  sensorData.boatDir = 245;
+  sensorData.boatDir = 60;
   
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
-  sensorData.windDir = 315;
+  sensorData.windDir = 0;
 
   Serial.println("----------Rotary Sensor----------");
   Serial1.println("----------Rotary Sensor----------");
