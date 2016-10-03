@@ -2,7 +2,7 @@
 double distanceError(coord_t currPos) {
   // current coordiantes
   double xa = currPos.longitude;
-  double ya = sensorData.latitude;
+  double ya = currPos.latitude;
 
 
   // final destination
@@ -10,6 +10,7 @@ double distanceError(coord_t currPos) {
   double y1 = wayPoints[maxPossibleWaypoints].latitude;
 
   // initial coordinates
+  // NEEDS TO BE IMPLEMENTED
   double x0;
   double y0;
 
