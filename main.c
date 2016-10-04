@@ -11,14 +11,23 @@
 
 int main() {
     
+    // coord_t data structure
+    struct coord_t {
+        double latitude;
+        double longitude;
+    };
+    
     //test inputs for conv_wayPoints
+    
     double wpTestArr[6] = {1.1, 1.2, 2.1, 2.2, 3.1, 3.2};
     int wpTestSize = 6;
     
-    //test conv_wayPoints function
-    struct coord_t * converted_WPs = conv_wayPoints(wpTestArr, wpTestSize);
-    printf("type double waypoint array is: %p\n", wpTestArr);
-    printf("type coord_t waypoint array is: %p\n", converted_WPs);
+//test conv_wayPoints function
+   struct coord_t * converted_WPs = conv_wayPoints(wpTestArr, wpTestSize);
+   printf("\ntype double waypoint array address is: %p\n", wpTestArr);
+   printf("type coord_t waypoint array address is: %p\n", converted_WPs);
+
+    printf("new address of wpTestArr is : %p\n", wpTestArr);
 
     return 0;
 }
