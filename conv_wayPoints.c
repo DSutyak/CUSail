@@ -15,9 +15,9 @@ struct coord_t {
 
 
 // function to convert wayPoints double array into array of type coord_t
-struct coord_t * conv_wayPoints (double *wayPoints, int waypointsize) {
-
-    struct coord_t converted_wayPoints[(waypointsize/2)];
+struct coord_t * conv_wayPoints (double *wayPoints, float waypointsize) {
+    
+    struct coord_t converted_wayPoints[((int)waypointsize/2)];
     
     for (int i = 0; i < waypointsize/2; i++) {
     
