@@ -8,29 +8,41 @@
 
 #include "conv_wayPoints.h"
 
-// varibale declaration
-double *wayPoints;
-int waypointsize;
-
 struct coord_t {
     double latitude;
     double longitude;
 };
 
-struct coord_t *converted_wayPoints;
 
 // function to convert wayPoints double array into array of type coord_t
 struct coord_t * conv_wayPoints (double *wayPoints, int waypointsize) {
+
+    struct coord_t converted_wayPoints[(waypointsize/2)];
     
-    int i, j = 0;
-    struct coord_t *converted_wayPoints[(waypointsize/2)];
+    for (int i = 0; i < waypointsize/2; i++) {
     
-    
-    for ( j = 0; j < waypointsize - 1; j = j+2) {
-        converted_wayPoints[i]->latitude = wayPoints[j];
-        converted_wayPoints[i]->longitude = wayPoints[(j+1)];
-        i++;
+        printf("i is : %i\n\n", i);
+
+        converted_wayPoints[i].latitude = *wayPoints;
+        
+        printf("latitude is: %.1f\n", *wayPoints);
+        printf("converted_waypoints[%i].latitude is %.1f\n\n: ", i, converted_wayPoints[i].latitude);
+
+        wayPoints = wayPoints + 1;
+        converted_wayPoints[i].longitude = *wayPoints;
+        
+        printf("longitude is:  %.1f\n", *wayPoints);
+        printf("converted_waypoints[%d].longitude is %.1f\n\n: ", i, converted_wayPoints[i].longitude);
+        
+        wayPoints = wayPoints + 1;
+
     }
     
-    return *converted_wayPoints;
+    printf("type coord_t wayPoints : ");
+    for (int i = 0; i < waypointsize/2; i++) {
+        printf("[%.2f, %.2f] ,", converted_wayPoints[i].latitude, converted_wayPoints[i].longitude);
+    }
+
+    return converted_wayPoints;
+    
 }
