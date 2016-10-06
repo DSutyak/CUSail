@@ -18,7 +18,7 @@
 
  Code has been tested and run on an Arduino Due
 
- Last Updated: 9/25/2016 by Arjan Singh
+ Last Updated: 10/6/2016 by Arjan Singh
  
  Authors: Alex Pomerenk, Alec Dean, Arjan Singh, Stephanie Hogan
  

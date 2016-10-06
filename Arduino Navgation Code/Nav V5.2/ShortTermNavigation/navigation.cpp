@@ -38,7 +38,9 @@ coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, l
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.468792,-76.5044053}; //Out in the lake, to the left of the Cornell Sailing Center
 coord_t lakeOut2 = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
+coord_t lakeOut3 = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
 coord_t shore = {42.469033,-76.5040623}; //Far end of the docks, to the left of the Cornell Sailing Center
+coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 
 /*Servo setup
 * "Attaches" servos to defined pins*/
@@ -59,13 +61,14 @@ void initNavigation(void) {
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 2;
+  numWP = 3;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = engQuadX;
-  wayPoints[1] = outsideThurston;
+  wayPoints[0] = lakeOut3;
+  wayPoints[1] = shore2;
+  wayPoints[2] = lakeOut3;
   
   //Serial prints to Serial Monitor
   Serial.println("First coordinate: ");
@@ -91,8 +94,7 @@ void setWaypoints(void) {
 }
 
 
-/*Returns angle (with respect to North) between two global coordinates.
-* Coordinates must be given in latitude and longitude */
+/*Returns angle (with respect to North) between two global coordinates.*/
 float angleToTarget(float lat1, float long1, float lat2, float long2){
   lat1=lat1 * M_PI/180;
   lat2=lat2 * M_PI/180;
@@ -106,8 +108,7 @@ float angleToTarget(float lat1, float long1, float lat2, float long2){
   return brng;
 }
 
-/*Returns great circle distance between two global coordinates.
-* Coordinates must be given in latitude and longitude */
+/*Returns great circle distance (in meters) between two global coordinates.*/
 double havDist(coord_t  first, coord_t second) {
   double x = first.longitude;
   double y = first.latitude;
@@ -130,13 +131,6 @@ double havDist(coord_t  first, coord_t second) {
   double distance = 2 * r * asin(part2);// distance is in km due to units of earth's radius
 
   distance = (distance*1000);
-
-//  if (distance<30) {
-//    long double longDiff = wayPoints[wpNum].longitude - sensorData.longi;
-//    long double latDiff  = wayPoints[wpNum].latitude - sensorData.lati;
-//    distance = sqrt(pow(longDiff,2) + pow(latDiff,2));
-//    Serial1.print("Less than 30m dist: "); Serial1.println(distance);
-//  }
 
   return distance;
 }
@@ -223,7 +217,7 @@ void nShort(void) {
     Serial1.print(wayPoints[wpNum].latitude);
     Serial1.print(", ");
     Serial1.println(wayPoints[wpNum].longitude);
-    wpNum = wpNum + 1 ;
+    wpNum += 1 ;
 
     //reset variables because we have reached the old waypoint
     r[0] = wayPoints[wpNum].longitude - sensorData.longi;
@@ -239,15 +233,15 @@ void nShort(void) {
     digitalWrite(blueLED, HIGH);
     digitalWrite(greenLED, HIGH);
 
-    delay(8000);
+    delay(8000); //Wait 8 seconds after hitting a waypoint
     
   }
 
     digitalWrite(redLED1, LOW);
     digitalWrite(redLED2, LOW);
     digitalWrite(yellowLED, LOW);
-    digitalWrite(blueLED, HIGH);
-    digitalWrite(greenLED, LOW);
+    digitalWrite(blueLED, LOW);
+    digitalWrite(greenLED, HIGH);
 
   //dir is the direction to the next waypoint from the boat
   //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
@@ -328,7 +322,7 @@ void nShort(void) {
     else {
       Serial.println("Right bottom right");
       Serial1.println("Right bottom right");
-      sailAngle=optpolarbot + angleofattack;
+      sailAngle=optpolarbot+angleofattack;
       tailAngle=optpolarbot;
     }
   }

@@ -1,8 +1,20 @@
 /*-----------------------------------------------------------------
  CU Sail
 `Cornell University Autonomous Sailboat Team
+
+ Sensors
+ Gathers boat direction w.r.t North, wind direction w.r.t North, boat pitch, boat yaw,
+ date, time and boat position in lattitude and longitude, using an IMU, a GPS and a Rotary Sensor
+
+ Code has been tested and run on an Arduino Due
  
- Authors: Alex Pomerenk, Alec Dean, Arjan Singh, Stephanie Hogan
+ Rotary Sensor:  AS5047 by AMS (AS5147 has been tested to work)
+ GPS: PAM-7Q GPS Module by Parallax
+ IMU: 3 Space Embedded Evaluation Kit by Yost Labs 
+
+ Last Updated: 10/1/2016 by Arjan Singh
+ 
+ Authors: Alex Pomerenk, Arjan Singh
  
  Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
@@ -34,15 +46,13 @@ typedef struct dataStructure {
 #define IMU_CSN         65 
 #define SO              74
 #define SI              75
-#define CLK             76 
-#define anePin          49
-#define debLimit        60
-#define GPSRep          4
+#define CLK             76
+
 #define redLED1         22
+#define redLED2         44
 #define blueLED         35
 #define yellowLED       36
-#define greenLED        53    // power LED 
-#define redLED2         44
+#define greenLED        53    // Power LED 
 
 /*--------------------------- Global Variables ---------------------------*/
 extern data_t sensorData; //Defines the boat's state, in type data_t
