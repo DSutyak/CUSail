@@ -6,8 +6,6 @@ The enclosed files contain the following elments of the navigation system of Sai
 
 -Arduino Individual Code: This folder contains sensor code for the boat's Rotary Sensor, IMU and GPS
 
--Sail and Tailvane Servo Testing Code: This folder contains code to calibrate the sail and tailvane servos
-
 -Simulators: This folder contains two kinds of MATLAB simulators made for testing the algorithm
 
 -Short Term Navigation Algorithm: This folder contains code in C that eventually populates the 

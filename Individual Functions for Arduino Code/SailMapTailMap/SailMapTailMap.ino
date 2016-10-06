@@ -2,9 +2,8 @@
 Servo Sail;
 Servo Tail;
 
-/** Used to test sail and tail servos, using their respective servo 
- *  mappings. Uncomment tests as required.
-*/
+/* Used to calibrate and test sail and tail servos, using their respective servo 
+ *  mappings. Uncomment tests as required.*/
 
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
@@ -71,7 +70,6 @@ void loop() {
   Sail.write(sailMap(0)); //Sail to 0
   delay(5000);
 
-  
   Tail.write(tailMap(0, -30));
   delay(5000);  
   
