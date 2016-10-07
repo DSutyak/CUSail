@@ -15,3 +15,8 @@ The enclosed files contain the following elments of the navigation system of Sai
                           the culmination of the sensor code and the navigation algorithm
 			  
 -Individual Functions for Arduino Code: Contains (mostly) helper functions used in the Arduino Code
+
+#Recent Updates (10/6/16)
+
+-Added the most curretn version of the algorithm to the Short Term Navigation Algorithm folder
+-Added the most curretn version of the arduino code to the Arduino Navigation Code folder
