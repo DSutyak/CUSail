@@ -9,6 +9,34 @@
 
 */
 void nShort() {
+
+
+  struct coord_t {
+    double latitude;
+    double longitude;
+  };
+
+
+  // function to convert wayPoints double array into array of type coord_t
+  struct coord_t * conv_wayPoints (double *wayPoints, float waypointsize) {
+      
+      struct coord_t converted_wayPoints[((int)waypointsize/2)];
+      
+      for (int i = 0; i < waypointsize/2; i++) {
+          converted_wayPoints[i].latitude = *wayPoints;
+          wayPoints = wayPoints + 1;
+          converted_wayPoints[i].longitude = *wayPoints;
+          wayPoints = wayPoints + 1;
+      }
+
+      return converted_wayPoints;  
+  }
+
+
+
+  wayPoints = conv_wayPoints(wayPoints, waypointsize);
+
+
   
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
