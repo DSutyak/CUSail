@@ -3,12 +3,17 @@
 #include "TinyGPS++.h"
 TinyGPSPlus gps;
 data_t sensorData;
+float boatDirections[numBoatDirReads];
+float windDirections[numWindDirReads];
 
-// Type to convert the bytes from SPI to float (Used as part of the IMU code
+// Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
     byte b[4];
     float fval;
 } imu_data[3];  // Create 3 unions, one for each euler angle
+
+int boatDirArrayNum = 0; // ints helping in replacing array elements
+int windDirArrayNum = 0;
 
 /*Transfers commands through SPI*/
 byte transferByte(byte byteToWrite) {
@@ -110,6 +115,15 @@ void initSensors(void) {
   SPI.begin();
 }
 
+float dirAverage(int numToAverage, float arrayToAverage[]) {
+    float sum = 0;
+    for(int i=0; i < numToAverage; i++) {
+      sum += arrayToAverage[i];
+    }
+  float avgDir = sum/numToAverage;
+  return avgDir;
+}
+
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
@@ -132,13 +146,11 @@ void sRSensor(void) {
 
   //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
-
-  sensorData.boatDir = 60;
   
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
-  sensorData.windDir = 0;
+  sensorData.windDir = 185;
 
   Serial.println("----------Rotary Sensor----------");
   Serial1.println("----------Rotary Sensor----------");
@@ -222,17 +234,20 @@ void sIMU(void) {
 
   // Send start of packet:
   result = transferByte(0xF6);
+  delay(1);
        Serial.print("Sent start of packet. Result: "),Serial.println(result);
        Serial1.print("Sent start of packet. Result: "),Serial1.println(result);
   
   
   // Send command (tared euler angles)
   result = transferByte(0x01);
+  delay(1);
        Serial.print("Sent commmand 0x01. Result: "),Serial.println(result);
        Serial1.print("Sent commmand 0x01. Result: "),Serial1.println(result);
   
   // Get status of device:
   result = transferByte(0xFF);
+  delay(1);
        Serial.print("Status of device. Result: "),Serial.println(result);
        Serial1.print("Status of device. Result: "),Serial1.println(result);
 
@@ -257,11 +272,23 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  sensorData.boatDir =  ((imu_data[1].fval)*(180/PI));
-  if (sensorData.boatDir < 0) {
-    sensorData.boatDir += 360; 
+  float boatDir =  ((imu_data[1].fval)*(180/PI));
+  if (boatDir < 0) {
+    boatDir += 360; 
   }
 
+  Serial.print("Boat direction b/f avg: "), Serial.println(boatDir,4);
+  Serial1.print("Boat direction b/f afdvg: "), Serial1.println(boatDir,4);
+  
+  boatDirections[boatDirArrayNum%numBoatDirReads] = boatDir;
+  Serial1.println("directions:");
+  Serial1.println("[");
+  for (int i=0; i<numBoatDirReads; i++){
+    Serial1.println(boatDirections[i]);
+  }
+  Serial1.println("]");
+  boatDirArrayNum += 1;
+  sensorData.boatDir = dirAverage(numBoatDirReads, boatDirections);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
   
@@ -280,4 +307,8 @@ void sIMU(void) {
   Serial.println("");
   Serial1.println("");
 }
+
+
+
+
 

@@ -36,10 +36,11 @@ coord_t northBottomStairs = {42.444735, -76.483275}; //Bottom of stairs, to the 
 coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
 
 //Coordinates in and around the Cornell Sailing Center
-coord_t lakeOut = {42.468792,-76.5044053}; //Out in the lake, to the left of the Cornell Sailing Center
+coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the Cornell Sailing Center
+coord_t lakeOut12 = {42.469847,-76.504522}; //Out in the lake, to the left of the Cornell Sailing Center
 coord_t lakeOut2 = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
 coord_t lakeOut3 = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
-coord_t shore = {42.469033,-76.5040623}; //Far end of the docks, to the left of the Cornell Sailing Center
+coord_t shore = {42.469717,-76.503341}; //Far end of the docks, to the left of the Cornell Sailing Center
 coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 
 /*Servo setup
@@ -66,9 +67,9 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut3;
-  wayPoints[1] = shore2;
-  wayPoints[2] = lakeOut3;
+  wayPoints[0] = lakeOut;
+  wayPoints[1] = shore;
+  wayPoints[2] = lakeOut12;
   
   //Serial prints to Serial Monitor
   Serial.println("First coordinate: ");
@@ -233,6 +234,10 @@ void nShort(void) {
     digitalWrite(blueLED, HIGH);
     digitalWrite(greenLED, HIGH);
 
+    for (int i=0; i<numBoatDirReads; i++){
+      boatDirections[i] = 0;
+    }
+
     delay(8000); //Wait 8 seconds after hitting a waypoint
     
   }
@@ -282,13 +287,13 @@ void nShort(void) {
 //write function that checks boat orientation and see if facing directly to waypoint, or if needs to turn
 
 //  boat initially facing right
-  if (sensorData.boatDir<180) {
+  if (dirangle<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
       Serial.println("Right up right");
       Serial1.println("Right up right");  
-      sailAngle=sensorData.windDir+angleofattack ;
-      tailAngle=sensorData.windDir;
+      sailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop) - angleofattack; //sensorData.windDir+angleofattack ;
+      tailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop);
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
@@ -308,22 +313,22 @@ void nShort(void) {
     else if (dirangle>360-optpolartop){
       Serial.println("Right up left");
       Serial1.println("Right up left");
-      sailAngle=sensorData.windDir+angleofattack;
-      tailAngle=sensorData.windDir;
+      sailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop) + angleofattack; //sensorData.windDir+angleofattack;
+      tailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop);
     }   
     //bottom left    
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
       Serial.println("Right bottom left");
       Serial1.println("Right bottom left");
-      sailAngle=sensorData.windDir+angleofattack;
-      tailAngle=sensorData.windDir;
+      sailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot) + angleofattack; //sensorData.windDir+angleofattack;
+      tailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot);
     }
     //bottom right
     else {
       Serial.println("Right bottom right");
       Serial1.println("Right bottom right");
-      sailAngle=optpolarbot+angleofattack;
-      tailAngle=optpolarbot;
+      sailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot) - angleofattack;
+      tailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot);
     }
   }
   //boat facing to left  

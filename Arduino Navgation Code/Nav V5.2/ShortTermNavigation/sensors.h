@@ -47,7 +47,8 @@ typedef struct dataStructure {
 #define SO              74
 #define SI              75
 #define CLK             76
-
+#define numBoatDirReads 20 // Number of boat direction readings to average
+#define numWindDirReads 20 // Number of wind direction readings to average
 #define redLED1         22
 #define redLED2         44
 #define blueLED         35
@@ -56,6 +57,8 @@ typedef struct dataStructure {
 
 /*--------------------------- Global Variables ---------------------------*/
 extern data_t sensorData; //Defines the boat's state, in type data_t
+extern float boatDirections[numBoatDirReads];
+extern float windDirections[numWindDirReads];
 
 /*------------------------------ Functions ------------------------------*/
 
