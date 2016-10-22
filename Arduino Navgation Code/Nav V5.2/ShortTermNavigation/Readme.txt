@@ -4,7 +4,7 @@ Cornell University Autonomous Sailboat Team
 Short Term Navigation Code
 Version 5.1
 
-Last Updated: 10/18/2016
+Last Updated: 10/20/2016
 
 This code is uploaded to the microcontroller of the SailVane.
 This code is intended for use with the Arduino Due, but could be adapted to be used with other microcontrollers.
@@ -33,7 +33,7 @@ Noteworthy details/Changes since previous iteration:
 
 - The Navigation Algorithm is a work in progress. The boat is not capable of executing any maneuvers 
   like Jibing and Tacking
-- The boat direction is now averaged for 20 readings
-- The algorithm has been slightly modified for when the boat is facing right. Updates for when the boat is 
-  facing left is upcoming.
+- The current waypoints are set in context of the Cornell Sailing Center, Ithaca, NY
+- A function to calculate distance between two global coordinates has also been implemented
+- A function to average boat direction and wind direction readings has been added
 

@@ -283,9 +283,6 @@ void nShort(void) {
   Serial.println("Setting sail and tail");
   Serial1.println("Setting sail and tail");
 
-
-//write function that checks boat orientation and see if facing directly to waypoint, or if needs to turn
-
 //  boat initially facing right
   if (dirangle<180) {
     //Up right
