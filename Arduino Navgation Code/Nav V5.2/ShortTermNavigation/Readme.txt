@@ -35,5 +35,6 @@ Noteworthy details/Changes since previous iteration:
   like Jibing and Tacking
 - The current waypoints are set in context of the Cornell Sailing Center, Ithaca, NY
 - A function to calculate distance between two global coordinates has also been implemented
-- A function to average boat direction and wind direction readings has been added
+- A function to average boat direction and wind direction readings has been added: The function is just 
+  a sliding window averager. Must be improved.
 

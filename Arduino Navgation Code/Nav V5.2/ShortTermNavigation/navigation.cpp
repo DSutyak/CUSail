@@ -42,6 +42,8 @@ coord_t lakeOut2 = {42.469065,-76.506674}; //Out in the lake, to the right of th
 coord_t lakeOut3 = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
 coord_t shore = {42.469717,-76.503341}; //Far end of the docks, to the left of the Cornell Sailing Center
 coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
+coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
+coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking from the beach to the left of the Cornell Sailing Center 
 
 /*Servo setup
 * "Attaches" servos to defined pins*/
@@ -62,14 +64,14 @@ void initNavigation(void) {
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 2;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut;
+  wayPoints[0] = acrossDock;
   wayPoints[1] = shore;
-  wayPoints[2] = lakeOut12;
+
   
   //Serial prints to Serial Monitor
   Serial.println("First coordinate: ");
