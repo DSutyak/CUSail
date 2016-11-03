@@ -153,6 +153,51 @@ double havDist(coord_t  first, coord_t second) {
   return distance;
 }
 
+
+void upRight() {
+	Serial.println("Right up right");
+  Serial1.println("Right up right");
+ 	sailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop) - angleofattack; //sensorData.windDir+angleofattack ;
+ 	tailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop);
+}
+
+void rightTarget(){
+	Serial.println("Right to target to the right");
+	Serial1.println("Right to target to the right");
+	sailAngle=sensorData.windDir+angleofattack;
+	tailAngle=sensorData.windDir;
+}
+
+void leftTarget(){
+  Serial.println("Right to target to the left");
+  Serial1.println("Right to target to the left");
+  sailAngle=sensorData.windDir-angleofattack;
+  tailAngle=sensorData.windDir;
+}
+
+void upLeft(){
+  Serial.println("Right up left");
+  Serial1.println("Right up left");
+  sailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop) + angleofattack; //sensorData.windDir+angleofattack;
+  tailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop);
+}
+
+void downLeft(){
+  Serial.println("Right bottom left");
+  Serial1.println("Right bottom left");
+  sailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot) + angleofattack; //sensorData.windDir+angleofattack;
+  tailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot);
+}
+
+void downRight(){
+  Serial.println("Right bottom right");
+  Serial1.println("Right bottom right");
+  sailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot) - angleofattack;
+  tailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot);
+}
+
+
+
 /*----------NAVIGATION ALGORITHM----------
 *
 *Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle.
@@ -338,90 +383,54 @@ void nShort(void) {
   else if (dirangle<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial.println("Right up right");
-      Serial1.println("Right up right");
-      sailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop) - angleofattack; //sensorData.windDir+angleofattack ;
-      tailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop);
+      upRight();
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial.println("Right to target to the right");
-      Serial1.println("Right to target to the right");
-      sailAngle=sensorData.windDir+angleofattack;
-      tailAngle=sensorData.windDir;
+      rightTarget();
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial.println("Right to target to the left");
-      Serial1.println("Right to target to the left");
-      sailAngle=sensorData.windDir-angleofattack;
-      tailAngle=sensorData.windDir;
+      leftTarget();
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial.println("Right up left");
-      Serial1.println("Right up left");
-      sailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop) + angleofattack; //sensorData.windDir+angleofattack;
-      tailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop);
+      upLeft();
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial.println("Right bottom left");
-      Serial1.println("Right bottom left");
-      sailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot) + angleofattack; //sensorData.windDir+angleofattack;
-      tailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot);
+    	downLeft();
     }
     //bottom right
     else {
-      Serial.println("Right bottom right");
-      Serial1.println("Right bottom right");
-      sailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot) - angleofattack;
-      tailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot);
+      downRight();
     }
   }
   //boat facing to left
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial.println("Left up right");
-      Serial1.println("Left up right");
-      sailAngle=sensorData.windDir-angleofattack ;
-      tailAngle=sensorData.windDir;
+      upRight();
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial.println("Left to target to the right");
-      Serial1.println("Left to target to the right");
-      sailAngle=sensorData.windDir+angleofattack;
-      tailAngle=sensorData.windDir;
+      rightTarget();
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial.println("Left to target to the left");
-      Serial1.println("Left to target to the left");
-      sailAngle=sensorData.windDir-angleofattack;
-      tailAngle=sensorData.windDir;
+      leftTarget();
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial.println("Left up left");
-      Serial1.println("Left up left");
-      sailAngle=sensorData.windDir-angleofattack;
-      tailAngle=sensorData.windDir;
+      upLeft();
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial.println("Left bottom left");
-      Serial1.println("Left bottom left");
-      sailAngle=sensorData.windDir-angleofattack;
-      tailAngle=sensorData.windDir;
+      downLeft();
     }
     //bottom right
     else {
-      Serial.println("Left bottom right");
-      Serial1.println("Left bottom right");
-      sailAngle=sensorData.windDir - angleofattack;
-      tailAngle=sensorData.windDir;
+      downRight();
     }
   }
   Serial.print("Sail angle (0 to 360) w.r.t North: ");   Serial.println(sailAngle);
