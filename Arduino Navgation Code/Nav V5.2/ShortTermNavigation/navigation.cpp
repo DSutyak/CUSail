@@ -27,8 +27,8 @@ float optpolarbot;
 /*---------Distance to Center Line------*/
 // latitude is y, longitude is x
 float max_distance=100;
-coord_t center_start={1,2}
-coord_t center_end={10,20}
+coord_t center_start={1,2};
+coord_t center_end={10,20};
 
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
@@ -154,11 +154,20 @@ double havDist(coord_t  first, coord_t second) {
 }
 
 
+
+
+
+// orientation is 1 for right and 0 for left
+// right is negative offset, left is positive
+// never go upright when facing left
+// facing right, angle is above in the sector: w-offset
+//   w-(|w+opttop - boatdir|)
 void upRight() {
-	Serial.println("Right up right");
+  Serial.println("Right up right");
   Serial1.println("Right up right");
- 	sailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop) - angleofattack; //sensorData.windDir+angleofattack ;
- 	tailAngle= sensorData.windDir - (sensorData.boatDir - optpolartop);
+  float offset = fabsf(sensorData.windDir+optpolartop-sensorData.boatDir);
+  tailAngle=sensorData.windDir-offset;
+  sailAngle=tailAngle+angleofattack;
 }
 
 void rightTarget(){
@@ -174,29 +183,50 @@ void leftTarget(){
   sailAngle=sensorData.windDir-angleofattack;
   tailAngle=sensorData.windDir;
 }
-
+// facing left, angle is above in the sector: w+offset
+//   w+(|w-opttop-boatdir|)
 void upLeft(){
-  Serial.println("Right up left");
-  Serial1.println("Right up left");
-  sailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop) + angleofattack; //sensorData.windDir+angleofattack;
-  tailAngle= sensorData.windDir + (sensorData.boatDir - optpolartop);
+  Serial.println("Left up left");
+  Serial1.println("Left up left");
+  float offset = fabsf(sensorData.windDir-optpolartop-sensorData.boatDir);
+  tailAngle=sensorData.windDir+offset;
+  sailAngle=tailAngle-angleofattack;
 }
 
+// facing left, angle is below in the sector: w+offset
+//   w+(|w+180-optboat-boatdir)
 void downLeft(){
-  Serial.println("Right bottom left");
-  Serial1.println("Right bottom left");
-  sailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot) + angleofattack; //sensorData.windDir+angleofattack;
-  tailAngle= sensorData.windDir - (sensorData.boatDir - optpolarbot);
+  Serial.println("Left bottom left");
+  Serial1.println("Left bottom left");
+  float offset = fabsf(sensorData.windDir+180-optpolarbot-sensorData.boatDir);
+  tailAngle=sensorData.windDir+offset;
+  sailAngle=tailAngle-angleofattack;
 }
-
+// facing right, angle is below in the sector: w-offset
+//   w-(|w+180+optbot-boatdir|)
 void downRight(){
   Serial.println("Right bottom right");
   Serial1.println("Right bottom right");
-  sailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot) - angleofattack;
-  tailAngle= sensorData.windDir + (sensorData.boatDir - optpolarbot);
+  float offset = fabsf(sensorData.windDir+180+optpolarbot-sensorData.boatDir);
+  tailAngle=sensorData.windDir-offset;
+  sailAngle=tailAngle+angleofattack;
 }
 
+void lightAllLEDs(){
+  digitalWrite(redLED1, HIGH);
+  digitalWrite(redLED2, HIGH);
+  digitalWrite(yellowLED, HIGH);
+  digitalWrite(blueLED, HIGH);
+  digitalWrite(greenLED, HIGH);
+}
 
+void lowAllLEDs(){
+  digitalWrite(redLED1, LOW);
+  digitalWrite(redLED2, LOW);
+  digitalWrite(yellowLED, LOW);
+  digitalWrite(blueLED, LOW);
+  digitalWrite(greenLED, HIGH);
+}
 
 /*----------NAVIGATION ALGORITHM----------
 *
@@ -246,19 +276,7 @@ void nShort(void) {
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
-    Serial.println("");
-    Serial.println("");
-    Serial.println("");
-    Serial.println("----------");
-    Serial.println("REACHED WAYPOINT");
-    Serial.println("----------");
-    Serial.println("");
-    Serial.println("");
-    Serial.println("");
-
-
-    Serial.println("Reached waypoint #");
-    Serial.print(wpNum);
+    Serial.println("\n\n\n----------\nREACHED WAYPOINT\n----------\n\n\n\nReached waypoint #: \n");
     Serial.print(": ");
     Serial.print(wayPoints[wpNum].latitude);
     Serial.print(", ");
@@ -290,11 +308,7 @@ void nShort(void) {
     coord_t currentPosition = {sensorData.lati, sensorData.longi};
     normr = havDist(wayPoints[wpNum], currentPosition);
 
-    digitalWrite(redLED1, HIGH);
-    digitalWrite(redLED2, HIGH);
-    digitalWrite(yellowLED, HIGH);
-    digitalWrite(blueLED, HIGH);
-    digitalWrite(greenLED, HIGH);
+    lightAllLEDs();
 
     for (int i=0; i<numBoatDirReads; i++){
       boatDirections[i] = 0;
@@ -304,11 +318,7 @@ void nShort(void) {
 
   }
 
-    digitalWrite(redLED1, LOW);
-    digitalWrite(redLED2, LOW);
-    digitalWrite(yellowLED, LOW);
-    digitalWrite(blueLED, LOW);
-    digitalWrite(greenLED, HIGH);
+  lowAllLEDs();
 
   //dir is the direction to the next waypoint from the boat
   //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
@@ -347,7 +357,7 @@ void nShort(void) {
 
 
   /*---------checking if past maximum tacking width------------*/
-  float distance_to_center=center_distance(currentPosition);
+  float distance_to_center = center_distance(currentPosition);
   // boat facing right and past line, must turn left
   if (distance_to_center<max_distance){
     if (dirangle<180){
@@ -370,9 +380,13 @@ void nShort(void) {
     w is wind wrt north
     opttop and optboat are 45 or 40 eg
     boatdir is boat wrt north
+
+  general: if boat is facing right, and cant sail directly to WP or turn to WP,
+    tailangle= wind -offset
+    facing left: tailangle=wind+offset
   facing right, angle is above in the sector: w-offset
     w-(|w+opttop - boatdir|)
-  facing right, angle is below in the sector: w+offset
+  facing left, angle is below in the sector: w+offset
     w+(|w+180-optboat-boatdir)
   facing left, angle is above in the sector: w+offset
     w+(|w-opttop-boatdir|)
@@ -391,15 +405,16 @@ void nShort(void) {
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      // turning
       leftTarget();
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      upLeft();
+      upRight();
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-    	downLeft();
+    	downRight();
     }
     //bottom right
     else {
@@ -410,7 +425,7 @@ void nShort(void) {
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      upRight();
+      upLeft();
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
@@ -430,7 +445,7 @@ void nShort(void) {
     }
     //bottom right
     else {
-      downRight();
+      downLeft();
     }
   }
   Serial.print("Sail angle (0 to 360) w.r.t North: ");   Serial.println(sailAngle);
