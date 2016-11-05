@@ -427,14 +427,14 @@ void nServos(void) {
   sailServo.write(sailAngle); 
 }
 
-/*
+
 /** Returns a double:
 *   2 indicates no object
 *   0 to 1 indicates object on the starboard (closer to 1 = closer to edge of pixy cam view)
 *  -1 to 0 indicates object on the port (closer to -1 = closer to edge of pixy cam view)
 *   NOTE: This only detects objects set to
 *   signature 1 on the pixy cam */
-double getObjects() {
+/*double getObjects() {
     uint16_t blocks = pixy.getBlocks();
 
     if (blocks) {
