@@ -385,6 +385,28 @@ void nShort(void) {
   Serial.print("sensorData.windDir: ");   Serial.println(sensorData.windDir);
   Serial1.print("sensorData.boatDir: ");   Serial1.println(sensorData.boatDir);
   Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
+  
+  /*
+   double courseChange = getObjects();
+
+    if (courseChange < 0) {
+        // we need to make a starboard turn
+        angleofattack = (-1)*90*coursChange; // val from 0 to 90
+        sailAngle=sensorData.windDir - angleofattack;
+        tailAngle=sensorData.windDir;
+    }
+    else if (courseChange > 0 && courseChange != 2.0) {
+        // we need to make a port side turn
+        angleofattack = 90*courseChange;
+        sailAngle=sensorData.windDir + angleofattack;
+        tailAngle=sensorData.windDir;
+    }
+
+    else {
+        sailAngle=sensorData.windDir;
+        tailAngle=sensorData.windDir;
+    }
+   */
 
   //Convert sail and tail from wrt north to wrt boat
   sailAngle=sailAngle-sensorData.boatDir;
