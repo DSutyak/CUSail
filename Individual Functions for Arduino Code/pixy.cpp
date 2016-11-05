@@ -8,7 +8,7 @@ pixy.init();
 
 angleofattack = 15;
 
-/** Returns an integer:
+/** Returns a double:
 *   2 indicates no object
 *   0 to 1 indicates object on the starboard (closer to 1 = closer to edge of pixy cam view)
 *  -1 to 0 indicates object on the port (closer to -1 = closer to edge of pixy cam view)
