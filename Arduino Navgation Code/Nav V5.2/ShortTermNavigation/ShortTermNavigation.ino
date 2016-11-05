@@ -1,5 +1,6 @@
 #include "sensors.h"
 #include "navigation.h"
+//#include <Pixy.h>
 
 /*-----------------------------------------------------------------
  CU Sail
@@ -24,6 +25,7 @@
  
  Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
+//Pixy pixy; //pixycam
 
 // Code within setup() runs once on receiving power
 void setup() {
@@ -31,6 +33,7 @@ void setup() {
   initNavigation(); // Set the number of waypoints and the current waypoint # to 0
   initServos(); // attach the sail and tailvane servos
   setWaypoints(); // create the course by means of a waypoint array
+  //pixy.init();
 }
 
 // Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
