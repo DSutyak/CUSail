@@ -421,11 +421,12 @@ void nShort(void) {
     double courseChange;
     getObjects();
     int s = xVals.size();
-    if (s > 1) {
+    if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) { // ensure an object has been detected
         double initialReading = xVals.get(s-2);
         double recentReading = xVals.get(s-1);
 
         courseChange = initialReading - recentReading;
+        recentReading = (recentReading / 319.0) - 1.0;
         if (Math.abs(courseChange) < 0.1) {
             //we need to make evasion manuerver
             if (recentReading > 0) {
@@ -514,6 +515,9 @@ void getObjects() {
                 xVals.push_back(xVals);
             }
         }
+    }
+    else {
+        xVals.push_back(400.0); // no objects were detected
     }
 }
 */
