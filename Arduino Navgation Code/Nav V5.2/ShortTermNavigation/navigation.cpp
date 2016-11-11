@@ -116,13 +116,8 @@ void setWaypoints(void) {
   //Assignmment must be of the type coord_t.
   wayPoints[0] = acrossDock;
   wayPoints[1] = shore;
-<<<<<<< HEAD
   wayPoints[2] = lakeOut12;
 
-=======
-
-
->>>>>>> master
   //Serial prints to Serial Monitor
   Serial.println("First coordinate: ");
   Serial.print("latitude: "); Serial.println(wayPoints[0].longitude,6);
