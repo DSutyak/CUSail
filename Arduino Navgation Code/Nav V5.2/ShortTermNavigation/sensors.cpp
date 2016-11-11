@@ -150,7 +150,7 @@ void sRSensor(void) {
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
-  sensorData.windDir = 185;
+  sensorData.windDir = 270;
 
   Serial.println("----------Rotary Sensor----------");
   Serial1.println("----------Rotary Sensor----------");

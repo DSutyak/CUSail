@@ -69,7 +69,7 @@ void loop() {
 
   Sail.write(sailMap(0)); //Sail to 0
   delay(5000);
-
+     
   Tail.write(tailMap(0, -30));
   delay(5000);  
   
