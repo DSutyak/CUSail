@@ -36,8 +36,12 @@ void setup() {
 // Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
 void loop() {
   sRSensor(); //Gather wind directio w.r.t North
+  delay(1000);
   sGPS(); //Gather global coordinates
+  delay(1000);
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
+  delay(1000);
   nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
+  delay(1000);
   nServos(); //Send acquired servo commands
 }
