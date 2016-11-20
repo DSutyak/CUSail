@@ -1,92 +1,9 @@
-//Short Course Navigation Algorithm for The Cornell Autonomous Sailboat Team
-//Written By Alec Dean and Alex Pomerank
-//Ruina Lab
-//Cornell University
-//Spring 2016
-
-
-
-//TODO:
-//  -Implement and test tacking as opposed to jibing
-//  -Implement and test the "just set the sail and tail" algorithm
-//  -Implement and test buoy rounding algorithm
-//  -Look into creating better simulation
-//  -Long course navigation----not now
-//  -Fix error between predicted path and actual path due to wind pushing the boat downwind
-//  -Comment better
-//  -Jibing downwind should start earlier (reverse of dropping a tackpoint for upwind jibe)
-//  -Attempt to create a better program design
-//  -Jesse's simulation
-//  -Check to see if boat is tipping
-
-
-
 #include "mex.h"
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include "nShort.h"
 //#include <Arduino.h>
 #include <math.h>
-
-
-//function that takes two gps coordinates and finds the angle between them wrt north
-float angleToTarget(lat1, long1, lat2, long2){
-  lat1=lat1 * M_PI/180;
-  lat2=lat2 * M_PI/180;
-  float dLong=(long2-long1) * M_PI/180;
-  float y = sin(dLong) * cos(lat2);
-  float x = cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(dLong);
-  float brng = atan2(y, x) * 180/ M_PI;
-  if (brng<0){
-    brng+=360;
-  }
-  //printf("NextHeading in Degrees WRT North: ", brng);
-  return brng;
-}
-
-float* calcKeyConversion(prevSail, prevTail, currSail, currTail){
-  float commands[4]
-  if (prevSail<currSail){
-    commands[0]=1;
-    commands[1]=0;
-    commands[2]=0;
-    commands[3]=0;
-  }
-  else if (prevSail>currSail){
-    commands[0]=0;
-    commands[1]=1;
-    commands[2]=0;
-    commands[3]=0;
-  }
-  if (prevTail<currTail){
-    commands[0]=0;
-    commands[1]=0;
-    commands[2]=1;
-    commands[3]=0;
-  }
-  else if (prevTail>currTail){
-    commands[0]=0;
-    commands[1]=0;
-    commands[2]=0;
-    commands[3]=1;
-  return commands;
-}
-
-//function that takes in two gps coordinates and finds distance between them
-float toMeters(lat1, lon1, lat2, lon2){
-  float R = 6371000;
-  float phi1 = lat1  *M_PI/180;
-  float phi2 = lat2 *M_PI/180;
-  float dphi1 = (lat2-lat1) *M_PI/180;
-  float dphi2 = (lon2-lon1) *M_PI/180;
-
-  float a = sin(dphi1/2) * sin(dphi1/2) + cos(phi1) * cos(phi2) * sin(dphi2/2) * sin(dphi2/2);
-  float c = 2 * atan2(sqrt(a), sqrt(1-a));
-
-  float d = R * c;
-  //printf("Distance in Meters: %d \n", d);
-  return d;
-}
 
 // short term navigation algorithm, with the following inputs and outputs:
 //   Inputs:
@@ -109,37 +26,38 @@ float toMeters(lat1, lon1, lat2, lon2){
 //
 // Note 2: parts of the code that usually interact with Arduino sensors have been commented out, and replaced
 // with code to interact with input parameters representing sensor information
-void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir, float wpNum, float waypointsize, float jibing, float tackpointx, float tackpointy, float prevNormr, float timeAway, float prevSail, float prevTail, float *angles) {
+void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir, float wpNum, float waypointsize, float jibing, float tackpointx, float tackpointy, float *angles) {
   
     
-    
-    float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0.1712,0.17325,0.17742,0.18336,0.19064,0.19882,0.20757,0.21661,
-        0.22575,0.23487,0.24389,0.25275,0.26143,0.26991,0.27818,0.28623,0.29407,0.3017,0.30912,0.31634,
-        0.32337,0.33021,0.33687,0.34335,0.34966,0.35581,0.36179,0.36761,0.37329,0.37882,0.3842,0.38944,
-        0.39455,0.39952,0.40437,0.40909,0.41368,0.41815,0.42251,0.42675,0.43087,0.43488,0.43878,0.44257,
-        0.44626,0.44984,0.45332,0.4567,0.45998,0.46315,0.46624,0.46922,0.47211,0.47491,0.47761,0.48023,
-        0.48275,0.48518,0.48753,0.48979,0.49196,0.49405,0.49605,0.49797,0.4998,0.50155,0.50322,0.50481,
-        0.50632,0.50774,0.50909,0.51036,0.51155,0.51267,0.5137,0.51466,0.51555,0.51636,0.51709,0.51775,
-        0.51833,0.51884,0.51927,0.51964,0.51992,0.52014,0.52028,0.52035,0.52035,0.52028,0.52013,0.51991,
-        0.51962,0.51926,0.51883,0.51833,0.51775,0.51711,0.51639,0.5156,0.51474,0.51381,0.51281,0.51173,
-        0.51059,0.50937,0.50808,0.50672,0.50529,0.50378,0.5022,0.50055,0.49882,0.49702,0.49514,0.49319,
-        0.49117,0.48907,0.48689,0.48463,0.4823,0.47989,0.4774,0.47483,0.47218,0.46945,0.46663,0.46373,
-        0.46075,0.46373,0.46663,0.46945,0.47218,0.47483,0.4774,0.47989,0.4823,0.48463,0.48689,0.48907,
-        0.49117,0.49319,0.49514,0.49702,0.49882,0.50055,0.5022,0.50378,0.50529,0.50672,0.50808,0.50937,
-        0.51059,0.51173,0.51281,0.51381,0.51474,0.5156,0.51639,0.51711,0.51775,0.51833,0.51883,0.51926,
-        0.51962,0.51991,0.52013,0.52028,0.52035,0.52035,0.52028,0.52014,0.51992,0.51964,0.51927,0.51884,
-        0.51833,0.51775,0.51709,0.51636,0.51555,0.51466,0.5137,0.51267,0.51155,0.51036,0.50909,0.50774,
-        0.50632,0.50481,0.50322,0.50155,0.4998,0.49797,0.49605,0.49405,0.49196,0.48979,0.48753,0.48518,
-        0.48275,0.48023,0.47761,0.47491,0.47211,0.46922,0.46624,0.46315,0.45998,0.4567,0.45332,0.44984,
-        0.44626,0.44257,0.43878,0.43488,0.43087,0.42675,0.42251,0.41815,0.41368,0.40909,0.40437,0.39952,
-        0.39455,0.38944,0.3842,0.37882,0.37329,0.36761,0.36179,0.35581,0.34966,0.34335,0.33687,0.33021,
-        0.32337,0.31634,0.30912,0.3017,0.29407,0.28623,0.27818,0.26991,0.26143,0.25275,0.24389,0.23487,
-        0.22575,0.21661,0.20757,0.19882,0.19064,0.18336,0.17742,0.17325,0.1712,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    
+  float polarPlot [361] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0.1712,0.17325,0.17742,0.18336,0.19064,0.19882,0.20757,0.21661,
+                        0.22575,0.23487,0.24389,0.25275,0.26143,0.26991,0.27818,0.28623,0.29407,0.3017,0.30912,0.31634,
+                        0.32337,0.33021,0.33687,0.34335,0.34966,0.35581,0.36179,0.36761,0.37329,0.37882,0.3842,0.38944,
+                        0.39455,0.39952,0.40437,0.40909,0.41368,0.41815,0.42251,0.42675,0.43087,0.43488,0.43878,0.44257,
+                        0.44626,0.44984,0.45332,0.4567,0.45998,0.46315,0.46624,0.46922,0.47211,0.47491,0.47761,0.48023,
+                        0.48275,0.48518,0.48753,0.48979,0.49196,0.49405,0.49605,0.49797,0.4998,0.50155,0.50322,0.50481,
+                        0.50632,0.50774,0.50909,0.51036,0.51155,0.51267,0.5137,0.51466,0.51555,0.51636,0.51709,0.51775,
+                        0.51833,0.51884,0.51927,0.51964,0.51992,0.52014,0.52028,0.52035,0.52035,0.52028,0.52013,0.51991,
+                        0.51962,0.51926,0.51883,0.51833,0.51775,0.51711,0.51639,0.5156,0.51474,0.51381,0.51281,0.51173,
+                        0.51059,0.50937,0.50808,0.50672,0.50529,0.50378,0.5022,0.50055,0.49882,0.49702,0.49514,0.49319,
+                        0.49117,0.48907,0.48689,0.48463,0.4823,0.47989,0.4774,0.47483,0.47218,0.46945,0.46663,0.46373,
+                        0.46075,0.46373,0.46663,0.46945,0.47218,0.47483,0.4774,0.47989,0.4823,0.48463,0.48689,0.48907,
+                        0.49117,0.49319,0.49514,0.49702,0.49882,0.50055,0.5022,0.50378,0.50529,0.50672,0.50808,0.50937,
+                        0.51059,0.51173,0.51281,0.51381,0.51474,0.5156,0.51639,0.51711,0.51775,0.51833,0.51883,0.51926,
+                        0.51962,0.51991,0.52013,0.52028,0.52035,0.52035,0.52028,0.52014,0.51992,0.51964,0.51927,0.51884,
+                        0.51833,0.51775,0.51709,0.51636,0.51555,0.51466,0.5137,0.51267,0.51155,0.51036,0.50909,0.50774,
+                        0.50632,0.50481,0.50322,0.50155,0.4998,0.49797,0.49605,0.49405,0.49196,0.48979,0.48753,0.48518,
+                        0.48275,0.48023,0.47761,0.47491,0.47211,0.46922,0.46624,0.46315,0.45998,0.4567,0.45332,0.44984,
+                        0.44626,0.44257,0.43878,0.43488,0.43087,0.42675,0.42251,0.41815,0.41368,0.40909,0.40437,0.39952,
+                        0.39455,0.38944,0.3842,0.37882,0.37329,0.36761,0.36179,0.35581,0.34966,0.34335,0.33687,0.33021,
+                        0.32337,0.31634,0.30912,0.3017,0.29407,0.28623,0.27818,0.26991,0.26143,0.25275,0.24389,0.23487,
+                        0.22575,0.21661,0.20757,0.19882,0.19064,0.18336,0.17742,0.17325,0.1712,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  
+  printf("\n\n");
+  
   //Serial.println("Short Term Navigation");
   float nextHeading;
   float error;
@@ -176,6 +94,9 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
 
   int waypointnumber=floor(wpNum);
 
+
+
+
   r[0] = wayPoints[waypointnumber] - sensorData[0];
   r[1] = wayPoints[waypointnumber+1] - sensorData[1];
   w[0] = cos((windDir)*(PI/180.0));
@@ -183,15 +104,17 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   normr = sqrt(pow(r[0],2)+pow(r[1],2));
 
 
-    float size =waypointsize;//sizeof(wayPoints[0]);
+    float size =waypointsize;///sizeof(wayPoints[0]);
 
     printf("weird wind direction: %f\n",waypointnumber);
 
-  printf("checkingwaypoint normr: %f, wpNum: %f\n",normr,waypointnumber);
+  // printf("checkingwaypoint normr: %f, wpNum: %f\n",normr,waypointnumber);
 
-  float oldnormr=30;
+  float oldnormr=1000;
 
-  if((normr < 3) && ((waypointnumber + 2) < size)){
+  float detectionradius=3;
+
+  if((normr < detectionradius) && ((waypointnumber + 2) < size)){
     printf("reached waypoint\n");
     waypointnumber=waypointnumber+2;
     printf("new wpnum: %f\n", waypointnumber);
@@ -202,38 +125,40 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
     w[0] = cos((windDir)*(PI/180.0));
     w[1] = sin((windDir)*(PI/180.0));
     oldnormr=normr;
-
-    //COMMENT OR UNCOMMENT DEPENDING ON IF TESTING USING GPS COORDINATES OR NOT
-    //normr = toMeters(sensorData[0], sensorData[1], wayPoints[waypointnumber], wayPoints[waypointnumber+1]);
     normr = sqrt(pow(r[0],2)+pow(r[1],2));
-
     printf("new normr: %f\n",normr );
   }
 
 
+  //latitude longitude distance
+
+
+  // printf("waypoint: %f, %f\n",wayPoints[wpNum],wayPoints[wpNum+1]);
+//   mwSize deg = (mwSize) floor(atan(r[1]/r[0])*(180.0/PI)) - windDir;
+//   if(deg < 0) { deg = deg + 360; }
+//   
+//   if (polarPlot[(deg)] > 0 && floor(deg + windDir - boatDir) < -40000){
+//       deg = (mwSize) floor(deg + windDir);
+//       if(deg > 360){ deg = deg - 360; }
+//       nextHeading = deg;
+//   }
+
+
+    
 
   /*
       Next heading code start
-
   */
   //optimal angle to go at if we cannot go directly to the waypoint
   //puts us on a tack or jibe
   //different values for top and bottom of polar plot
   float optpolartop=45;
   float optpolarbot=40;
-  float windPushError=5;
   //bottom vs top
   //dir is the direction to the next waypoint from the boat
   printf("boat at: %f,%f\n",sensorData[0],sensorData[1]);
   //because we want the angle from the y axis (from the north) we take atan of adjacent over oppoosite
-
-
-
-  //COMMENT OR UNCOMMENT DEPENDING ON IF TESTING USING GPS COORDINATES OR NOT
-  //float anglewaypoint= angleToTarget(sensorData[0], sensorData[1], wayPoints[waypointnumber], wayPoints[waypointnumber+1]);
   float anglewaypoint=atan2(r[0],r[1])*360/(2*PI);
-  
-
   //converts to 0-360
   anglewaypoint=(float)((int)anglewaypoint%360);
   anglewaypoint=anglewaypoint+360;
@@ -251,7 +176,21 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   dirangle=(float)((int)dirangle%360);
   // printf("dirangle: %f\n",dirangle);
 
-  printf("jibing: %d \n", jibing);
+
+  // float 2r[2];
+  // if((waypointnumber + 2) < size){
+  //   2r[0] = wayPoints[waypointnumber+2] - sensorData[0];
+  //   2r[1] = wayPoints[waypointnumber+3] - sensorData[1];
+  // }
+  // else{
+  //   2r[0] = wayPoints[waypointnumber] - sensorData[0];
+  //   2r[1] = wayPoints[waypointnumber+1] - sensorData[1];
+  // }
+  // float 2anglewaypoint=atan2(r[0],r[1])*360/(2*PI);
+  // 2anglewaypoint=(float)((int)anglewaypoint%360);
+  // 2anglewaypoint=anglewaypoint+360;
+  // 2anglewaypoint=(float)((int)anglewaypoint%360);
+  // float 2dirangle=2anglewaypoint-windDir;
  
   boatDir=360-(boatDir-90);
   boatDir=(float)((int)boatDir%360);
@@ -260,6 +199,8 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
    printf("boat orientation: %f\n",boatDir);
     //right=0, left =1
      int side;
+
+
 
   //we have to port tack into the wind
   //right up
@@ -370,40 +311,6 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   //TODOneed to make sure boat doesnt go off course
 
 
-  //printf("normr: %f \n", normr);
-  //printf("prevNormr: %f \n", prevNormr);
-  if (normr>prevNormr){ // if the boat is farther away from wp than it was last time, increase timeAway by 1
-    timeAway+=1;
-  }
-  else{
-    timeAway=0;
-  }
-  if (timeAway>20){
-    jibing=0;
-  }
-  prevNormr=normr;
-  // if (jibing==-1){
-  //   if(dirangle>180){
-  //     dirangle=dirangle-360;
-  //   }
-  //   if (dirangle>0){
-  //     //sail up and to right of wind
-  //     //jibing=3;
-  //     sailAngle=optpolartop-angleofattack;
-  //     tailangle=optpolartop;
-  //   }
-  //   else{
-  //     //sail up and to the left of wind
-  //     //jibing=2;
-  //     sailAngle=-optpolartop+angleofattack;
-  //     tailangle=-optpolartop;
-  //   }
-  //   if (fabsf(dirangle)<=optpolartop){
-  //     jibing=0;
-  //   }
-  // }
-  //printf("timeAway: %f \n", timeAway);
-  
   //jibing 0: head directly there
   //jibing 1: turn back to get on heading
   //jibing 2: head left of the wind upwind
@@ -415,21 +322,22 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
 
   printf("waypoints at: %f, %f\n", wayPoints[waypointnumber],wayPoints[waypointnumber+1]);
 
-  //COMMENT OR UNCOMMENT DEPENDING ON IF TESTING USING GPS COORDINATES OR NOT
-  //float distance = toMeters(tackpointy, tackpointx, sensorData[1], sensorData[0]);
   float distance=pow(sensorData[0]-tackpointx,2)+pow(sensorData[1]-tackpointy,2);
 
   if(dirangle>180){
     dirangle-=360;
   }
+  //change jibedistance to 10 for arduino
   float jibedistance=70;
   float jibeangle=10;
   // printf("tacking point: %f, %f\n",tackpointx,tackpointy);
   // printf("dirangle: %f\n", dirangle);
 
-  if (jibing == 0 || jibing==1 || oldnormr<3){
+
+  //starting code,reached intermediate waypoint, reached last waypoint
+  if (jibing == 0 || jibing==1 || oldnormr<detectionradius){
     //close to last waypoint
-    if((waypointnumber + 2) >= size && ( normr<3 || oldnormr<3)){
+    if((waypointnumber + 2) >= size && (oldnormr<detectionradius || normr<detectionradius)){
       tackpointx=sensorData[0];
       tackpointy=sensorData[1];
       printf("close to last waypoint, setting jibing\n");
@@ -489,16 +397,29 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   //go through two points in a direction to simulate around buoy
   //bump in heading upwind (around tack point?)
   //turning wrong when for a sec when jibing
-  //plot waypoints
   //optimize variables
   //heading at start depends on location of next next heading (eg if we want to go around it to the right or to the left)
   //start tacking before getting to the tacking point
+  //immediate sail upwind for station keeping
+
+  //opposite direction of second buoy
+  //have to clear both lines
+  //have we cleared the first line? if so, then keep going to it, and then check once we've actually hit it
+
 
   //DONE
   //plotting points
 
+  //for jibing, its possible it gets turned around too much at the start, which is why it does the full turn. if it gets on the same side
+  //but 30 degrees past the heading, stop
+
+  // if(jibing==3 && (windDir>45|| windDir<anglewaypoint) ||
+  //   jibing==2 && (windDir<-45|| windDir>anglewaypoint) )
+
+
   //if we are going upwind or we need to keep going upwind
   //possibly redundant first boolean
+  printf("dirangle: %f",dirangle);
   if((fabsf(dirangle)<optpolartop || fabsf(dirangle)>180-optpolarbot) &&
     (jibing ==2 || jibing == 3 || jibing==4|| jibing==5)){
       printf("go at a tack: %f\n",jibing);
@@ -657,11 +578,13 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
     else {
       sailAngle=windboat-angleofattack;
     }
+
   }
   else if(jibing==6){
     if(fabsf(differenceheading)<30){
       jibing=0;
-    }     
+    }
+              
     printf("jibe left\n");
     sailAngle=windboat;
     tailangle=windboat+tailangleofattack*2;
@@ -761,27 +684,11 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
           }
     }
 
-    if (jibing==-1){
-      if(dirangle>180){
-        dirangle=dirangle-360;
-      }
-      if (dirangle>0){
-        //sail up and to right of wind
-        //jibing=3;
-        sailAngle=optpolartop-angleofattack;
-        tailangle=optpolartop;
-      }
-      else{
-        //sail up and to the left of wind
-        //jibing=2;
-        sailAngle=-optpolartop+angleofattack;
-        tailangle=-optpolartop;
-      }
-      if (fabsf(dirangle)>optpolartop){
-        jibing=0;
-      }
-    }
+
   }
+
+  printf("tailangle: %f\n",tailangle);
+  printf("sailAngle: %f\n", sailAngle);
   tailangle=tailangle*-1;
   sailAngle=sailAngle*-1;
 
@@ -789,20 +696,11 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   angles[0] = tailangle;
   angles[1] = sailAngle;
   angles[2] = jibing;
-  angles[3] = jibing;
-  angles[4] = tackpointx;
-  angles[5] = tackpointy;
-  angles[6] = waypointnumber;
-  angles[7] = prevNormr;
-  angles[8] = timeAway;
-  angles[9] = up;
-  angles[10] = down;
-  angles[11] = left;
-  angles[12] = right;
-  angles[13] = sailAngle;
-  angles[14] = tailangle;
+  angles[3] = tackpointx;
+  angles[4] = tackpointy;
+  angles[5] = waypointnumber;
 
-  printf("\n\n");
+
 //code to look up jesses table
     // if(false){
     // for (int i=0;i<23;i++){
@@ -854,10 +752,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     float waypointsize;
     float tackpointx;
     float tackpointy;
-    float prevNormr;
-    float timeAway;
-    float prevTail;
-    float prevSail;
     float *angles;
     
     //double multiplier;              /* input scalar */
@@ -866,8 +760,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     //double *outMatrix;              /* output matrix */
 
     /* check for proper number of arguments */
-    if(nrhs!=13) {
-        mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nrhs","13 inputs required.");
+    if(nrhs!=9) {
+        mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nrhs","8 inputs required.");
     }
     if(nlhs!=1) {
         if(nlhs==2){mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","One output required. There were 2");}
@@ -927,12 +821,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     waypointsize= (float) mxGetScalar(prhs[6]);
     tackpointx = (float) mxGetScalar(prhs[7]);
     tackpointy = (float) mxGetScalar(prhs[8]);
-    prevNormr = (float) mxGetScalar(prhs[9]);
-    timeAway  = (float) mxGetScalar(prhs[10]);
-    //Jesse sim additions
-    prevSail = (float) mxGetScalar(prhs[11]);
-    prevTail = (float) mxGetScalar(prhs[12]);
- 
 
     /* create a pointer to the real data in the input matrices  */
     wPs = mxGetPr(prhs[0]);
@@ -940,12 +828,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
     //sD = (float*) mxGetPr(prhs[1]);
 
     /* create the output matrix */
-    plhs[0] = mxCreateNumericMatrix(1, 15, mxSINGLE_CLASS, mxREAL);
+    plhs[0] = mxCreateNumericMatrix(1, 6, mxSINGLE_CLASS, mxREAL);
     //plhs[0] = mxCreateDoubleMatrix(1,(mwSize)ncols,mxREAL);
 
     /* get a pointer to the real data in the output matrix */
     angles = (float *) mxGetData(plhs[0]);
 
     /* call the computational routine */
-    nShort(wPs,sD,wDir,bDir,pError,wpNum, waypointsize, tackpointx, tackpointy, prevNormr, timeAway, angles);
+    nShort(wPs,sD,wDir,bDir,pError,wpNum, waypointsize, tackpointx, tackpointy, angles);
 }

@@ -1,4 +1,4 @@
-function sail3(testnum1, testnum2, testnum3)
+function sail3
 %This function calls the function 'input.m' and uses an euler integration
 %that makes use of the 'rhs.m' function, where the dynamics of the simulation takes place.
 %Outputs:
@@ -8,11 +8,11 @@ function sail3(testnum1, testnum2, testnum3)
 %   -Figure 1 is a graph of the location of the boat over time, w/ wind direction/magnitude indicated.
 %   Also includes sail and rudder locations over time.
 %   -Figure 2 shows the complete trajectory of boat.
-%clear all; close all; hold on
-tspan=[0 100]; n=300;  t=linspace(tspan(1), tspan(2), n+1);
+clear all; close all; hold on
+tspan=[0 150]; n=300;  t=linspace(tspan(1), tspan(2), n+1);
 
 %Call input parameters
-[rho, p, v, x0, I, th, wp1, omega]=inputs3(testnum1, testnum2, testnum3);
+[rho, p, v, x0, I, th, wp1, omega]=inputsIndivid;
 v0=v.boat; theta=th.b;  omega=omega;
 z0=[x0 v0 theta omega th.r th.s]';
 %Call Integrator
@@ -25,10 +25,15 @@ thfin=zarray(end,5);
 omfin=zarray(end,6);
 vfnorm=vfin/norm(vfin);
 %Define Figure 1
-%figure(1);
+figure(1);
 xlabel('Distance (m)'); ylabel('Distance (m)');
 for k=1:length(t)
-    cla
+    cla;
+    for waypnt=1:2:length(wp1)
+        pointx(waypnt)=wp1(waypnt);
+        pointy(waypnt)=wp1(waypnt+1);
+    end
+    scatter(pointx, pointy, '*');
     xx=zarray(k,1); yy=zarray(k,2); tt=zarray(k,5); ttr=zarray(k,7); tts=zarray(k,8);
     axis([-4+xx 4+xx -4+yy 4+yy]);
     tip=([xx yy]+.5*p.length.h.*[cosd(tt) sind(tt)]);
@@ -51,11 +56,10 @@ for k=1:length(t)
     text(fw1(1), fw1(2)-.2,'Wind');
     xlabel('Distance (m)'); ylabel('Distance (m)');
 
-    pause(0.05)
+    pause(0.15)
 end
 %Define Figure 2
 figure(2)
-sailpathplot=gcf;
 cla; hold on
 hold on
 plot(zarray(1:end,1),zarray(1:end,2), '-k', 'MarkerSize', 4.5)
@@ -64,8 +68,7 @@ fw2=fw1+v.wind;
 arrow(fw1, fw2,'EdgeColor','b','FaceColor','b')
 text(fw1(1), fw1(2)-.2,'Wind');
 xlabel('Distance (m)'); ylabel('Distance (m)');
-filename=strcat('Sailplot_', num2str(wp1(1)), ',', num2str(wp1(2)), '_WIND', num2str(v.wind(1)), ',', num2str(v.wind(2)), '_Theta', num2str(theta), '.jpeg');
-saveas(gcf, filename);
+
 end
 function [t zarray]=eulermethod(tspan, t,z0, n, p,rho, v, I, th, x0, wp1)
 time=t(2)-t(1);
@@ -74,6 +77,8 @@ w=0;
 aa=0;
 tackpointx=0;
 tackpointy=0;
+waypointsize=4;
+wpNum=0;
 for i=1:n;
     ti=t(i);
     currpos=zarray(i,1:2); currvel=-zarray(i,3:4)+v.wind;
@@ -81,12 +86,12 @@ for i=1:n;
     z=zarray(i,:)';
     %%%%%%%%%%%%%% NAV CODE: uncomment below %%%%%%%%%%%%%%%%
      if w==2;  %set time interval to call nav code(e.g. w->5 is every 5s)
-    out=nShort6(wp1,currpos, rwind, currth, 0, aa,tackpointx, tackpointy);
-    aa=out(4);
-    tackpointx=out(5);
-    tackpointy=out(6);
+    out=nShort5(wp1,currpos, rwind, currth, wpNum,waypointsize, aa,tackpointx, tackpointy);
+    aa=out(3);
+    tackpointx=out(4);
+    tackpointy=out(5);
     th.r=double(out(1)); th.s=double(out(2));
-    new_err=double(out(3)); new_err2=double(out(4));
+    wpNum=out(6);
     w=0;
     else
     w=w+1;
@@ -95,16 +100,12 @@ for i=1:n;
     znew=[otherz; zzz(7:8)];
     zarray(i+1,:)=znew';
 end
-
-%disp('NEXT WAYPOINT');
-%disp(wp1);
-
 end
 function zdot=rhs(t,z,p,rho,v, I, th, x0, wp1)
 xdot=z(3:4)';
 thetadot=z(6)';
 thetaboat=z(5); %degrees
-vr=-xdot+v.wind;
+vr=v.wind;%-xdot+v.wind;%HERE
 vrn=vr/norm(vr);
 if norm(xdot)==0
     xnorm=[0,0];
