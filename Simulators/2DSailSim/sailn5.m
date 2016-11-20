@@ -94,8 +94,8 @@ for i=1:n;
      %   rwind=0;  
     %end
     %%%%%%%%%%%%%% NAV CODE: uncomment below %%%%%%%%%%%%%%%%
-     if w==2;  %set time interval to call nav code(e.g. w->5 is every 5s
-    out=nav_v2_primitive(wp1,currpos, rwind, currth, waypoint, waypointsize, aa,tackpointx, tackpointy);
+    if w==2;  %set time interval to call nav code(e.g. w->5 is every 5s
+        out=nav_v2_primitive(wp1,currpos, rwind, currth, waypoint, waypointsize, aa,tackpointx, tackpointy);
     aa=out(4);
     tackpointx=out(5);
     tackpointy=out(6);
