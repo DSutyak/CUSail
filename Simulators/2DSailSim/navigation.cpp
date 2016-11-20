@@ -8,6 +8,34 @@
 Servo tailServo;
 Servo sailServo;
 
+//this class allows us to use a vector data structure within Arduino code
+template<typename Data>
+class Vector {
+  size_t d_size; // Stores no. of actually stored objects
+  size_t d_capacity; // Stores allocated capacity
+  Data *d_data; // Stores data
+  public:
+    Vector() : d_size(0), d_capacity(0), d_data(0) {}; // Default constructor
+    Vector(Vector const &other) : d_size(other.d_size), d_capacity(other.d_capacity), d_data(0) { d_data = (Data *)malloc(d_capacity*sizeof(Data));
+        memcpy(d_data, other.d_data, d_size*sizeof(Data)); }; // Copy constuctor
+    ~Vector() { free(d_data); }; // Destructor
+    Vector &operator=(Vector const &other) { free(d_data); d_size = other.d_size; d_capacity = other.d_capacity;
+        d_data = (Data *)malloc(d_capacity*sizeof(Data));
+        memcpy(d_data, other.d_data, d_size*sizeof(Data));
+        return *this; }; // Needed for memory management
+    void push_back(Data const &x) { if (d_capacity == d_size) resize(); d_data[d_size++] = x; }; // Adds new value. If needed, allocates more space
+    size_t size() const { return d_size; }; // Size getter
+    Data const &operator[](size_t idx) const { return d_data[idx]; }; // Const getter
+    Data &operator[](size_t idx) { return d_data[idx]; }; // Changeable getter
+  private:
+    void resize() { d_capacity = d_capacity ? d_capacity*2 : 1; Data *newdata = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(newdata, d_data, d_size * sizeof(Data)); free(d_data); d_data = newdata; };// Allocates double the old space
+};
+
+/*----------PixyCam Variables----------*/
+//Vector<double> xVals;
+
+
+
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
@@ -59,6 +87,8 @@ coord_t lakeOut2 = {42.469065,-76.506674}; //Out in the lake, to the right of th
 coord_t lakeOut3 = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
 coord_t shore = {42.469717,-76.503341}; //Far end of the docks, to the left of the Cornell Sailing Center
 coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
+coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
+coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking from the beach to the left of the Cornell Sailing Center
 
 /*Servo setup
 * "Attaches" servos to defined pins*/
@@ -79,12 +109,12 @@ void initNavigation(void) {
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 2;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut;
+  wayPoints[0] = acrossDock;
   wayPoints[1] = shore;
   wayPoints[2] = lakeOut12;
 
@@ -484,7 +514,58 @@ void nShort(void) {
     }
   }
   printSailTailSet();
+  Serial.print("Sail angle (0 to 360) w.r.t North: ");   Serial.println(sailAngle);
+  Serial.print("Tail angle (0 to 360) w.r.t North: ");   Serial.println(tailAngle);
+  Serial1.print("Sail angle (0 to 360) w.r.t North: ");   Serial1.println(sailAngle);
+  Serial1.print("Tail angle (0 to 360) w.r.t North: ");   Serial1.println(tailAngle);
 
+  //Print boat and wind direction to make sure data is consistent at this point
+  Serial.print("sensorData.boatDir: ");   Serial.println(sensorData.boatDir);
+  Serial.print("sensorData.windDir: ");   Serial.println(sensorData.windDir);
+  Serial1.print("sensorData.boatDir: ");   Serial1.println(sensorData.boatDir);
+  Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
+
+
+  // this section of code implements avoidance manuervure if
+  // pixy cam detects an object in the boats path
+  /*
+    double courseChange;
+    getObjects();
+    int s = xVals.size();
+    if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) { // ensure an object has been detected
+        double initialReading = xVals.get(s-2);
+        double recentReading = xVals.get(s-1);
+
+        courseChange = initialReading - recentReading;
+        recentReading = (recentReading / 319.0) - 1.0;
+        if (Math.abs(courseChange) < 0.1) {
+            //we need to make evasion manuerver
+            if (recentReading > 0) {
+                // we need to make a starboard turn
+                angleofattack = 90.0*recentReading; // val from 0 to 90
+                sailAngle=sensorData.windDir - angleofattack;
+                tailAngle=sensorData.windDir;
+            }
+            else if (recentReading < 0) {
+                // we need to make a port side turn
+                angleofattack = (-1.0)*90.0*recentReading;
+                sailAngle=sensorData.windDir + angleofattack;
+                tailAngle=sensorData.windDir;
+            }
+        }
+        else if (initialReading > recentReading) {
+            // make a starboard turn proportional to recentReading
+            angleofattack = Math.abs(90.0*recentReading); // val from 0 to 90
+            sailAngle=sensorData.windDir - angleofattack;
+            tailAngle=sensorData.windDir;
+        }
+        else if (initialReading < recentReading) {
+             // we need to make a port side turn
+            angleofattack = Math.abs(90.0*recentReading);
+            sailAngle=sensorData.windDir + angleofattack;
+            tailAngle=sensorData.windDir;
+        }
+   */
   //Convert sail and tail from wrt north to wrt boat
   sailAngle=sailAngle-sensorData.boatDir;
   tailAngle=tailAngle-sensorData.boatDir;
@@ -515,3 +596,29 @@ void nServos(void) {
   tailServo.write(tailAngle);
   sailServo.write(sailAngle);
 }
+
+
+/** Updates xVals vector
+*   0 to 1 indicates object on the starboard (closer to 1 = closer to edge of pixy cam view)
+*  -1 to 0 indicates object on the port (closer to -1 = closer to edge of pixy cam view)
+*   NOTE: This only detects objects set to
+*   signature 1 on the pixy cam */
+/*
+void getObjects() {
+    uint16_t blocks = pixy.getBlocks();
+
+    if (blocks) {
+        for (int j = 0; j < blocks, j++) {
+            if (pixy.blocks[j].signature == 1) {
+                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
+                double half = xLocation / 2.0;
+                xVals.push_back(xVals);
+            }
+        }
+    }
+    else {
+        xVals.push_back(400.0); // no objects were detected
+    }
+}
+*/
+

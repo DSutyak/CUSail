@@ -7,8 +7,166 @@
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include "nShort.h"
-//#include <Arduino.h>
+// #include <Arduino.h>
 #include <math.h>
+// #include <Servo.h>
+// #include "sensors.h"
+
+
+typedef struct coordinate {
+  double latitude; // float latitude
+  double longitude; // float longitude
+} coord_t;
+int maxPossibleWaypoints=2;
+int wpNum; //the current waypoint's number in the wayPoints array
+int numWP; //total number of waypoints on current course
+float detectionradius = 15; //how far away the boat marks a waypoint "reached"
+coord_t wayPoints[3]; //the array containing the waypoints
+float normr; //normal distance to the waypoint
+float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
+            //r[1]: Lattitude difference b/w current position and waypoint
+float w[2]; //w[0]: Cosine of the wind direction w.r.t North,
+            //w[1]: Sine of the wind direction w.r.t North
+float sailAngle;
+float tailAngle;
+float angleofattack=15;
+float optpolartop=45;
+float optpolarbot=40;
+float windDir;
+float boatDir;
+
+/*---------Distance to Center Line------*/
+// latitude is y, longitude is x
+// float max_distance=100;
+// coord_t center_start={1,2};
+// coord_t center_end={10,20};
+
+// float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
+// float intercept= center_start.latitude - slope * center_start.longitude;
+
+// takes a coordinate and returns the distance from the coordinate to the center line
+// float center_distance(coord_t position){
+//   float top= fabs(slope*position.longitude+position.latitude+intercept);
+//   float bot= sqrtf(slope*slope + 1);
+//   return top/bot;
+
+// }
+
+
+float upRight(float b, float w) {
+  printf("UP RIGHT\n\n");
+  float offset = fabsf(w+optpolartop-b);
+  printf("boatDir: %f\n windDir: %f\noffset: %f\n",b, w,offset);
+  tailAngle=b-offset;
+  // sailAngle=tailAngle+angleofattack;
+  return b-offset;
+}
+
+float rightTarget(float b, float w){
+  // Serial.println("Right to target to the right");
+  // Serial1.println("Right to target to the right");
+  sailAngle=windDir+angleofattack;
+  tailAngle=windDir;
+
+  printf ("RIGHTS sail angle: %f\n",sailAngle);
+  printf ("RIGHTT tail angle: %f\n",tailAngle);
+  return windDir;
+}
+
+float leftTarget(float b, float w){
+
+  printf("LEFT TARGET\n\n");
+  // Serial.println("Right to target to the left");
+  // Serial1.println("Right to target to the left");
+  sailAngle=windDir-angleofattack;
+  return windDir;
+}
+// facing left, angle is above in the sector: w+offset
+//   w+(|w-opttop-boatdir|)
+float upLeft(float b, float w){
+  printf("UP LEFT\n\n");
+  // Serial.println("Left up left");
+  // Serial1.println("Left up left");
+  float offset = fabsf(windDir-optpolartop-boatDir);
+  return windDir+offset;
+  // sailAngle=tailAngle-angleofattack;
+}
+
+// facing left, angle is below in the sector: w+offset
+//   w+(|w+180-optboat-boatdir)
+float downLeft(float b, float w){
+  printf("DOWN RIGHT\n\n");
+  // Serial.println("Left bottom left");
+  // Serial1.println("Left bottom left");
+  float offset = fabsf(windDir+180-optpolarbot-boatDir);
+  return windDir+offset;
+  // sailAngle=tailAngle-angleofattack;
+}
+// facing right, angle is below in the sector: w-offset
+//   w-(|w+180+optbot-boatdir|)
+float downRight(float b, float w){
+  printf("DOWN RIGHT\n\n");
+  // Serial.println("Right bottom right");
+  // Serial1.println("Right bottom right");
+  float offset = fabsf(windDir+180+optpolarbot-boatDir);
+  return w-offset;
+  // sailAngle=tailAngle+angleofattack;
+}
+
+void lightAllLEDs(){
+  // digitalWrite(redLED1, HIGH);
+  // digitalWrite(redLED2, HIGH);
+  // digitalWrite(yellowLED, HIGH);
+  // digitalWrite(blueLED, HIGH);
+  // digitalWrite(greenLED, HIGH);
+}
+
+void lowAllLEDs(){
+  // digitalWrite(redLED1, LOW);
+  // digitalWrite(redLED2, LOW);
+  // digitalWrite(yellowLED, LOW);
+  // digitalWrite(blueLED, LOW);
+  // digitalWrite(greenLED, HIGH);
+}
+
+float angleToTarget(float lat1, float long1, float lat2, float long2){
+  lat1=lat1 * M_PI/180;
+  lat2=lat2 * M_PI/180;
+  float dLong=(long2-long1) * M_PI/180;
+  float y = sin(dLong) * cos(lat2);
+  float x = cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(dLong);
+  float brng = atan2(y, x) * 180/ M_PI;
+  if (brng<0){
+    brng+=360;
+  }
+  return brng;
+}
+
+double havDist(coord_t  first, coord_t second) {
+  double x = first.longitude;
+  double y = first.latitude;
+
+  double x1 = second.longitude;
+  double y1 = second.latitude;
+
+  const double conversion = M_PI / 180;// term to convert from degrees to radians
+  const double r = 6371.0;//radius of earth in km
+  x = x * conversion;// convert x to radians
+  y = y * conversion;// convert y to radians
+  x1 = x1 * conversion;
+  y1 = y1 * conversion;
+
+  double half1 = (y-y1) / 2;
+  double half2 = (x-x1) / 2;
+
+  double part1 = sin(half1) * sin(half1) + cos(y) * cos(y1) * sin(half2) * sin(half2);
+  double part2 = sqrt(part1);
+  double distance = 2 * r * asin(part2);// distance is in km due to units of earth's radius
+
+  distance = (distance*1000);
+
+  return distance;
+}
 
 // short term navigation algorithm, with the following inputs and outputs:
 //   Inputs:
@@ -32,35 +190,22 @@
 // Note 2: parts of the code that usually interact with Arduino sensors have been commented out, and replaced
 // with code to interact with input parameters representing sensor information
 void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir, float wpNum, float waypointsize, float jibing, float tackpointx, float tackpointy, float *angles) {
-  
-  
   printf("\n\n");
-  
+
   //Serial.println("Short Term Navigation");
-  float nextHeading;
-  float error;
-  float command;
-  mwSize alpha;
-  float n;
-  float normr;
-  float v_T_R_max;
+  float nextHeading; float error;float command;
+  mwSize alpha;  float n;
+  float normr;  float v_T_R_max;
   float v_T_L_max;
-  float v_T_R;
-  float v_T_L;
+  float v_T_R;  float v_T_L;
   float thetaBoat_R_max;
   float thetaBoat_L_max;
-  float vB[2];
-  float r[2];
-  
-  float w[2];
-  float d1;
-  float d2;
+  float vB[2];  float r[2]; float w[2];
+  float d1;  float d2;
   mwSize opt = 0;
   mwSize delalpha = 1;
   float PI = 3.14159265358979323846;
   float rudderAngle;
-  float sailAngle;
-  float tailangle;
 
   //Calculates distance vector from boat to target, using latitude and longitude from sensor
 
@@ -79,9 +224,9 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   normr = sqrt(pow(r[0],2)+pow(r[1],2));
 
 
-    float size =waypointsize;///sizeof(wayPoints[0]);
+  float size =waypointsize;///sizeof(wayPoints[0]);
 
-    printf("weird wind direction: %f\n",waypointnumber);
+  printf("weird wind direction: %f\n",waypointnumber);
 
   // printf("checkingwaypoint normr: %f, wpNum: %f\n",normr,waypointnumber);
 
@@ -125,7 +270,6 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   dirangle=dirangle+360;
   dirangle=(float)((int)dirangle%360);
 
- 
   boatDir=360-(boatDir-90);
   boatDir=(float)((int)boatDir%360);
   boatDir=boatDir+360;
@@ -133,8 +277,6 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   printf("boat orientation: %f\n",boatDir);
   //right=0, left =1
   int side;
-
-
 
 //pseudocode for new sailing method---DOESNT WORK COMPLETELY--VERY PRIMITIVE VERSION
 
@@ -149,32 +291,145 @@ angleofattack = 15;
 float windboat;
 windboat=windDir-boatDir;
 
-    printf("Setting sail and tail");
+float boat_wrt_wind=boatDir-windDir;
+boat_wrt_wind=360-(boat_wrt_wind-90);
+boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+boat_wrt_wind=boatDir+360;
+boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+
+printf("Setting sail and tail");
+
+  //dir is the direction to the next waypoint from the boat
+  //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
+
+
+  /*---------checking if past maximum tacking width------------*/
+  // float distance_to_center = center_distance(currentPosition);
+  // boat facing right and past line, must turn left
+  // if (distance_to_center<max_distance){
+  //   if (dirangle<180){
+  //     Serial.println("Past line to the right, turning left");
+  //     Serial1.println("Past line to the right, turning left");
+  //     sailAngle=windDir-angleofattack;
+  //     tailAngle=windDir;
+  //   }
+  //   else {
+  //     Serial.println("Past line to the left, turning right");
+  //     Serial1.println("Past line to the left, turning right");
+  //     sailAngle=windDir+angleofattack;
+  //     tailAngle=windDir;
+  //   }
+  // }
+/* heading upwind angles
+  general format:
+    offset is the angle between the boat's actual orientation and desired orientation
+    eg when if wind is at 0, opttop is at 45, and we boat is facing 20, offset is 25
+    w is wind wrt north
+    opttop and optboat are 45 or 40 eg
+    boatdir is boat wrt north
+
+  general: if boat is facing right, and cant sail directly to WP or turn to WP,
+    tailangle= wind -offset
+    facing left: tailangle=wind+offset
+  facing right, angle is above in the sector: w-offset
+    w-(|w+opttop - boatdir|)
+  facing left, angle is below in the sector: w+offset
+    w+(|w+180-optboat-boatdir)
+  facing left, angle is above in the sector: w+offset
+    w+(|w-opttop-boatdir|)
+  facing right, angle is below in the sector: w-offset
+    w-(|w+180+optbot-boatdir|)
+*/
+//  boat initially facing right
+  if (boat_wrt_wind<180) {
+    printf ("facing right\n");
+    //Up right
     if (dirangle<optpolartop && dirangle>0){
-      sailAngle=optpolartop -angleofattack;
-      tailangle=optpolartop;
+      tailAngle=upRight(boatDir,windDir);
+      sailAngle=tailAngle+15;
     }
-    //head directly to target to the right
+    //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      sailAngle=dirangle-angleofattack;
-      tailangle=dirangle;
+      printf("DIRECT TO TARGET RIGHT\n");
+      tailAngle=rightTarget(boatDir,windDir);
+      sailAngle=tailAngle+15;
     }
-
-    else if (fabsf(dirangle)>optpolartop && fabsf(dirangle)<180 -optpolarbot){
-      sailAngle=dirangle-angleofattack;
-      tailangle=dirangle;
+    //Head directly to target to the left
+    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      // turning
+      tailAngle=leftTarget(boatDir,windDir);
+      sailAngle=tailAngle-15;
     }
+    //Up left
     else if (dirangle>360-optpolartop){
-      sailAngle=optpolartop +angleofattack;
-      tailangle=optpolartop;
+      tailAngle=upRight(boatDir,windDir);
+      sailAngle=tailAngle+15;
     }
-    else if (dirangle<360-optpolartop){
-      sailAngle=dirangle +angleofattack;
-      tailangle=dirangle;
+    //bottom left
+    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+      tailAngle=downRight(boatDir,windDir);
+      sailAngle=tailAngle+15;
     }
+    //bottom right
+    else {
+      tailAngle=downRight(boatDir,windDir);
+      sailAngle=tailAngle+15;
+    }
+  }
+  //boat facing to left
+  else{
+    printf ("facing left\n");
+    //Up right
+    if (dirangle<optpolartop && dirangle>0){
+      tailAngle=upLeft(boatDir,windDir);
+      sailAngle=tailAngle-15;
+      sailAngle=tailAngle+15;
+    }
+    //Head directly to target to the right
+    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+      tailAngle=rightTarget(boatDir,windDir);
+      sailAngle=tailAngle+15;
+    }
+    //Head directly to target to the left
+    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      tailAngle=leftTarget(boatDir,windDir);
+      sailAngle=tailAngle-15;
+    }
+    //Up left
+    else if (dirangle>360-optpolartop){
+      tailAngle=upLeft(boatDir,windDir);
+      sailAngle=tailAngle-15;
+    }
+    //bottom left
+    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+      tailAngle=downLeft(boatDir,windDir);
+      sailAngle=tailAngle-15;
+    }
+    //bottom right
+    else {
+      tailAngle=downLeft(boatDir,windDir);
+      sailAngle=tailAngle-15;
+    }
+  }
+  printf ("output sail angle: %f\n",sailAngle);
+  printf ("output tail angle: %f\n",tailAngle);
 
 
-  angles[0] = tailangle;
+// ////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+  sailAngle=360-(sailAngle-90);
+  tailAngle=360-(tailAngle-90);
+
+
+
+  angles[0] = tailAngle;
   angles[1] = sailAngle;
   angles[2] = jibing;
   angles[3] = jibing;
@@ -201,7 +456,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     float tackpointx;
     float tackpointy;
     float *angles;
-    
+
     //double multiplier;              /* input scalar */
     //double *inMatrix;               /* 1xN input matrix */
     //size_t ncols;                   /* size of matrix */
@@ -216,51 +471,51 @@ void mexFunction( int nlhs, mxArray *plhs[],
         else if(nlhs==0){mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","One output required. There were 0");}
         else{mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","One output required.");}
     }
-    
+
     /* make sure the first input argument is type float */
     if( mxIsComplex(prhs[0])) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notDouble","Input matrix must be type float.");
     }
-    
+
     /* check that number of rows in first input argument is 1 */
     if(mxGetM(prhs[0])!=1) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notRowVector","Input must be a row vector.");
     }
-    
+
     /* make sure the second input argument is type float */
     if( mxIsComplex(prhs[1])) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notDouble","Input matrix must be type float.");
     }
-    
+
     /* check that number of rows in second input argument is 1 */
     if(mxGetM(prhs[1])!=1) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notRowVector","Input must be a row vector.");
     }
-    
+
     /* make sure the third input argument is scalar */
     if( mxIsComplex(prhs[2]) ||
          mxGetNumberOfElements(prhs[2])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the fourth input argument is scalar */
     if( mxIsComplex(prhs[3]) ||
          mxGetNumberOfElements(prhs[3])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the fifth input argument is scalar */
     if( mxIsComplex(prhs[4]) ||
          mxGetNumberOfElements(prhs[4])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* make sure the sixth input argument is scalar */
     if( mxIsComplex(prhs[5]) ||
          mxGetNumberOfElements(prhs[5])!=1 ) {
         mexErrMsgIdAndTxt("MyToolbox:arrayProduct:notScalar","Input multiplier must be a scalar.");
     }
-    
+
     /* get the value of the scalar inputs  */
     wDir = (float) mxGetScalar(prhs[2]);
     bDir = (float) mxGetScalar(prhs[3]);
