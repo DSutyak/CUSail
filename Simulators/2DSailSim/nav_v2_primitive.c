@@ -57,9 +57,8 @@ float upRight(float b, float w) {
   printf("UP RIGHT\n\n");
   float offset = fabsf(w+optpolartop-b);
   printf("boatDir: %f\n windDir: %f\noffset: %f\n",b, w,offset);
-  tailAngle=b-offset;
-  // sailAngle=tailAngle+angleofattack;
-  return b-offset;
+  tailAngle=w-offset;
+  return w-offset;
 }
 
 float rightTarget(float b, float w){
@@ -70,7 +69,7 @@ float rightTarget(float b, float w){
 
   printf ("RIGHTS sail angle: %f\n",sailAngle);
   printf ("RIGHTT tail angle: %f\n",tailAngle);
-  return windDir;
+  return w;
 }
 
 float leftTarget(float b, float w){
@@ -78,8 +77,8 @@ float leftTarget(float b, float w){
   printf("LEFT TARGET\n\n");
   // Serial.println("Right to target to the left");
   // Serial1.println("Right to target to the left");
-  sailAngle=windDir-angleofattack;
-  return windDir;
+  // sailAngle=windDir-angleofattack;
+  return w;
 }
 // facing left, angle is above in the sector: w+offset
 //   w+(|w-opttop-boatdir|)
@@ -87,8 +86,8 @@ float upLeft(float b, float w){
   printf("UP LEFT\n\n");
   // Serial.println("Left up left");
   // Serial1.println("Left up left");
-  float offset = fabsf(windDir-optpolartop-boatDir);
-  return windDir+offset;
+  float offset = fabsf(windDir-optpolartop-b);
+  return w+offset;
   // sailAngle=tailAngle-angleofattack;
 }
 
@@ -98,8 +97,8 @@ float downLeft(float b, float w){
   printf("DOWN RIGHT\n\n");
   // Serial.println("Left bottom left");
   // Serial1.println("Left bottom left");
-  float offset = fabsf(windDir+180-optpolarbot-boatDir);
-  return windDir+offset;
+  float offset = fabsf(windDir+180-optpolarbot-b);
+  return w+offset;
   // sailAngle=tailAngle-angleofattack;
 }
 // facing right, angle is below in the sector: w-offset
@@ -108,9 +107,21 @@ float downRight(float b, float w){
   printf("DOWN RIGHT\n\n");
   // Serial.println("Right bottom right");
   // Serial1.println("Right bottom right");
-  float offset = fabsf(windDir+180+optpolarbot-boatDir);
+  float offset = fabsf(windDir+180+optpolarbot-b);
   return w-offset;
   // sailAngle=tailAngle+angleofattack;
+}
+
+float tackLeft(float b, float w, float angleWP){
+  float offset=fabsf(w- optpolartop -b);
+  printf ("offset: %f\n boatDir: %f\n", offset, b);
+  return w+offset;
+}
+
+float tackRight(float b, float w, float angleWP){
+  float offset=fabsf(w+ optpolartop - b);
+  printf ("offset: %f\n boatDir: %f\n", offset, b);
+  return w-offset;
 }
 
 void lightAllLEDs(){
@@ -167,6 +178,7 @@ double havDist(coord_t  first, coord_t second) {
 
   return distance;
 }
+
 
 // short term navigation algorithm, with the following inputs and outputs:
 //   Inputs:
@@ -264,6 +276,9 @@ void nShort(double *wayPoints, double *sensorData, float windDir, float boatDir,
   anglewaypoint=anglewaypoint+360;
   anglewaypoint=(float)((int)anglewaypoint%360);
 
+
+
+
   float dirangle=anglewaypoint-windDir;
   //converts to 0-360
   dirangle=(float)((int)dirangle%360);
@@ -292,12 +307,53 @@ float windboat;
 windboat=windDir-boatDir;
 
 float boat_wrt_wind=boatDir-windDir;
-boat_wrt_wind=360-(boat_wrt_wind-90);
+// boat_wrt_wind=360-(boat_wrt_wind-90);
 boat_wrt_wind=(float)((int)boat_wrt_wind%360);
-boat_wrt_wind=boatDir+360;
+boat_wrt_wind=boat_wrt_wind+360;
 boat_wrt_wind=(float)((int)boat_wrt_wind%360);
 
-printf("Setting sail and tail");
+// tacking left: tell the boat it is facing the waypoint
+// if (jibing==1){
+//   if(boat_wrt_wind<=180){
+//     tailAngle=turnLeft();
+//     sailAngle=tailAngle-15;
+//   }
+//   else{
+//     jibing=0;
+//   }
+// }
+
+printf("BOAT WRT WIND: %f\n",boat_wrt_wind);
+if (     jibing==1 && (boat_wrt_wind<=180+ optpolarbot || boat_wrt_wind>= 360-optpolartop)){
+  printf("TACKING left\n");
+  tailAngle=tackLeft(boatDir, windDir, anglewaypoint);
+  sailAngle=tailAngle-15;
+  // sailAngle=windDir;
+  // tailAngle=windDir+30;
+}
+else if (jibing==2 && ( boat_wrt_wind>=180- optpolarbot && boat_wrt_wind<= optpolartop)){
+  printf("TACKING right\n");
+  tailAngle=tackRight(boatDir, windDir, anglewaypoint);
+  sailAngle=tailAngle+15;
+  // sailAngle=windDir;
+  // tailAngle=windDir-30;
+}
+// tacking right
+// else if (jibing==2){
+//   if(boat_wrt_wind>=180){
+//     boatDir=anglewaypoint;
+//     boat_wrt_wind=boatDir-windDir;
+//     // boat_wrt_wind=360-(boat_wrt_wind-90);
+//     boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+//     boat_wrt_wind=boatDir+360;
+//     boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+//   }
+//   else{
+//     jibing=0;
+//   }
+// }
+
+// printf("Setting sail and tail");
 
   //dir is the direction to the next waypoint from the boat
   //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
@@ -340,33 +396,40 @@ printf("Setting sail and tail");
   facing right, angle is below in the sector: w-offset
     w-(|w+180+optbot-boatdir|)
 */
+
+
 //  boat initially facing right
-  if (boat_wrt_wind<180) {
+  else if (boat_wrt_wind<180) {
+    jibing=0;
     printf ("facing right\n");
     //Up right
-    if (dirangle<optpolartop && dirangle>0){
+    if (dirangle<optpolartop && dirangle>=0){
       tailAngle=upRight(boatDir,windDir);
       sailAngle=tailAngle+15;
     }
     //Head directly to target to the right
-    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+    else if (dirangle>=optpolartop && dirangle<=180- optpolarbot){
       printf("DIRECT TO TARGET RIGHT\n");
       tailAngle=rightTarget(boatDir,windDir);
       sailAngle=tailAngle+15;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+    else if (dirangle>=optpolarbot + 180 && dirangle<=360 -optpolartop){
       // turning
-      tailAngle=leftTarget(boatDir,windDir);
-      sailAngle=tailAngle-15;
+      printf("DIRECT LEFT\n");
+      // tailAngle=leftTarget(boatDir,windDir);
+      // sailAngle=tailAngle-15;
+      tailAngle=rightTarget(boatDir,windDir);
+      sailAngle=tailAngle+15;
+      jibing=1;
     }
     //Up left
-    else if (dirangle>360-optpolartop){
+    else if (dirangle>=360-optpolartop){
       tailAngle=upRight(boatDir,windDir);
       sailAngle=tailAngle+15;
     }
     //bottom left
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+    else if (dirangle <= 180 + optpolarbot && dirangle >= 180){
       tailAngle=downRight(boatDir,windDir);
       sailAngle=tailAngle+15;
     }
@@ -379,16 +442,19 @@ printf("Setting sail and tail");
   //boat facing to left
   else{
     printf ("facing left\n");
+    jibing=0;
     //Up right
     if (dirangle<optpolartop && dirangle>0){
       tailAngle=upLeft(boatDir,windDir);
       sailAngle=tailAngle-15;
-      sailAngle=tailAngle+15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      tailAngle=rightTarget(boatDir,windDir);
-      sailAngle=tailAngle+15;
+      // tailAngle=rightTarget(boatDir,windDir);
+      // sailAngle=tailAngle+15;
+      tailAngle=leftTarget(boatDir, windDir);
+      sailAngle=tailAngle-15;
+      jibing=2;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
@@ -411,6 +477,11 @@ printf("Setting sail and tail");
       sailAngle=tailAngle-15;
     }
   }
+
+
+  sailAngle=(float)((int)sailAngle%360);
+  sailAngle=sailAngle+360;
+  sailAngle=(float)((int)sailAngle%360);
   printf ("output sail angle: %f\n",sailAngle);
   printf ("output tail angle: %f\n",tailAngle);
 

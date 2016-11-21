@@ -192,54 +192,60 @@ double havDist(coord_t  first, coord_t second) {
 // never go upright when facing left
 // facing right, angle is above in the sector: w-offset
 //   w-(|w+opttop - boatdir|)
-void upRight() {
+float upRight(float b, float w) {
   Serial.println("Right up right");
   Serial1.println("Right up right");
-  float offset = fabsf(sensorData.windDir+optpolartop-sensorData.boatDir);
-  tailAngle=sensorData.windDir-offset;
-  sailAngle=tailAngle+angleofattack;
+  float offset = fabsf(w+optpolartop-b);
+  tailAngle=w-offset;
+  // sailAngle=tailAngle+angleofattack;
+  return tailAngle;
 }
 
-void rightTarget(){
+float rightTarget(float b, float w){
 	Serial.println("Right to target to the right");
 	Serial1.println("Right to target to the right");
-	sailAngle=sensorData.windDir+angleofattack;
-	tailAngle=sensorData.windDir;
+	// sailAngle=sensorData.windDir+angleofattack;
+	tailAngle=w;
+  return tailAngle;
 }
 
-void leftTarget(){
+float leftTarget(float b, float w){
   Serial.println("Right to target to the left");
   Serial1.println("Right to target to the left");
-  sailAngle=sensorData.windDir-angleofattack;
-  tailAngle=sensorData.windDir;
+  // sailAngle=sensorData.windDir-angleofattack;
+  tailAngle=w;
+  return tailAngle;
 }
 // facing left, angle is above in the sector: w+offset
 //   w+(|w-opttop-boatdir|)
-void upLeft(){
+float upLeft(float b, float w){
   Serial.println("Left up left");
   Serial1.println("Left up left");
-  float offset = fabsf(sensorData.windDir-optpolartop-sensorData.boatDir);
-  tailAngle=sensorData.windDir+offset;
-  sailAngle=tailAngle-angleofattack;
+  float offset = fabsf(w-optpolartop-b);
+  tailAngle=w+offset;
+  return tailAngle;
+  // sailAngle=tailAngle-angleofattack;
 }
 
 // facing left, angle is below in the sector: w+offset
 //   w+(|w+180-optboat-boatdir)
-void downLeft(){
+float downLeft(float b, float w){
   Serial.println("Left bottom left");
   Serial1.println("Left bottom left");
-  float offset = fabsf(sensorData.windDir+180-optpolarbot-sensorData.boatDir);
-  tailAngle=sensorData.windDir+offset;
-  sailAngle=tailAngle-angleofattack;
+  float offset = fabsf(w+180-optpolarbot-b);
+  tailAngle=w+offset;
+  return tailAngle;
+  // sailAngle=tailAngle-angleofattack;
 }
 // facing right, angle is below in the sector: w-offset
 //   w-(|w+180+optbot-boatdir|)
-void downRight(){
+float downRight(float b, float w){
   Serial.println("Right bottom right");
   Serial1.println("Right bottom right");
-  float offset = fabsf(sensorData.windDir+180+optpolarbot-sensorData.boatDir);
-  tailAngle=sensorData.windDir-offset;
-  sailAngle=tailAngle+angleofattack;
+  float offset = fabsf(w+180+optpolarbot-b);
+  tailAngle=w-offset;
+  return tailAngle;
+  // sailAngle=tailAngle+angleofattack;
 }
 
 void lightAllLEDs(){
@@ -420,6 +426,13 @@ void nShort(void) {
   Serial.println("Setting sail and tail");
   Serial1.println("Setting sail and tail");
 
+  float boat_wrt_wind=boatDirection-sensorData.windDir;
+  boat_wrt_wind=360-(boat_wrt_wind-90);
+  boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+  boat_wrt_wind=boat_wrt_wind+360;
+  boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+
+  float windDir=sensorData.windDir;
 
   /*---------checking if past maximum tacking width------------*/
   float distance_to_center = center_distance(currentPosition);
@@ -459,58 +472,70 @@ void nShort(void) {
     w-(|w+180+optbot-boatdir|)
 */
 //  boat initially facing right
-  else if (dirangle<180) {
+    else if (boat_wrt_wind<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      upRight();
+      tailAngle=upRight(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      rightTarget();
+      tailAngle=rightTarget(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
       // turning
-      leftTarget();
+      tailAngle=leftTarget(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      upRight();
+      tailAngle=upRight(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-    	downRight();
+      tailAngle=downRight(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
     //bottom right
     else {
-      downRight();
+      tailAngle=downRight(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
   }
   //boat facing to left
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      upLeft();
+      tailAngle=upLeft(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      rightTarget();
+      tailAngle=rightTarget(boatDirection,windDir);
+      sailAngle=tailAngle+15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      leftTarget();
+      tailAngle=leftTarget(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      upLeft();
+      tailAngle=upLeft(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      downLeft();
+      tailAngle=downLeft(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
     //bottom right
     else {
-      downLeft();
+      tailAngle=downLeft(boatDirection,windDir);
+      sailAngle=tailAngle-15;
     }
   }
   printSailTailSet();
