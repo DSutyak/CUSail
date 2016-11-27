@@ -8,6 +8,8 @@ pixy.init();
 
 angleofattack = 15;
 
+
+//this code comes from https://forum.arduino.cc/index.php?topic=45626.0
 template<typename Data>
 class Vector {
   size_t d_size; // Stores no. of actually stored objects
