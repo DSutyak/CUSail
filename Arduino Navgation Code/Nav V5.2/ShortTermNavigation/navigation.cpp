@@ -551,7 +551,7 @@ void nShort(void) {
   Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
 
 
-  // this section of code implements avoidance manuervure if
+  // this section of code implements avoidance maneuver if
   // pixy cam detects an object in the boats path
   /*
     double courseChange;
