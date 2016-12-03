@@ -53,6 +53,30 @@ void getObjects() {
     }
 }
 
+/** This function checks if an object is detected. If it is
+*   detected the sail angle is adjusted so the boat sails towards it. */
+void trackObject() {
+    double courseChange;
+    getObjects();
+    int s = xVals.size();
+    if (s > 0 && xVals.get(s-1) != 400.0) {
+        double recentReading = xVals.get(s-1);     
+        if (recentReading > 159.5) {
+            // make a starboard turn proportional to recentReading
+            recentReading = (recentReading / 319.0) - 1;
+            angleofattack = Math.abs(90.0*recentReading); // val from 0 to 90
+            sailAngle=sensorData.windDir - angleofattack;
+            tailAngle=sensorData.windDir;
+        }
+        else if (recentReading < 159.5) {
+             // we need to make a port side turn
+            recentReading = (recentReading / 319.0) - 1.0;
+            angleofattack = Math.abs(90.0*recentReading);
+            sailAngle=sensorData.windDir + angleofattack;
+            tailAngle=sensorData.windDir;
+        }
+}
+
 void adjustDirection() {
     double courseChange;
     getObjects();
