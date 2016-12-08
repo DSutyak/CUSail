@@ -610,6 +610,10 @@ void nShort(void) {
   tailAngle=windDir+offset;
   sailAngle=tailAngle+intended_angle_of_attack;
 
+
+  // //////////
+  // PIXY CAM STUFF TO GO HERE
+  // /////////
   printSailTailSet();
 
   //Convert sail and tail from wrt north to wrt boat
