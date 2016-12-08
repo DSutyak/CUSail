@@ -551,7 +551,7 @@ void nShort(void) {
   Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
 
 
-  // this section of code implements avoidance manuervure if
+  // this section of code implements avoidance maneuver if
   // pixy cam detects an object in the boats path
   /*
     double courseChange;
@@ -624,8 +624,7 @@ void nServos(void) {
 
 
 /** Updates xVals vector
-*   0 to 1 indicates object on the starboard (closer to 1 = closer to edge of pixy cam view)
-*  -1 to 0 indicates object on the port (closer to -1 = closer to edge of pixy cam view)
+*   Only updates x-position
 *   NOTE: This only detects objects set to
 *   signature 1 on the pixy cam */
 /*
@@ -636,8 +635,7 @@ void getObjects() {
         for (int j = 0; j < blocks, j++) {
             if (pixy.blocks[j].signature == 1) {
                 int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
-                double half = xLocation / 2.0;
-                xVals.push_back(xVals);
+                xVals.push_back(xLocation);
             }
         }
     }
