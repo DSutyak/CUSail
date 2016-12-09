@@ -662,14 +662,14 @@ void nShort(void) {
 		else if (initialReading > recentReading) {
 			// make starboard turn
 			recentReading = Math.abs(45.0*recentReading);
-			sailAngle += recentReading * 45;
-			tailAngle += recentReading * 45;
+			sailAngle += recentReading;
+			tailAngle += recentReading;
 		}
 		else {
 			// make port side turn
 			recentReading = Math.abs(45.0*recentReading);
-			sailAngle -= recentReading * 45;
-			tailAngle -= recentReading * 45;
+			sailAngle -= recentReading;
+			tailAngle -= recentReading;
 		}
 		
 	}
