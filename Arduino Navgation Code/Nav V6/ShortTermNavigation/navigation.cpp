@@ -638,48 +638,56 @@ void nShort(void) {
   tailAngle=windDir+offset;
   sailAngle=tailAngle+intended_angle_of_attack;
 
+  tailAngle=(float)((int)tailAngle%360);
+  tailAngle=tailAngle+360;
+  tailAngle=(float)((int)tailAngle%360);
+
+  sailAngle=(float)((int)sailAngle%360);
+  sailAngle=sailAngle+360;
+  sailAngle=(float)((int)sailAngle%360);
+
 
   // This section of code implements avoidance manuever
   // if pixy detects an object in the boats path
-  	getObjects();
-	int s = xVals.size();
-	if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
-		double initialReading = xVals.get(s-2);
-		double recentReading = xVals.get(s-1);
-		double courseChange = initialReading - recentReading;
-		recentReading = (recentReading / 159.5) - 1.0; // this makes
-		// recentReading from -1.0 to 1.0 with 0.0 being center of the frame
-		if (Math.abs(courseChange) < 0.1) {
-			// we need to make an evasion manuever
-			if (recentReading > 0)
-				recentReading = 1 - recentReading;// reverse recentReading measure
-					// so that closer to 1 = closer to center
-			else
-				recentReading = -1 - recentReading;
-			sailAngle += recentReading * 45;
-			tailAngle += recentReading * 45;
-		}
-		else if (initialReading > recentReading) {
-			// make starboard turn
-			recentReading = Math.abs(45.0*recentReading);
-			sailAngle += recentReading;
-			tailAngle += recentReading;
-		}
-		else {
-			// make port side turn
-			recentReading = Math.abs(45.0*recentReading);
-			sailAngle -= recentReading;
-			tailAngle -= recentReading;
-		}
-		
-	}
-	
+ //  	getObjects();
+	// int s = xVals.size();
+	// if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
+	// 	double initialReading = xVals.get(s-2);
+	// 	double recentReading = xVals.get(s-1);
+	// 	double courseChange = initialReading - recentReading;
+	// 	recentReading = (recentReading / 159.5) - 1.0; // this makes
+	// 	// recentReading from -1.0 to 1.0 with 0.0 being center of the frame
+	// 	if (Math.abs(courseChange) < 0.1) {
+	// 		// we need to make an evasion manuever
+	// 		if (recentReading > 0)
+	// 			recentReading = 1 - recentReading;// reverse recentReading measure
+	// 				// so that closer to 1 = closer to center
+	// 		else
+	// 			recentReading = -1 - recentReading;
+	// 		sailAngle += recentReading * 45;
+	// 		tailAngle += recentReading * 45;
+	// 	}
+	// 	else if (initialReading > recentReading) {
+	// 		// make starboard turn
+	// 		recentReading = Math.abs(45.0*recentReading);
+	// 		sailAngle += recentReading;
+	// 		tailAngle += recentReading;
+	// 	}
+	// 	else {
+	// 		// make port side turn
+	// 		recentReading = Math.abs(45.0*recentReading);
+	// 		sailAngle -= recentReading;
+	// 		tailAngle -= recentReading;
+	// 	}
+
+	// }
+
   // //////////
   // PIXY CAM STUFF TO GO HERE
   // /////////
 
-	
-	
+
+
   printSailTailSet();
 
   //Convert sail and tail from wrt north to wrt boat
