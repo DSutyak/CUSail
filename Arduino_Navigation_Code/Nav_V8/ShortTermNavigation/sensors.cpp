@@ -5,6 +5,7 @@ TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
 float windDirections[numWindDirReads];
+float prevWindDirection = 270;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -95,8 +96,6 @@ void initSensors(void) {
   sensorData = *(data_t*) malloc(sizeof(data_t));
   sensorData = {}; 
 
-  prevWindDirection = 270;
-
   //Set Pin Modes
   pinMode(RS_CSN, OUTPUT);
   pinMode(IMU_CSN, OUTPUT);
@@ -153,9 +152,9 @@ void sRSensor(void) {
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
   //---filter wind---
-  newSinWind = ( (sin(prevWindDirection) + (1/16)*sin(wind_wrtN)) / (1+ (1/16)) );
-  newCosWind = ( (cos(prevWindDirection) + (1/16)*cos(wind_wrtN)) / (1+ (1/16)) );
-  newWind = atan2(newSinWind, newCosWind);  
+  float newSinWind = ( (sin(prevWindDirection) + (1/16)*sin(wind_wrtN)) / (1+ (1/16)) );
+  float newCosWind = ( (cos(prevWindDirection) + (1/16)*cos(wind_wrtN)) / (1+ (1/16)) );
+  float newWind = atan2(newSinWind, newCosWind);  
   //------
   sensorData.windDir = newWind;
   prevWindDirection = wind_wrtN;
