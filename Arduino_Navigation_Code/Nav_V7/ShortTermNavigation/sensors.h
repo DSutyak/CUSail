@@ -59,8 +59,6 @@ typedef struct dataStructure {
 extern data_t sensorData; //Defines the boat's state, in type data_t
 extern float boatDirections[numBoatDirReads];
 extern float windDirections[numWindDirReads];
-extern float prevWindDirection;
-
 /*------------------------------ Functions ------------------------------*/
 
 /*Sensor setup*/

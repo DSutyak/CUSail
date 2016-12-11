@@ -96,7 +96,10 @@ coord_t shore = {42.469717,-76.503341}; //Far end of the docks, to the left of t
 coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
 coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking from the beach to the left of the Cornell Sailing Center
-
+coord_t across_low_dock= {42.468887, -76.504546}; //Across the lake from the low dock
+coord_t across_low_dock_test= {42.468923, -76.503655}; //Across the lake from the low dock, halfway to the main point
+coord_t low_dock={42.468951,-76.502941}; //Right at the lower dock
+coord_t high_dock={42.469552,-76.503353};
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {
@@ -121,8 +124,8 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = sundial;
-  wayPoints[1] = outsideThurston;
+  wayPoints[0] = lakeOut;
+  wayPoints[1] = high_dock;
 }
 
 
@@ -339,7 +342,7 @@ void nShort(void) {
   //sensorData.lati=outsideThurston.latitude;
   //sensorData.longi=outsideThurston.longitude;
 //  sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 200;
  /// sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
@@ -362,28 +365,28 @@ void nShort(void) {
   optpolarbot= 40;
 
   //Runs for number of miliseconds defined by turnTime after a waypoint is hit
-  if (turn) {
-  	if (firstIterTurn) {
-  		turnTimer = millis();
-  		firstIterTurn = false;
-  	}
-  	if ( (millis() - turnTimer) > turnTime) {
-  		turn = false;
-  		firstIterTurn = false;
-  	}
-  	else {
-  		float newBoatDirection = angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
-  		sensorData.boatDir = newBoatDirection;
-  	}
-  }
+  // if (turn) {
+  // 	if (firstIterTurn) {
+  // 		turnTimer = millis();
+  // 		firstIterTurn = false;
+  // 	}
+  // 	if ( (millis() - turnTimer) > turnTime) {
+  // 		turn = false;
+  // 		firstIterTurn = false;
+  // 	}
+  // 	else {
+  // 		float newBoatDirection = angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+  // 		sensorData.boatDir = newBoatDirection;
+  // 	}
+  // }
 
   // printWaypointData();
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
     // printHitWaypointData();
-    turn = true;
-    firstIterTurn = true;
+    // turn = true;
+    // firstIterTurn = true;
     wpNum += 1 ;
 
     //reset variables because we have reached the old waypoint

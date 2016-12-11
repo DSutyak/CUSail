@@ -5,6 +5,7 @@ TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
 float windDirections[numWindDirReads];
+float prevWindDirection = 270;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -95,8 +96,6 @@ void initSensors(void) {
   sensorData = *(data_t*) malloc(sizeof(data_t));
   sensorData = {}; 
 
-  prevWindDirection = 270;
-
   //Set Pin Modes
   pinMode(RS_CSN, OUTPUT);
   pinMode(IMU_CSN, OUTPUT);
@@ -148,26 +147,35 @@ void sRSensor(void) {
 
   //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
+
+  pos = pos - 109;
+  if (pos < 0) pos += 360;
+  pos = pos%360;
+  pos = 360 - pos;
   
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
-
+//  int wind_wrtN = (int)pos%360;
+  prevWindDirection = prevWindDirection*PI/180;
   //---filter wind---
-  newSinWind = ( (sin(prevWindDirection) + (1/16)*sin(wind_wrtN)) / (1+ (1/16)) );
-  newCosWind = ( (cos(prevWindDirection) + (1/16)*cos(wind_wrtN)) / (1+ (1/16)) );
-  newWind = atan2(newSinWind, newCosWind);  
+  float newSinWind = ( (sin(prevWindDirection) + (1/64)*sin(wind_wrtN)) / (1+ (1/64)) );
+  float newCosWind = ( (cos(prevWindDirection) + (1/64)*cos(wind_wrtN)) / (1+ (1/64)) );
+  float newWind = atan2(newSinWind, newCosWind);  
+  newWind=newWind*180/PI;
+  int newWindInt=newWind;
+  newWindInt=(newWindInt+360)%360;
   //------
-  sensorData.windDir = newWind;
+  sensorData.windDir = newWindInt;
   prevWindDirection = wind_wrtN;
   
   Serial.println("----------Rotary Sensor----------");
   Serial1.println("----------Rotary Sensor----------");
   
   Serial.print("Wind direction w.r.t boat:  "); Serial.println(pos);
-  Serial.print("Wind direction w.r.t North: "); Serial.println(newWind);
+  Serial.print("Wind direction w.r.t North: "); Serial.println(newWindInt);
   
   Serial1.print("Wind direction w.r.t boat:  "); Serial1.println(pos);
-  Serial1.print("Wind direction w.r.t North: "); Serial1.println(newWind);
+  Serial1.print("Wind direction w.r.t North: "); Serial1.println(newWindInt);
 
   Serial.println("");
   Serial1.println("");
