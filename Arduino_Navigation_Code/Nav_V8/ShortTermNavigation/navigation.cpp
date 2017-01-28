@@ -99,7 +99,7 @@ coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking f
 coord_t across_low_dock= {42.468887, -76.504546}; //Across the lake from the low dock
 coord_t across_low_dock_test= {42.468923, -76.503655}; //Across the lake from the low dock, halfway to the main point
 coord_t low_dock={42.468951,-76.502941}; //Right at the lower dock
-coord_t high_dock={42.469552,-76.503353};
+coord_t high_dock={42.469552,-76.503353}; //High dock launch point
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {
@@ -505,6 +505,7 @@ void nShort(void) {
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
       // turning
+      // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
       tailAngle=leftTarget(boatDirection,windDir);
       sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
@@ -543,6 +544,7 @@ void nShort(void) {
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+      //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION      
       tailAngle=rightTarget(boatDirection,windDir);
       sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;
