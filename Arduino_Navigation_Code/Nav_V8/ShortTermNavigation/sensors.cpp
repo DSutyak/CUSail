@@ -24,7 +24,7 @@ byte transferByte(byte byteToWrite) {
   Result = SPI.transfer(byteToWrite);
   delay(1);
   digitalWrite(IMU_CSN,HIGH);
-  return Result; 
+  return Result;
 }
 
 /*Returns a byte with the endian swapped*/
@@ -37,7 +37,7 @@ void endianSwap(byte temp[4]) {
   temp[2] = myTemp;
 }
 
-/* Returns servo command for sail servo for inputted sail angle 
+/* Returns servo command for sail servo for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
  */
 double sailMap(double sailAngle){
@@ -57,17 +57,17 @@ double sailMap(double sailAngle){
   return newSailAngle;
 }
 
-/* Returns servo command tail servo for inputted sail angle and tail angle 
+/* Returns servo command tail servo for inputted sail angle and tail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
 double tailMap(double sailAngle, double tailAngle){
- 
+
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
-  } 
-  
+  }
+
   double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
-  
+
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
     newTailAngle+=360;
@@ -77,10 +77,53 @@ double tailMap(double sailAngle, double tailAngle){
   }
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,38,84); 
+    newTailAngle=map(newTailAngle,-30,0,38,84);
   }
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,85,144); 
+    newTailAngle=map(newTailAngle,0,30,85,144);
+  }
+  return newTailAngle;
+}
+
+
+
+double sailMapBench( double sailAngle){
+  double newSailAngle;
+  if (sailAngle <= 90){
+    newSailAngle = map(sailAngle, 0, 90, 72, 78.5);
+  }
+  else if (sailAngle <= 180){
+    newSailAngle = map(sailAngle, 90, 180, 78.5, 84);
+  }
+  else if (sailAngle <= 270){
+    newSailAngle = map(sailAngle, 180, 270, 84, 90);
+  }
+  else{
+   newSailAngle = map(sailAngle, 270, 360, 90, 96);
+  }
+  return newSailAngle;
+}
+
+double tailMapBench( double sailAngle, double tailAngle){
+  if (sailAngle > 180){ //convert sail angle to -180.. 180
+    sailAngle -= 360;
+  }
+
+  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+
+  //make sure tail angle is in range -180.. 180
+  if(newTailAngle<-180){
+    newTailAngle+=360;
+  }
+  else if(newTailAngle>180){
+    newTailAngle-=360;
+  }
+  //map to servo commands
+  if (newTailAngle <= 0 ){
+    newTailAngle=map(newTailAngle,-30,0,69,71);
+  }
+  else if (newTailAngle > 0 ){
+    newTailAngle=map(newTailAngle,0,30,71,73);
   }
   return newTailAngle;
 }
@@ -91,10 +134,10 @@ void initSensors(void) {
   Serial2.begin(9600);
   Serial1.begin(9600);
   Serial3.begin(9600);
-  
+
   // initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
-  sensorData = {}; 
+  sensorData = {};
 
   //Set Pin Modes
   pinMode(RS_CSN, OUTPUT);
@@ -107,12 +150,12 @@ void initSensors(void) {
   pinMode(greenLED, OUTPUT);
   pinMode(blueLED, OUTPUT);
   pinMode(yellowLED, OUTPUT);
-  
+
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
   digitalWrite(IMU_CSN, HIGH);
-  
-  //Initialize SPI 
+
+  //Initialize SPI
   SPI.begin();
 }
 
@@ -128,7 +171,7 @@ float dirAverage(int numToAverage, float arrayToAverage[]) {
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
-  
+
   //Send the Command Frame
   digitalWrite(RS_CSN, LOW);
   delayMicroseconds(1);
@@ -147,21 +190,21 @@ void sRSensor(void) {
 
   //convert to a 360 degree scale
   int pos = ( (unsigned long) angle)*360UL/16384UL;
-  
+
   //get angle with respect to North
   int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
 
   //---filter wind---
   float newSinWind = ( (sin(prevWindDirection) + (1/16)*sin(wind_wrtN)) / (1+ (1/16)) );
   float newCosWind = ( (cos(prevWindDirection) + (1/16)*cos(wind_wrtN)) / (1+ (1/16)) );
-  float newWind = atan2(newSinWind, newCosWind);  
+  float newWind = atan2(newSinWind, newCosWind);
   //------
   sensorData.windDir = newWind;
   prevWindDirection = wind_wrtN;
-  
+
 }
 
-/*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime 
+/*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
 void sGPS(void) {
   while (Serial3.available() > 0) {
@@ -174,11 +217,11 @@ void sGPS(void) {
     sensorData.dateTime.hour = gps.time.hour();       // Hour (0-23) (u8)
     sensorData.dateTime.minute = gps.time.minute();   // Minute (0-59) (u8)
     sensorData.dateTime.seconds = gps.time.second();  // Second (0-59) (u8)
-    }  
-      
+    }
+
 }
 
-/*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll 
+/*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
 * to current boat direction w.r.t North, current boat pitch and current boat roll*/
 void sIMU(void) {
   SPI.beginTransaction(SPISettings(6000000, MSBFIRST, SPI_MODE0 ));
@@ -188,8 +231,8 @@ void sIMU(void) {
   // Send start of packet:
   result = transferByte(0xF6);
   delay(1);
-      
-  
+
+
   // Send command (tared euler angles)
   result = transferByte(0x01);
   delay(1);
@@ -197,20 +240,20 @@ void sIMU(void) {
   // Get status of device:
   result = transferByte(0xFF);
   delay(1);
-      
+
 
   while (result != 0x01) {  // Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
     }
-  
+
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
     for (int jj=0; jj<4; jj++) {
       imu_data[ii].b[jj] =  transferByte(0xFF);
       delay(1);
     }
-  }  
+  }
 
   SPI.endTransaction();
 
@@ -220,9 +263,9 @@ void sIMU(void) {
 
   float boatDir =  ((imu_data[1].fval)*(180/PI));
   if (boatDir < 0) {
-    boatDir += 360; 
+    boatDir += 360;
   }
-  
+
   boatDirections[boatDirArrayNum%numBoatDirReads] = boatDir;
   boatDirArrayNum += 1;
   float averageBoatDirection = dirAverage(numBoatDirReads, boatDirections);

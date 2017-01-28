@@ -39,7 +39,7 @@ Servo sailServo;
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = 25; //how far away the boat marks a waypoint "reached"
+float detectionradius = 10; //how far away the boat marks a waypoint "reached"
 coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
@@ -86,6 +86,9 @@ coord_t bottomStairs = {42.444240, -76.483258}; //Bottom of stairs, outside West
 coord_t northBottomStairs = {42.444735, -76.483275}; //Bottom of stairs, to the left of North entrance to Duffield Hall
 coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
 coord_t sundial = {42.4448630, -76.4835293}; //Sundial on the engineering quad
+coord_t northQuadStair= {42.444751, -76.483267}; //bottom of the north stairs
+coord_t bottomRightIntersection= {42.444242, -76.483247}; //path intersection bottom right of quad
+coord_t thurstonWestEntrance={42.444245, -76.484068}; //west entrance to thurston on the path
 
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the Cornell Sailing Center
@@ -124,8 +127,8 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut;
-  wayPoints[1] = high_dock;
+  wayPoints[0] = thurstonWestEntrance;
+  wayPoints[1] = bottomStairs;
 }
 
 
@@ -208,7 +211,7 @@ float upLeft(float b, float w){
 }
 
 // facing left, angle is below in the sector: w+offset
-//   w+(|w+180-optboat-boatdir)
+//   w+(|w+180-optboat-boatdir|)
 float downLeft(float b, float w){
   float offset = fabsf(w+180-optpolarbot-b);
   tailAngle=w+offset;
@@ -251,6 +254,11 @@ void lowAllLEDs(){
 /*----------------------------*/
 /*----------Printers----------*/
 /*----------------------------*/
+
+void printLocationData(){
+  Serial1.print("Latitude: "); Serial1.println(sensorData.lati);
+  Serial1.print("Longitude: "); Serial1.println(sensorData.longi);
+}
 
 void printWaypointData(){
   Serial.println("----------NAVIGATION----------");
@@ -337,13 +345,14 @@ void printServoSailTail(){
  * calculated in terms of angle w.r.t the boat direction*/
 void nShort(void) {
 
-  //Unit testing setters
-//  sensorData.lati = 42.4441782290;
+  printLocationData();
+//Unit testing setters
+  //sensorData.lati = 42.4441782290;
   //sensorData.lati=outsideThurston.latitude;
   //sensorData.longi=outsideThurston.longitude;
-//  sensorData.longi = -76.4834140241;
-  sensorData.windDir = 200;
- /// sensorData.boatDir = 180;
+  //sensorData.longi = -76.4834140241;
+  sensorData.windDir = 270;
+  //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
@@ -380,11 +389,11 @@ void nShort(void) {
   // 	}
   // }
 
-  // printWaypointData();
+  printWaypointData();
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
-    // printHitWaypointData();
+    printHitWaypointData();
     // turn = true;
     // firstIterTurn = true;
     wpNum += 1 ;
@@ -490,45 +499,52 @@ void nShort(void) {
   if (boat_wrt_wind<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      tailAngle=upRight(boatDirection,windDir);
-      sailAngle=tailAngle+15;
+      Serial1.println("FACING RIGHT UP RIGHT");
+      // tailAngle=upRight(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
       intended_angle=windDir+optpolartop;
       intended_angle_of_attack=15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      tailAngle=rightTarget(boatDirection,windDir);
-      sailAngle=tailAngle+15;
+      Serial1.println("FACING RIGHT DIRECT RIGHT");
+      // tailAngle=rightTarget(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;
       intended_angle_of_attack=15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+      Serial1.println("FACING RIGHT DIRECT LEFT");
+
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      tailAngle=leftTarget(boatDirection,windDir);
-      sailAngle=tailAngle-15;
+      // tailAngle=leftTarget(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
       intended_angle_of_attack=-15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      tailAngle=upRight(boatDirection,windDir);
-      sailAngle=tailAngle+15;
-      intended_angle=windDir-optpolartop;
-      intended_angle_of_attack=-15;
+      Serial1.println("FACING RIGHT UP LEFT");
+      // tailAngle=upRight(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
+      intended_angle=windDir+optpolartop;
+      intended_angle_of_attack=15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      tailAngle=downRight(boatDirection,windDir);
-      sailAngle=tailAngle+15;
-      intended_angle=windDir+180+optpolarbot;
-      intended_angle_of_attack=-15;
+      Serial1.println("FACING RIGHT BOTTOM LEFT");
+      // tailAngle=downRight(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
+      intended_angle=windDir+180-optpolarbot;
+      intended_angle_of_attack=15;
     }
     //bottom right
     else {
-      tailAngle=downRight(boatDirection,windDir);
-      sailAngle=tailAngle+15;
+      Serial1.println("FACING RIGHT BOTTOM RIGHT");
+      // tailAngle=downRight(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
       intended_angle=windDir+180-optpolarbot;
       intended_angle_of_attack=15;
     }
@@ -537,57 +553,63 @@ void nShort(void) {
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      tailAngle=upLeft(boatDirection,windDir);
-      sailAngle=tailAngle-15;
-      intended_angle=windDir+optpolartop;
-      intended_angle_of_attack=15;
+      Serial1.println("FACING LEFT UP RIGHT");
+      // tailAngle=upLeft(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
+      intended_angle=windDir-optpolartop;
+      intended_angle_of_attack=-15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION      
-      tailAngle=rightTarget(boatDirection,windDir);
-      sailAngle=tailAngle+15;
+      Serial1.println("FACING LEFT DIRECT RIGHT");
+      //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
+      // tailAngle=rightTarget(boatDirection,windDir);
+      // sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;
       intended_angle_of_attack=15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      tailAngle=leftTarget(boatDirection,windDir);
-      sailAngle=tailAngle-15;
+      Serial1.println("FACING LEFT DIRECT LEFT");
+      // tailAngle=leftTarget(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
       intended_angle_of_attack=-15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      tailAngle=upLeft(boatDirection,windDir);
-      sailAngle=tailAngle-15;
+      Serial1.println("FACING LEFT UP LEFT");
+      // tailAngle=upLeft(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
       intended_angle=windDir-optpolartop;
       intended_angle_of_attack=-15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      tailAngle=downLeft(boatDirection,windDir);
-      sailAngle=tailAngle-15;
+      Serial1.println("FACING LEFT BOTTOM LEFT");
+      // tailAngle=downLeft(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
       intended_angle=windDir+180+optpolarbot;
       intended_angle_of_attack=-15;
     }
     //bottom right
     else {
-      tailAngle=downLeft(boatDirection,windDir);
-      sailAngle=tailAngle-15;
-      intended_angle=windDir+180-optpolarbot;
-      intended_angle_of_attack=15;
+      Serial1.println("FACING LEFT BOTTOM RIGHT");
+      // tailAngle=downLeft(boatDirection,windDir);
+      // sailAngle=tailAngle-15;
+      intended_angle=windDir+180+optpolarbot;
+      intended_angle_of_attack=-15;
     }
   }
 
   // ATTEMPT TO USE INTENDED ANGLE
   float offset=boatDirection-intended_angle;
-  // Serial1.print("Intended angle: ");
-  // Serial1.println(intended_angle);
+   Serial1.print("Intended angle: ");
+   Serial1.println(intended_angle);
   // Serial.print("Intended angle: ");
   // Serial.println(intended_angle);
-  // Serial1.print("Offset: ");
-  // Serial1.println(offset);
+   Serial1.print("Offset: ");
+   Serial1.println(offset);
   // Serial.print("Offset: ");
   // Serial.println(offset);
   tailAngle=windDir+offset;
@@ -643,7 +665,7 @@ void nShort(void) {
 
 
 
-  // printSailTailSet();
+  printSailTailSet();
 
   //Convert sail and tail from wrt north to wrt boat
   sailAngle=sailAngle-sensorData.boatDir;
@@ -657,9 +679,13 @@ void nShort(void) {
   if (sailAngle < 0) {
     sailAngle += 360;
   }
+// REAL BOAT SAIL AND TAIL MAPPING
+  // tailAngle = tailMap(sailAngle, tailAngle);
+  // sailAngle = sailMap(sailAngle);
 
-  tailAngle = tailMap(sailAngle, tailAngle);
-  sailAngle = sailMap(sailAngle);
+// TESTBENCH SAIL AND TAIL MAPPING
+  tailAngle = tailMapBench(sailAngle, tailAngle);
+  sailAngle = sailMapBench(sailAngle);
 
   // printServoSailTail();
 

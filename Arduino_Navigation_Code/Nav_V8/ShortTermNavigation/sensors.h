@@ -7,15 +7,15 @@
  date, time and boat position in lattitude and longitude, using an IMU, a GPS and a Rotary Sensor
 
  Code has been tested and run on an Arduino Due
- 
+
  Rotary Sensor:  AS5047 by AMS (AS5147 has been tested to work)
  GPS: PAM-7Q GPS Module by Parallax
- IMU: 3 Space Embedded Evaluation Kit by Yost Labs 
+ IMU: 3 Space Embedded Evaluation Kit by Yost Labs
 
  Last Updated: 10/20/2016 by Arjan Singh
- 
+
  Authors: Alex Pomerenk, Arjan Singh
- 
+
  Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ typedef struct date {
 
 typedef struct dataStructure {
   float boatDir; //Boat direction w.r.t North
-  float pitch; 
+  float pitch;
   float roll;
   float windDir; // Wind direction w.r.t North
   double longi; // Longitude of current global position;
@@ -42,8 +42,8 @@ typedef struct dataStructure {
 } data_t;
 
 /*--------------------------- Predefined Variables ---------------------------*/
-#define RS_CSN          52 
-#define IMU_CSN         65 
+#define RS_CSN          52
+#define IMU_CSN         65
 #define SO              74
 #define SI              75
 #define CLK             76
@@ -53,7 +53,7 @@ typedef struct dataStructure {
 #define redLED2         44
 #define blueLED         35
 #define yellowLED       36
-#define greenLED        53    // Power LED 
+#define greenLED        53    // Power LED
 
 /*--------------------------- Global Variables ---------------------------*/
 extern data_t sensorData; //Defines the boat's state, in type data_t
@@ -69,18 +69,22 @@ void initSensors(void);
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void);
 
-/*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime 
+/*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
 void sGPS(void);
 
-/*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll 
+/*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
 * to current boat direction w.r.t North, current boat pitch and current boat roll*/
 void sIMU(void);
 
-/*Returns servo command tail servo for inputted sail angle and tail angle 
+/*Returns servo command tail servo for inputted sail angle and tail angle
 * Precondition: Sail Angle in 0.. 360, Tail Angle in -180.. 180, w.r.t BOAT*/
 double tailMap(double sailAngle, double tailAngle);
 
-/*Returns servo command for sail servo for inputted sail angle 
+/*Returns servo command for sail servo for inputted sail angle
 * Precondition: Sail Angle in 0.. 360 w.r.t BOAT*/
 double sailMap(double sailAngle);
+
+double sailMapBench( double sailAngle);
+
+double tailMapBench( double sailAngle, double tailAngle);
