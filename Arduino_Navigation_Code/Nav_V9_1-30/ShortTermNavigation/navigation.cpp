@@ -127,8 +127,8 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = thurstonWestEntrance;
-  wayPoints[1] = bottomStairs;
+  wayPoints[0] = sundial;
+  wayPoints[1] = outsideThurston;
 }
 
 
@@ -359,7 +359,7 @@ void nShort(void) {
   //sensorData.lati=outsideThurston.latitude;
   //sensorData.longi=outsideThurston.longitude;
   //sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 0;
   //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
@@ -516,6 +516,7 @@ void nShort(void) {
 
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
+      delay(5000);
       // tailAngle=leftTarget(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
@@ -565,6 +566,7 @@ void nShort(void) {
       Serial1.println("FACING LEFT DIRECT RIGHT");
       Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
+      delay(5000);
       // tailAngle=rightTarget(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;

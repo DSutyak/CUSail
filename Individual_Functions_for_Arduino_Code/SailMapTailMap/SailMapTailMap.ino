@@ -65,55 +65,103 @@ void loop() {
 //  Tail.write(145); //30 degrees
 //  delay(5000);
 
+  Sail.write(sailMapBench(0)); //Sail to 0
+  delay(5000);
+
+  Tail.write(tailMapBench(0, -30));
+  delay(5000);  
+  
+  Tail.write(tailMapBench(0, 0));
+  delay(5000);
+
+  Tail.write(tailMapBench(0, 30));
+  delay(5000);
+
+//  Sail.write(sailMapBench(90)); //Sail to 90
+//  delay(5000);
+//  
+//  Tail.write(tailMapBench(90, 60));
+//  delay(5000);  
+//  
+//  Tail.write(tailMapBench(90, 90));
+//  delay(5000);
+//
+//  Tail.write(tailMapBench(90, 120));
+//  delay(5000);
+//
+//  Sail.write(sailMapBench(180)); //Sail to 180
+//  delay(5000);
+//  
+//  Tail.write(tailMapBench(180, 150));
+//  delay(5000);  
+//  
+//  Tail.write(tailMapBench(180, 180));
+//  delay(5000);
+//
+//  Tail.write(tailMapBench(180, -150));
+//  delay(5000);
+//
+//  Sail.write(sailMapBench(270)); //Sail to 270
+//  delay(5000);
+//
+//  Tail.write(tailMapBench(270, -120));
+//  delay(5000);  
+//  
+//  Tail.write(tailMapBench(270, -90));
+//  delay(5000);
+//
+//  Tail.write(tailMapBench(270, -60));
+//  delay(5000);
+
 /*Tail and Sail full test for wrt sail*/
 
-  Sail.write(sailMap(0)); //Sail to 0
-  delay(5000);
-
-  Tail.write(tailMap(0, -30));
-  delay(5000);  
-  
-  Tail.write(tailMap(0, 0));
-  delay(5000);
-
-  Tail.write(tailMap(0, 30));
-  delay(5000);
-
-  Sail.write(sailMap(90)); //Sail to 90
-  delay(5000);
-  
-  Tail.write(tailMap(90, 60));
-  delay(5000);  
-  
-  Tail.write(tailMap(90, 90));
-  delay(5000);
-
-  Tail.write(tailMap(90, 120));
-  delay(5000);
-
-  Sail.write(sailMap(180)); //Sail to 180
-  delay(5000);
-  
-  Tail.write(tailMap(180, 150));
-  delay(5000);  
-  
-  Tail.write(tailMap(180, 180));
-  delay(5000);
-
-  Tail.write(tailMap(180, -150));
-  delay(5000);
-
-  Sail.write(sailMap(270)); //Sail to 270
-  delay(5000);
-
-  Tail.write(tailMap(270, -120));
-  delay(5000);  
-  
-  Tail.write(tailMap(270, -90));
-  delay(5000);
-
-  Tail.write(tailMap(270, -60));
-  delay(5000);
+//  Sail.write(sailMap(0)); //Sail to 0
+//  delay(5000);
+//
+//  Tail.write(tailMap(0, -30));
+//  delay(5000);  
+//  
+//  Tail.write(tailMap(0, 0));
+//  delay(5000);
+//
+//  Tail.write(tailMap(0, 30));
+//  delay(5000);
+//
+//  Sail.write(sailMap(90)); //Sail to 90
+//  delay(5000);
+//  
+//  Tail.write(tailMap(90, 60));
+//  delay(5000);  
+//  
+//  Tail.write(tailMap(90, 90));
+//  delay(5000);
+//
+//  Tail.write(tailMap(90, 120));
+//  delay(5000);
+//
+//  Sail.write(sailMap(180)); //Sail to 180
+//  delay(5000);
+//  
+//  Tail.write(tailMap(180, 150));
+//  delay(5000);  
+//  
+//  Tail.write(tailMap(180, 180));
+//  delay(5000);
+//
+//  Tail.write(tailMap(180, -150));
+//  delay(5000);
+//
+//  Sail.write(sailMap(270)); //Sail to 270
+//  delay(5000);
+//
+//  Tail.write(tailMap(270, -120));
+//  delay(5000);  
+//  
+//  Tail.write(tailMap(270, -90));
+//  delay(5000);
+//
+//  Tail.write(tailMap(270, -60));
+//  delay(5000);
 
 
 /*Sail-Tail Complex Test*/
@@ -184,5 +232,46 @@ double tailMap(double sailAngle, double tailAngle){
 
   return newTailAngle;
   
+}
+
+double sailMapBench( double sailAngle){
+  double newSailAngle;
+  if (sailAngle <= 90){
+    newSailAngle = map(sailAngle, 0, 90, 72, 78.5);
+  }
+  else if (sailAngle <= 180){
+    newSailAngle = map(sailAngle, 90, 180, 78.5, 84);
+  }
+  else if (sailAngle <= 270){
+    newSailAngle = map(sailAngle, 180, 270, 84, 90);
+  }
+  else{
+   newSailAngle = map(sailAngle, 270, 360, 90, 96);
+  }
+  return newSailAngle;
+}
+
+double tailMapBench( double sailAngle, double tailAngle){
+  if (sailAngle > 180){ //convert sail angle to -180.. 180
+    sailAngle -= 360;
+  }
+
+  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+
+  //make sure tail angle is in range -180.. 180
+  if(newTailAngle<-180){
+    newTailAngle+=360;
+  }
+  else if(newTailAngle>180){
+    newTailAngle-=360;
+  }
+  //map to servo commands
+  if (newTailAngle <= 0 ){
+    newTailAngle=map(newTailAngle,-30,0,69,71);
+  }
+  else if (newTailAngle > 0 ){
+    newTailAngle=map(newTailAngle,0,30,71,73);
+  }
+  return newTailAngle;
 }
 
