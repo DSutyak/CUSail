@@ -10,9 +10,10 @@
 Servo tailServo;
 Servo sailServo;
 
+/*--------------------------------------------*/
+/*----------Pixy Class and Variables----------*/
 // this class allows us to use a vector data structure within Arduino code
 // Take from https://forum.arduino.cc/index.php?topic=45626.0
-
 template<typename Data>
 class Vector {
   size_t d_size; // Stores no. of actually stored objects
@@ -36,6 +37,8 @@ class Vector {
 };
 
 Vector<double> xVals;
+/*--------------------------------------------*/
+
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
@@ -67,6 +70,7 @@ float center_distance(coord_t position){
   float bot= sqrtf(slope*slope + 1);
   return top/bot;
 }
+
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {

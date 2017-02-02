@@ -11,15 +11,7 @@
  Rotary Sensor:  AS5047 by AMS (AS5147 has been tested to work)
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs
-
- Last Updated: 10/20/2016 by Arjan Singh
-
- Authors: Alex Pomerenk, Arjan Singh
-
- Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
-
-#include <SPI.h>
 
 /*------------------------------ Structures ------------------------------*/
 typedef struct date {
@@ -53,7 +45,7 @@ typedef struct dataStructure {
 #define redLED2         44
 #define blueLED         35
 #define yellowLED       36
-#define greenLED        53    // Power LED
+#define greenLED        53 // Power LED
 
 /*--------------------------- Global Variables ---------------------------*/
 extern data_t sensorData; //Defines the boat's state, in type data_t
@@ -89,6 +81,11 @@ double tailMap(double sailAngle, double tailAngle);
 * Precondition: Sail Angle in 0.. 360 w.r.t BOAT*/
 double sailMap(double sailAngle);
 
+
+/*Returns servo command for sail servo for inputted sail angle
+* Precondition: Sail Angle in 0.. 360 w.r.t BOAT. To be used on the testbench*/
 double sailMapBench( double sailAngle);
 
+/*Returns servo command tail servo for inputted sail angle and tail angle
+* Precondition: Sail Angle in 0.. 360, Tail Angle in -180.. 180, w.r.t BOAT. To be used on the testbench */
 double tailMapBench( double sailAngle, double tailAngle);

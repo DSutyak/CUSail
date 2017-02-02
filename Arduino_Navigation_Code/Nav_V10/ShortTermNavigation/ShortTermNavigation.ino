@@ -17,12 +17,6 @@
   6. Go to 1.
 
  Code has been tested and run on an Arduino Due
-
- Last Updated: 10/6/2016 by Arjan Singh
- 
- Authors: Alex Pomerenk, Alec Dean, Arjan Singh, Stephanie Hogan
- 
- Past Contributors: Eric T. J. Jung, Brian Gross, Varun Shanbhag, David Brown
 --------------------------------------------------------------------*/
 
 // Code within setup() runs once on receiving power
