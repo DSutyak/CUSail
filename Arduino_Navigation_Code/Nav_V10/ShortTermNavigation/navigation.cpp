@@ -4,11 +4,38 @@
 #include "sensors.h"
 #include "print.h"
 #include "navigation.h"
+#include "navigation_helper.h"
 
 //Define Servo types for Sail and Tail
 Servo tailServo;
 Servo sailServo;
 
+// this class allows us to use a vector data structure within Arduino code
+// Take from https://forum.arduino.cc/index.php?topic=45626.0
+
+template<typename Data>
+class Vector {
+  size_t d_size; // Stores no. of actually stored objects
+  size_t d_capacity; // Stores allocated capacity
+  Data *d_data; // Stores data
+  public:
+    Vector() : d_size(0), d_capacity(0), d_data(0) {}; // Default constructor
+    Vector(Vector const &other) : d_size(other.d_size), d_capacity(other.d_capacity), d_data(0) { d_data = (Data *)malloc(d_capacity*sizeof(Data));
+        memcpy(d_data, other.d_data, d_size*sizeof(Data)); }; // Copy constuctor
+    ~Vector() { free(d_data); }; // Destructor
+    Vector &operator=(Vector const &other) { free(d_data); d_size = other.d_size; d_capacity = other.d_capacity;
+        d_data = (Data *)malloc(d_capacity*sizeof(Data));
+        memcpy(d_data, other.d_data, d_size*sizeof(Data));
+        return *this; }; // Needed for memory management
+    void push_back(Data const &x) { if (d_capacity == d_size) resize(); d_data[d_size++] = x; }; // Adds new value. If needed, allocates more space
+    size_t size() const { return d_size; }; // Size getter
+    Data const &operator[](size_t idx) const { return d_data[idx]; }; // Const getter
+    Data &operator[](size_t idx) { return d_data[idx]; }; // Changeable getter
+  private:
+    void resize() { d_capacity = d_capacity ? d_capacity*2 : 1; Data *newdata = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(newdata, d_data, d_size * sizeof(Data)); free(d_data); d_data = newdata; };// Allocates double the old space
+};
+
+Vector<double> xVals;
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
@@ -34,14 +61,12 @@ coord_t center_end={10,20};
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
 
-// takes a coordinate and returns the distance from the coordinate to the center line
+/* takes a coordinate and returns the distance from the coordinate to the center line */
 float center_distance(coord_t position){
   float top= fabs(slope*position.longitude+position.latitude+intercept);
   float bot= sqrtf(slope*slope + 1);
   return top/bot;
-
 }
-
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {
@@ -54,6 +79,12 @@ void initServos(void) {
 void initNavigation(void) {
   wpNum = 0;
   numWP = 0;
+}
+
+/*Sets servos to the sailAngle and tailAngle*/
+void nServos(void) {
+  tailServo.write(tailAngle);
+  sailServo.write(sailAngle);
 }
 
 /*----------Stored Coordinates----------*/
@@ -97,48 +128,6 @@ void setWaypoints(void) {
   //Assignmment must be of the type coord_t.
   wayPoints[0] = sundial;
   wayPoints[1] = outsideThurston;
-}
-
-
-/*Returns angle (with respect to North) between two global coordinates.*/
-float angleToTarget(float lat1, float long1, float lat2, float long2){
-  lat1=lat1 * M_PI/180;
-  lat2=lat2 * M_PI/180;
-  float dLong=(long2-long1) * M_PI/180;
-  float y = sin(dLong) * cos(lat2);
-  float x = cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(dLong);
-  float brng = atan2(y, x) * 180/ M_PI;
-  if (brng<0){
-    brng+=360;
-  }
-  return brng;
-}
-
-/*Returns great circle distance (in meters) between two global coordinates.*/
-double havDist(coord_t  first, coord_t second) {
-  double x = first.longitude;
-  double y = first.latitude;
-
-  double x1 = second.longitude;
-  double y1 = second.latitude;
-
-  const double conversion = M_PI / 180;// term to convert from degrees to radians
-  const double r = 6371.0;//radius of earth in km
-  x = x * conversion;// convert x to radians
-  y = y * conversion;// convert y to radians
-  x1 = x1 * conversion;
-  y1 = y1 * conversion;
-
-  double half1 = (y-y1) / 2;
-  double half2 = (x-x1) / 2;
-
-  double part1 = sin(half1) * sin(half1) + cos(y) * cos(y1) * sin(half2) * sin(half2);
-  double part2 = sqrt(part1);
-  double distance = 2 * r * asin(part2);// distance is in km due to units of earth's radius
-
-  distance = (distance*1000);
-
-  return distance;
 }
 
 /*------------------------------------------*/
@@ -196,16 +185,6 @@ float downRight(float b, float w){
 }
 
 /*------------------------------------------*/
-
-// converts an angle to a 0-360 range
-float convertto360(float angle){
-  angle=(float)((int)angle%360);
-  angle=angle+360;
-  angle=(float)((int)angle%360);
-  return angle;
-}
-
-/*----------------------------*/
 
 /*----------------------------------------*/
 /*----------NAVIGATION ALGORITHM----------*/
@@ -513,11 +492,63 @@ void nShort(void) {
 
 }
 
-/*Sets servos to the sailAngle and tailAngle*/
-void nServos(void) {
-  tailServo.write(tailAngle);
-  sailServo.write(sailAngle);
-}
+  // This section of code implements avoidance manuever
+  // if pixy detects an object in the boats path
+ //   getObjects();
+  // int s = xVals.size();
+  // if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
+  //  double initialReading = xVals.get(s-2);
+  //  double recentReading = xVals.get(s-1);
+  //  double courseChange = initialReading - recentReading;
+  //  recentReading = (recentReading / 159.5) - 1.0; // this makes
+  //  // recentReading from -1.0 to 1.0 with 0.0 being center of the frame
+  //  if (Math.abs(courseChange) < 0.1) {
+  //    // we need to make an evasion manuever
+  //    if (recentReading > 0)
+  //      recentReading = 1 - recentReading;// reverse recentReading measure
+  //        // so that closer to 1 = closer to center
+  //    else
+  //      recentReading = -1 - recentReading;
+  //    sailAngle += recentReading * 45;
+  //    tailAngle += recentReading * 45;
+  //  }
+  //  else if (initialReading > recentReading) {
+  //    // make starboard turn
+  //    recentReading = Math.abs(45.0*recentReading);
+  //    sailAngle += recentReading;
+  //    tailAngle += recentReading;
+  //  }
+  //  else {
+  //    // make port side turn
+  //    recentReading = Math.abs(45.0*recentReading);
+  //    sailAngle -= recentReading;
+  //    tailAngle -= recentReading;
+  //  }
+
+  // }
+
+  // //////////
+  // PIXY CAM STUFF TO GO HERE
+  // /////////
+
+  /** Updates xVals vector
+*   Only updates x-position
+*   NOTE: This only detects objects set to
+*   signature 1 on the pixy cam */
+//void getObjects() {
+//    uint16_t blocks = pixy.getBlocks();
+//    if (blocks) {
+//        for (int j = 0; j < blocks, j++) {
+//            if (pixy.blocks[j].signature == 1) {
+//                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
+//                xVals.push_back(xLocation);
+//            }
+//        }
+//    }
+//    else {
+//        xVals.push_back(400.0); // no objects were detected
+//    }
+//}
 
 
 
