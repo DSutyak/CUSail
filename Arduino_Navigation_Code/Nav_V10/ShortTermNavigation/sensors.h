@@ -66,6 +66,10 @@ extern float windDirections[numWindDirReads];
 /*Sensor setup*/
 void initSensors(void);
 
+void lightAllLEDs();
+
+void lowAllLEDs();
+
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void);
 

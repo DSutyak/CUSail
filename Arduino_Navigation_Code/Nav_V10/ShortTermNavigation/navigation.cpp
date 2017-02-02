@@ -2,35 +2,8 @@
 #include <math.h>
 #include <Servo.h>
 #include "sensors.h"
+#include "print.h"
 #include "navigation.h"
-
-
-// this class allows us to use a vector data structure within Arduino code
-// Take from https://forum.arduino.cc/index.php?topic=45626.0
-template<typename Data>
-class Vector {
-  size_t d_size; // Stores no. of actually stored objects
-  size_t d_capacity; // Stores allocated capacity
-  Data *d_data; // Stores data
-  public:
-    Vector() : d_size(0), d_capacity(0), d_data(0) {}; // Default constructor
-    Vector(Vector const &other) : d_size(other.d_size), d_capacity(other.d_capacity), d_data(0) { d_data = (Data *)malloc(d_capacity*sizeof(Data));
-        memcpy(d_data, other.d_data, d_size*sizeof(Data)); }; // Copy constuctor
-    ~Vector() { free(d_data); }; // Destructor
-    Vector &operator=(Vector const &other) { free(d_data); d_size = other.d_size; d_capacity = other.d_capacity;
-        d_data = (Data *)malloc(d_capacity*sizeof(Data));
-        memcpy(d_data, other.d_data, d_size*sizeof(Data));
-        return *this; }; // Needed for memory management
-    void push_back(Data const &x) { if (d_capacity == d_size) resize(); d_data[d_size++] = x; }; // Adds new value. If needed, allocates more space
-    size_t size() const { return d_size; }; // Size getter
-    Data const &operator[](size_t idx) const { return d_data[idx]; }; // Const getter
-    Data &operator[](size_t idx) { return d_data[idx]; }; // Changeable getter
-  private:
-    void resize() { d_capacity = d_capacity ? d_capacity*2 : 1; Data *newdata = (Data *)malloc(d_capacity*sizeof(Data)); memcpy(newdata, d_data, d_size * sizeof(Data)); free(d_data); d_data = newdata; };// Allocates double the old space
-};
-
-/*----------PixyCam Variables----------*/
-Vector<double> xVals;
 
 //Define Servo types for Sail and Tail
 Servo tailServo;
@@ -51,12 +24,6 @@ float tailAngle;
 float angleofattack;
 float optpolartop;
 float optpolarbot;
-//Turning variables
-bool turn = false; //when this turns true, turn
-bool firstIterTurn = false; //true at the first iteration of the turn code
-							//meant to start timing the turn; sets the turn timer
-float turnTime = 15000; //allotted time for turning, in miliseconds
-float turnTimer; //time in miliseconds, at which the boat started turning
 
 /*---------Distance to Center Line------*/
 // latitude is y, longitude is x
@@ -73,6 +40,20 @@ float center_distance(coord_t position){
   float bot= sqrtf(slope*slope + 1);
   return top/bot;
 
+}
+
+/*Servo setup
+* "Attaches" servos to defined pins*/
+void initServos(void) {
+  tailServo.attach(tailServoPin);
+  sailServo.attach(sailServoPin);
+}
+
+/*Navigation algorithm setup.
+* Sets curretn waypoint number and total number of waypoints to 0*/
+void initNavigation(void) {
+  wpNum = 0;
+  numWP = 0;
 }
 
 /*----------Stored Coordinates----------*/
@@ -103,19 +84,6 @@ coord_t across_low_dock= {42.468887, -76.504546}; //Across the lake from the low
 coord_t across_low_dock_test= {42.468923, -76.503655}; //Across the lake from the low dock, halfway to the main point
 coord_t low_dock={42.468951,-76.502941}; //Right at the lower dock
 coord_t high_dock={42.469552,-76.503353}; //High dock launch point
-/*Servo setup
-* "Attaches" servos to defined pins*/
-void initServos(void) {
-  tailServo.attach(tailServoPin);
-  sailServo.attach(sailServoPin);
-}
-
-/*Navigation algorithm setup.
-* Sets curretn waypoint number and total number of waypoints to 0*/
-void initNavigation(void) {
-  wpNum = 0;
-  numWP = 0;
-}
 
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
@@ -229,111 +197,6 @@ float downRight(float b, float w){
 
 /*------------------------------------------*/
 
-/*-------------------------------*/
-/*----------LED control----------*/
-/*-------------------------------*/
-
-void lightAllLEDs(){
-  digitalWrite(redLED1, HIGH);
-  digitalWrite(redLED2, HIGH);
-  digitalWrite(yellowLED, HIGH);
-  digitalWrite(blueLED, HIGH);
-  digitalWrite(greenLED, HIGH);
-}
-
-void lowAllLEDs(){
-  digitalWrite(redLED1, LOW);
-  digitalWrite(redLED2, LOW);
-  digitalWrite(yellowLED, LOW);
-  digitalWrite(blueLED, LOW);
-  digitalWrite(greenLED, HIGH);
-}
-
-/*-------------------------------*/
-
-/*----------------------------*/
-/*----------Printers----------*/
-/*----------------------------*/
-
-void printLocationData(){
-  Serial1.print("Latitude: "); Serial1.println(sensorData.lati);
-  Serial1.print("Longitude: "); Serial1.println(sensorData.longi);
-}
-
-void printWaypointData(){
-  Serial.println("----------NAVIGATION----------");
-  Serial1.println("----------NAVIGATION----------");
-  Serial.print("Next Waypoint #");
-  Serial.print(wpNum);
-  Serial.print(": ");
-  Serial.print(wayPoints[wpNum].latitude);
-  Serial.print(", ");
-  Serial.println(wayPoints[wpNum].longitude);
-  Serial.print("Distance to waypoint: ");Serial.println(normr);
-  Serial.print("Detection Radius: ");Serial.println(detectionradius);
-
-  Serial1.print("Next Waypoint #");
-  Serial1.print(wpNum);
-  Serial1.print(": ");
-  Serial1.print(wayPoints[wpNum].latitude);
-  Serial1.print(", ");
-  Serial1.println(wayPoints[wpNum].longitude);
-  Serial1.print("Distance to waypoint: ");Serial1.println(normr);
-  Serial1.print("Detection Radius: ");Serial1.println(detectionradius);
-}
-
-void printHitWaypointData(){
-  Serial.println("\n\n\n----------\nREACHED WAYPOINT\n----------\n\n\n\nReached waypoint #: \n");
-  Serial.print(": ");
-  Serial.print(wayPoints[wpNum].latitude);
-  Serial.print(", ");
-  Serial.println(wayPoints[wpNum].longitude);
-
-  Serial1.println("");
-  Serial1.println("");
-  Serial1.println("");
-  Serial1.println("----------");
-  Serial1.println("REACHED WAYPOINT");
-  Serial1.println("----------");
-  Serial1.println("");
-  Serial1.println("");
-  Serial1.println("");
-
-  Serial1.println("Reached waypoint #");
-  Serial1.print(wpNum);
-  Serial1.print(": ");
-  Serial1.print(wayPoints[wpNum].latitude);
-  Serial1.print(", ");
-  Serial1.println(wayPoints[wpNum].longitude);
-}
-
-void printSailTailSet(){
-  Serial.print("Sail angle (0 to 360) w.r.t North: ");   Serial.println(sailAngle);
-  Serial.print("Tail angle (0 to 360) w.r.t North: ");   Serial.println(tailAngle);
-  Serial1.print("Sail angle (0 to 360) w.r.t North: ");   Serial1.println(sailAngle);
-  Serial1.print("Tail angle (0 to 360) w.r.t North: ");   Serial1.println(tailAngle);
-
-  //Print boat and wind direction to make sure data is consistent at this point
-  Serial.print("sensorData.boatDir: ");   Serial.println(sensorData.boatDir);
-  Serial.print("sensorData.windDir: ");   Serial.println(sensorData.windDir);
-  Serial1.print("sensorData.boatDir: ");   Serial1.println(sensorData.boatDir);
-  Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
-}
-
-void printServoSailTail(){
-  Serial.print("Sail angle (Servo Command): ");   Serial.println(sailAngle);
-  Serial.print("Tail angle (Servo Command): ");   Serial.println(tailAngle);
-  Serial1.print("Sail angle (Servo Command): ");   Serial1.println(sailAngle);
-  Serial1.print("Tail angle (Servo Command): ");   Serial1.println(tailAngle);
-
-  Serial.println("");
-  Serial1.println("");
-  Serial.println("--------------------");
-  Serial1.println("--------------------");
-  Serial.println("");
-  Serial1.println("");
-}
-
 // converts an angle to a 0-360 range
 float convertto360(float angle){
   angle=(float)((int)angle%360);
@@ -381,29 +244,15 @@ void nShort(void) {
   optpolartop= 45;
   optpolarbot= 40;
 
-  //Runs for number of miliseconds defined by turnTime after a waypoint is hit
-  // if (turn) {
-  // 	if (firstIterTurn) {
-  // 		turnTimer = millis();
-  // 		firstIterTurn = false;
-  // 	}
-  // 	if ( (millis() - turnTimer) > turnTime) {
-  // 		turn = false;
-  // 		firstIterTurn = false;
-  // 	}
-  // 	else {
-  // 		float newBoatDirection = angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
-  // 		sensorData.boatDir = newBoatDirection;
-  // 	}
-  // }
-
   printWaypointData();
 
   //Reached waypoint!
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
     printHitWaypointData();
-    // turn = true;
-    // firstIterTurn = true;
+    lightAllLEDs();
+    //delay for 3 seconds
+    delay(3000);
+    lowAllLEDs();
     wpNum += 1 ;
 
     //reset variables because we have reached the old waypoint
@@ -636,48 +485,6 @@ void nShort(void) {
   sailAngle=sailAngle+360;
   sailAngle=(float)((int)sailAngle%360);
 
-
-  // This section of code implements avoidance manuever
-  // if pixy detects an object in the boats path
- //  	getObjects();
-	// int s = xVals.size();
-	// if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
-	// 	double initialReading = xVals.get(s-2);
-	// 	double recentReading = xVals.get(s-1);
-	// 	double courseChange = initialReading - recentReading;
-	// 	recentReading = (recentReading / 159.5) - 1.0; // this makes
-	// 	// recentReading from -1.0 to 1.0 with 0.0 being center of the frame
-	// 	if (Math.abs(courseChange) < 0.1) {
-	// 		// we need to make an evasion manuever
-	// 		if (recentReading > 0)
-	// 			recentReading = 1 - recentReading;// reverse recentReading measure
-	// 				// so that closer to 1 = closer to center
-	// 		else
-	// 			recentReading = -1 - recentReading;
-	// 		sailAngle += recentReading * 45;
-	// 		tailAngle += recentReading * 45;
-	// 	}
-	// 	else if (initialReading > recentReading) {
-	// 		// make starboard turn
-	// 		recentReading = Math.abs(45.0*recentReading);
-	// 		sailAngle += recentReading;
-	// 		tailAngle += recentReading;
-	// 	}
-	// 	else {
-	// 		// make port side turn
-	// 		recentReading = Math.abs(45.0*recentReading);
-	// 		sailAngle -= recentReading;
-	// 		tailAngle -= recentReading;
-	// 	}
-
-	// }
-
-  // //////////
-  // PIXY CAM STUFF TO GO HERE
-  // /////////
-
-
-
   printSailTailSet();
 
   //Convert sail and tail from wrt north to wrt boat
@@ -713,21 +520,4 @@ void nServos(void) {
 }
 
 
-/** Updates xVals vector
-*   Only updates x-position
-*   NOTE: This only detects objects set to
-*   signature 1 on the pixy cam */
-//void getObjects() {
-//    uint16_t blocks = pixy.getBlocks();
-//    if (blocks) {
-//        for (int j = 0; j < blocks, j++) {
-//            if (pixy.blocks[j].signature == 1) {
-//                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
-//                xVals.push_back(xLocation);
-//            }
-//        }
-//    }
-//    else {
-//        xVals.push_back(400.0); // no objects were detected
-//    }
-//}
+

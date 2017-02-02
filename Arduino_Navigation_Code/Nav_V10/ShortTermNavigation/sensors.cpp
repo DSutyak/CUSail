@@ -5,7 +5,6 @@ TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
 float windDirections[numWindDirReads];
-float prevWindDirection = 270;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -15,6 +14,7 @@ union u_types {
 
 int boatDirArrayNum = 0; // ints helping in replacing array elements
 int windDirArrayNum = 0;
+float prevWindDirection;
 
 /*Transfers commands through SPI*/
 byte transferByte(byte byteToWrite) {
@@ -158,6 +158,26 @@ void initSensors(void) {
   //Initialize SPI
   SPI.begin();
 }
+
+/*----------LED control----------*/
+
+void lightAllLEDs(){
+  digitalWrite(redLED1, HIGH);
+  digitalWrite(redLED2, HIGH);
+  digitalWrite(yellowLED, HIGH);
+  digitalWrite(blueLED, HIGH);
+  digitalWrite(greenLED, HIGH);
+}
+
+void lowAllLEDs(){
+  digitalWrite(redLED1, LOW);
+  digitalWrite(redLED2, LOW);
+  digitalWrite(yellowLED, LOW);
+  digitalWrite(blueLED, LOW);
+  digitalWrite(greenLED, HIGH);
+}
+
+/*-------------------------------*/
 
 float dirAverage(int numToAverage, float arrayToAverage[]) {
     float sum = 0;
