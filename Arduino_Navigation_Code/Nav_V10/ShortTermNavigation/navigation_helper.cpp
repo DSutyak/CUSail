@@ -2,6 +2,62 @@
 #include <math.h>
 #include "navigation.h"
 
+/*------------------------------------------*/
+/*----------Tailvane-angle setters----------*/
+/*------------------------------------------*/
+
+// orientation is 1 for right and 0 for left
+// right is negative offset, left is positive
+// never go upright when facing left
+// facing right, angle is above in the sector: w-offset
+//   w-(|w+opttop - boatdir|)
+float upRight(float b, float w) {
+  float offset = fabsf(w+optPolarTop-b);
+  tailAngle=w-offset;
+  // sailAngle=tailAngle+angleofattack;
+  return tailAngle;
+}
+
+float rightTarget(float b, float w){
+  // sailAngle=sensorData.windDir+angleofattack;
+  tailAngle=w;
+  return tailAngle;
+}
+
+float leftTarget(float b, float w){
+  // sailAngle=sensorData.windDir-angleofattack;
+  tailAngle=w;
+  return tailAngle;
+}
+
+// facing left, angle is above in the sector: w+offset
+//   w+(|w-opttop-boatdir|)
+float upLeft(float b, float w){
+  float offset = fabsf(w-optPolarTop-b);
+  tailAngle=w+offset;
+  return tailAngle;
+  // sailAngle=tailAngle-angleofattack;
+}
+
+// facing left, angle is below in the sector: w+offset
+//   w+(|w+180-optboat-boatdir|)
+float downLeft(float b, float w){
+  float offset = fabsf(w+180-optPolarBot-b);
+  tailAngle=w+offset;
+  return tailAngle;
+  // sailAngle=tailAngle-angleofattack;
+}
+// facing right, angle is below in the sector: w-offset
+//   w-(|w+180+optbot-boatdir|)
+float downRight(float b, float w){
+  float offset = fabsf(w+180+optPolarBot-b);
+  tailAngle=w-offset;
+  return tailAngle;
+  // sailAngle=tailAngle+angleofattack;
+}
+
+/*------------------------------------------*/
+
 /*Returns angle (with respect to North) between two global coordinates.*/
 float angleToTarget(float lat1, float long1, float lat2, float long2){
   lat1=lat1 * M_PI/180;

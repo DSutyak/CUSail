@@ -42,7 +42,10 @@ Vector<double> xVals;
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = 10; //how far away the boat marks a waypoint "reached"
+float detectionradius = detectionRadius; //how far away the boat marks a waypoint "reached"
+float optpolartop = optPolarTop;
+float optpolarbot = optPolarBot;
+float angleofattack = angleOfAttack;
 coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
@@ -51,9 +54,6 @@ float w[2]; //w[0]: Cosine of the wind direction w.r.t North,
             //w[1]: Sine of the wind direction w.r.t North
 float sailAngle;
 float tailAngle;
-float angleofattack;
-float optpolartop;
-float optpolarbot;
 
 /*---------Distance to Center Line------*/
 // latitude is y, longitude is x
@@ -134,62 +134,6 @@ void setWaypoints(void) {
   wayPoints[1] = outsideThurston;
 }
 
-/*------------------------------------------*/
-/*----------Tailvane-angle setters----------*/
-/*------------------------------------------*/
-
-// orientation is 1 for right and 0 for left
-// right is negative offset, left is positive
-// never go upright when facing left
-// facing right, angle is above in the sector: w-offset
-//   w-(|w+opttop - boatdir|)
-float upRight(float b, float w) {
-  float offset = fabsf(w+optpolartop-b);
-  tailAngle=w-offset;
-  // sailAngle=tailAngle+angleofattack;
-  return tailAngle;
-}
-
-float rightTarget(float b, float w){
-	// sailAngle=sensorData.windDir+angleofattack;
-	tailAngle=w;
-  return tailAngle;
-}
-
-float leftTarget(float b, float w){
-  // sailAngle=sensorData.windDir-angleofattack;
-  tailAngle=w;
-  return tailAngle;
-}
-
-// facing left, angle is above in the sector: w+offset
-//   w+(|w-opttop-boatdir|)
-float upLeft(float b, float w){
-  float offset = fabsf(w-optpolartop-b);
-  tailAngle=w+offset;
-  return tailAngle;
-  // sailAngle=tailAngle-angleofattack;
-}
-
-// facing left, angle is below in the sector: w+offset
-//   w+(|w+180-optboat-boatdir|)
-float downLeft(float b, float w){
-  float offset = fabsf(w+180-optpolarbot-b);
-  tailAngle=w+offset;
-  return tailAngle;
-  // sailAngle=tailAngle-angleofattack;
-}
-// facing right, angle is below in the sector: w-offset
-//   w-(|w+180+optbot-boatdir|)
-float downRight(float b, float w){
-  float offset = fabsf(w+180+optpolarbot-b);
-  tailAngle=w-offset;
-  return tailAngle;
-  // sailAngle=tailAngle+angleofattack;
-}
-
-/*------------------------------------------*/
-
 /*----------------------------------------*/
 /*----------NAVIGATION ALGORITHM----------*/
 /*----------------------------------------*/
@@ -219,17 +163,9 @@ void nShort(void) {
   //Dummy normal distance
   float oldnormr=1000;
 
-  angleofattack = 15;
-
-  //Optimal angle to go at if we cannot go directly to the waypoint
-  //Puts us on a tack or jibe
-  //Different values for top and bottom of polar plot
-  optpolartop= 45;
-  optpolarbot= 40;
-
   printWaypointData();
 
-  //Reached waypoint!
+  //-----------Reached waypoint!----------//
   if((normr < detectionradius) && ((wpNum + 1) < numWP)){
     printHitWaypointData();
     lightAllLEDs();
@@ -243,18 +179,10 @@ void nShort(void) {
     r[1] = wayPoints[wpNum].latitude - sensorData.lati;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_t currentPosition = {sensorData.lati, sensorData.longi};
+    currentPosition = {sensorData.lati, sensorData.longi};
     normr = havDist(wayPoints[wpNum], currentPosition);
-
-        //Reset all stored boat directions to 0
-    for (int i=0; i<numBoatDirReads; i++){
-      boatDirections[i] = 0;
-    }
-
-    lightAllLEDs();
-
-
   }
+  //-------------------------------------//
 
   lowAllLEDs();
 
