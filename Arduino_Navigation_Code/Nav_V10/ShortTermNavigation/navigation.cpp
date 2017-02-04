@@ -166,82 +166,93 @@ void nShort(void) {
   printWaypointData();
 
   //-----------Reached waypoint!----------//
-  if((normr < detectionradius) && ((wpNum + 1) < numWP)){
-    printHitWaypointData();
-    lightAllLEDs();
-    //delay for 3 seconds
-    delay(3000);
-    lowAllLEDs();
-    wpNum += 1 ;
-
-    //reset variables because we have reached the old waypoint
-    r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-    r[1] = wayPoints[wpNum].latitude - sensorData.lati;
-    w[0] = cos((sensorData.windDir)*(PI/180.0));
-    w[1] = sin((sensorData.windDir)*(PI/180.0));
-    currentPosition = {sensorData.lati, sensorData.longi};
-    normr = havDist(wayPoints[wpNum], currentPosition);
-  }
-  //-------------------------------------//
-
-  lowAllLEDs();
-
-  //dir is the direction to the next waypoint from the boat
-  //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
-  // float anglewaypoint=atan2(r[0],r[1])*360/(2*PI);
-// float angleToTarget(float lat1, float long1, float lat2, float long2){
-// instead of taking the raw location data, use haversine to get the angle to the waypoint
-  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
-  anglewaypoint=convertto360(anglewaypoint);
-
-  float dirangle=anglewaypoint-sensorData.windDir;
-  dirangle=convertto360(dirangle);
 
   bool buoy_rounding=true;
 
-  // if we are rounding a buoy and there is a next buoy to head to, do the buoy rounding code
-  if(buoy_rounding && ((wpNum + 1) < numWP)){
-    coord_t b={sensorData.lati,sensorData.longi};
-    coord_t wp1=wayPoints[wpNum];
-    coord_t wp2=wayPoints[wpNum+1];
+  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+  anglewaypoint=convertto360(anglewaypoint);
 
-    // get the rotation of a waypoint to be clockwise or not
-    bool clockwise=true;
 
-    // determining rounding angle
-    float buoy_angle=angleToTarget(wp1.lati,wp1.longi, wp2.lati,wp2.longi);
-    float rounding_angle= -180+(anglewaypoint-buoy_angle);
-    // ccw need ccw angle
-    // if(clockwise){
-    //   rounding_angle=360-rounding_angle;
-    // }
-    rounding_angle=convertto360(rounding_angle);
+  // heading directly to the waypoint
+  if (!buoy_rounding && ((wpNum + 1) < numWP)){
+    if(normr < detectionradius){
+      printHitWaypointData();
+      lightAllLEDs();
+      //delay for 3 seconds
+      delay(3000);
+      lowAllLEDs();
+      wpNum += 1 ;
 
-    // determining perpindicular distance
-    // pd is the perpindicular distance from the line through b and wp2, to wp1
-    float angle_buoy2=angleToTarget(b.lati,b.longi,wp2.lati,wp2.longi);
-    float wp0_b_wp1_angle=anglewaypoint+angle_buoy2;
-    float pd=normr*sin(180-(wp0_b_wp1_angle+90));
+      //reset variables because we have reached the old waypoint
+      r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+      r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+      w[0] = cos((sensorData.windDir)*(PI/180.0));
+      w[1] = sin((sensorData.windDir)*(PI/180.0));
+      currentPosition = {sensorData.lati, sensorData.longi};
+      normr = havDist(wayPoints[wpNum], currentPosition);
+    }
+  }
+  // buoy rounding
+  else if ((wpNum + 1) < numWP) {
 
-    // if we still need to round, or have rounded and are not outside the detectionradius
-    if(rounding_angle>180 || (a<180) && pd-detectionradius)){
-      float angle_to_new=atan(detectionradius, normr);
-      // ccw then add, cw subtract
-      // if counterclockwise, add the angle to the temporary waypoint
-      if(clockwise){
-        anglewaypoint+=angle_to_new;
+    // if we are rounding a buoy and there is a next buoy to head to, do the buoy rounding code
+    if(buoy_rounding && ((wpNum + 1) < numWP)){
+      coord_t b={sensorData.lati,sensorData.longi};
+      coord_t wp1=wayPoints[wpNum];
+      coord_t wp2=wayPoints[wpNum+1];
+
+      // get the rotation of a waypoint to be clockwise or not
+      bool clockwise=true;
+
+      // determining rounding angle
+      float buoy_angle=angleToTarget(wp1.latitude,wp1.longitude, wp2.latitude,wp2.longitude);
+      float rounding_angle= -180+(anglewaypoint-buoy_angle);
+      // ccw need ccw angle
+      // if(clockwise){
+      //   rounding_angle=360-rounding_angle;
+      // }
+      rounding_angle=convertto360(rounding_angle);
+
+      // determining perpindicular distance
+      // pd is the perpindicular distance from the line through b and wp2, to wp1
+      float angle_buoy2=angleToTarget(b.latitude,b.longitude,wp2.latitude,wp2.longitude);
+      float wp0_b_wp1_angle=anglewaypoint+angle_buoy2;
+      float pd=normr*sin(180-(wp0_b_wp1_angle+90));
+
+      // if we still need to round, or have rounded and are not outside the detectionradius
+      if(rounding_angle>180 || (rounding_angle<180 && pd<detectionradius)){
+        float angle_to_new=atan2(detectionradius, normr);
+        // ccw then add, cw subtract
+        // if counterclockwise, add the angle to the temporary waypoint
+        if(clockwise){
+          anglewaypoint+=angle_to_new;
+        }
+        // if cw then subtract
+        else{
+          anglewaypoint-=angle_to_new;
+        }
       }
-      // if cw then subtract
+      // hit a waypoint
       else{
-        anglewaypoint-=angle_to_new;
+        printHitWaypointData();
+        lightAllLEDs();
+        //delay for 3 seconds
+        delay(3000);
+        lowAllLEDs();
+        wpNum += 1 ;
+        // on the initial rounding of a buoy, just head to the next waypoint
+        anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
       }
-
     }
   }
   // we have hit the last waypoint, start doing station keeping
   else {
 
   }
+  anglewaypoint=convertto360(anglewaypoint);
+
+  float dirangle=anglewaypoint-sensorData.windDir;
+  dirangle=convertto360(dirangle);
 
   float boatDirection = sensorData.boatDir;
 //  boatDirection=360-(boatDirection-90);

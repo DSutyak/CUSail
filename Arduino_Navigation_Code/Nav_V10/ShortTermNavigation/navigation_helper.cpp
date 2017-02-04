@@ -56,6 +56,30 @@ float downRight(float b, float w){
   // sailAngle=tailAngle+angleofattack;
 }
 
+// float* buoyRounding(coord_t b, coord_t wp1, coord_t wp2, float initial_anglewaypoint, float normr){
+
+//   float anglewaypoint=initial_anglewaypoint;
+//   // get the rotation of a waypoint to be clockwise or not
+//   bool clockwise=true;
+
+//   // determining rounding angle
+//   float buoy_angle=angleToTarget(wp1.lati,wp1.longi, wp2.lati,wp2.longi);
+//   float rounding_angle= -180+(anglewaypoint-buoy_angle);
+//   // ccw need ccw angle
+//   // if(clockwise){
+//   //   rounding_angle=360-rounding_angle;
+//   // }
+//   rounding_angle=convertto360(rounding_angle);
+
+//   // determining perpindicular distance
+//   // pd is the perpindicular distance from the line through b and wp2, to wp1
+//   float angle_buoy2=angleToTarget(b.lati,b.longi,wp2.lati,wp2.longi);
+//   float wp0_b_wp1_angle=anglewaypoint+angle_buoy2;
+//   float pd=normr*sin(180-(wp0_b_wp1_angle+90));
+
+//   return float[2]={rounding_angle,pd};
+// }
+
 /*------------------------------------------*/
 
 /*Returns angle (with respect to North) between two global coordinates.*/

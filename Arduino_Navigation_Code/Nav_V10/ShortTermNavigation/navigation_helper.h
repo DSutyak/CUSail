@@ -34,3 +34,5 @@ float downLeft(float b, float w);
 float downRight(float b, float w);
 
 /*------------------------------------------*/
+
+// float* buoyRounding(coord_t b, coord_t wp1, coord_t wp2, float initial_anglewaypoint, float normr);
