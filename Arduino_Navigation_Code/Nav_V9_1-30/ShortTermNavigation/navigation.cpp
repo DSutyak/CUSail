@@ -3,6 +3,8 @@
 #include <Servo.h>
 #include "sensors.h"
 #include "navigation.h"
+#include <PixyI2C.h>
+
 
 
 // this class allows us to use a vector data structure within Arduino code
@@ -31,6 +33,7 @@ class Vector {
 
 /*----------PixyCam Variables----------*/
 Vector<double> xVals;
+PixyI2C pixy;
 
 //Define Servo types for Sail and Tail
 Servo tailServo;
@@ -641,9 +644,9 @@ void nShort(void) {
   // if pixy detects an object in the boats path
  //  	getObjects();
 	// int s = xVals.size();
-	// if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
-	// 	double initialReading = xVals.get(s-2);
-	// 	double recentReading = xVals.get(s-1);
+	// if (s > 1 && xVals[s-1] != 400.0 && xVals[s-2] != 400.0) {
+	// 	double initialReading = xVals[s-2];
+	// 	double recentReading = xVals[s-1];
 	// 	double courseChange = initialReading - recentReading;
 	// 	recentReading = (recentReading / 159.5) - 1.0; // this makes
 	// 	// recentReading from -1.0 to 1.0 with 0.0 being center of the frame
