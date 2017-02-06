@@ -1,6 +1,12 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
+#include <PixyI2C.h>
+
+/** Pixy variable **/
+PixyI2C pixy;
+
+
 TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
@@ -154,6 +160,9 @@ void initSensors(void) {
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
   digitalWrite(IMU_CSN, HIGH);
+  
+  //initialize pixy
+  pixy.init();
 
   //Initialize SPI
   SPI.begin();
