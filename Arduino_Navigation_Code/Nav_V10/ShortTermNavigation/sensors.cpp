@@ -3,8 +3,6 @@
 #include "TinyGPS++.h"
 TinyGPSPlus gps;
 data_t sensorData;
-float boatDirections[numBoatDirReads];
-float windDirections[numWindDirReads];
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -12,9 +10,9 @@ union u_types {
     float fval;
 } imu_data[3];  // Create 3 unions, one for each euler angle
 
-int boatDirArrayNum = 0; // ints helping in replacing array elements
-int windDirArrayNum = 0;
-float prevWindDirection;
+
+float prevWindDirection = 0;
+float angleCorrection = -121;
 
 /*Transfers commands through SPI*/
 byte transferByte(byte byteToWrite) {
@@ -209,17 +207,20 @@ void sRSensor(void) {
   angle = (angle & (0x3FFF));
 
   //convert to a 360 degree scale
-  int pos = ( (unsigned long) angle)*360UL/16384UL;
+  int reading = ( (unsigned long) angle)*360UL/16384UL;
+  reading += angleCorrection;
+  reading = (reading<0)?(reading+360):reading;
 
   //get angle with respect to North
-  int wind_wrtN = ((int)(pos + sensorData.boatDir))%360;
+  float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
 
-  //---filter wind---
-  float newSinWind = ( (sin(prevWindDirection) + (1/16)*sin(wind_wrtN)) / (1+ (1/16)) );
-  float newCosWind = ( (cos(prevWindDirection) + (1/16)*cos(wind_wrtN)) / (1+ (1/16)) );
-  float newWind = atan2(newSinWind, newCosWind);
-  //------
-  sensorData.windDir = newWind;
+  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading*PI/180)) / (1.125) );
+  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading*PI/180)) / (1.125) );
+  wind_wrtN = atan2(newSinWind, newCosWind);
+  wind_wrtN *= 180/PI;
+  wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
+
+  sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
 
 }
@@ -285,11 +286,8 @@ void sIMU(void) {
   if (boatDir < 0) {
     boatDir += 360;
   }
-
-  boatDirections[boatDirArrayNum%numBoatDirReads] = boatDir;
-  boatDirArrayNum += 1;
-  float averageBoatDirection = dirAverage(numBoatDirReads, boatDirections);
-  sensorData.boatDir = boatDir; //Not using average right now
+  
+  sensorData.boatDir = boatDir;
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
