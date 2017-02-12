@@ -3,6 +3,7 @@
 #include <Servo.h>
 #include "sensors.h"
 #include "navigation.h"
+#include <Pixy.h>
 
 
 // this class allows us to use a vector data structure within Arduino code
@@ -31,6 +32,8 @@ class Vector {
 
 /*----------PixyCam Variables----------*/
 Vector<double> xVals;
+Pixy pixy;
+//pixy.init();
 
 //Define Servo types for Sail and Tail
 Servo tailServo;
@@ -127,8 +130,8 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = thurstonWestEntrance;
-  wayPoints[1] = bottomStairs;
+  wayPoints[0] = sundial;
+  wayPoints[1] = outsideThurston;
 }
 
 
@@ -334,6 +337,14 @@ void printServoSailTail(){
   Serial1.println("");
 }
 
+// converts an angle to a 0-360 range
+float convertto360(float angle){
+  angle=(float)((int)angle%360);
+  angle=angle+360;
+  angle=(float)((int)angle%360);
+  return angle;
+}
+
 /*----------------------------*/
 
 /*----------------------------------------*/
@@ -351,7 +362,7 @@ void nShort(void) {
   //sensorData.lati=outsideThurston.latitude;
   //sensorData.longi=outsideThurston.longitude;
   //sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 0;
   //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
@@ -421,36 +432,22 @@ void nShort(void) {
   //dir is the direction to the next waypoint from the boat
   //because we want the angle from the y axis (from the north), we take atan of adjacent over oppoosite
   float anglewaypoint=atan2(r[0],r[1])*360/(2*PI);
-  //converts to 0-360
-  anglewaypoint=(float)((int)anglewaypoint%360);
-  anglewaypoint=anglewaypoint+360;
-  anglewaypoint=(float)((int)anglewaypoint%360);
+  anglewaypoint=convertto360(anglewaypoint);
 
   float dirangle=anglewaypoint-sensorData.windDir;
-  //converts to 0-360
-  dirangle=(float)((int)dirangle%360);
-  dirangle=dirangle+360;
-  dirangle=(float)((int)dirangle%360);
+  dirangle=convertto360(dirangle);
 
   float boatDirection = sensorData.boatDir;
-
-
 //  boatDirection=360-(boatDirection-90);
-  boatDirection=(float)((int)boatDirection%360);
-  boatDirection=boatDirection+360;
-  boatDirection=(float)((int)boatDirection%360);
-  int side;
+  boatDirection=convertto360(boatDirection);
 
   // Wind w.r.t the boat
   float windboat;
   windboat=sensorData.windDir-boatDirection;
 
-
   float boat_wrt_wind=boatDirection-sensorData.windDir;
 //  boat_wrt_wind=360-(boat_wrt_wind-90);
-  boat_wrt_wind=(float)((int)boat_wrt_wind%360);
-  boat_wrt_wind=boat_wrt_wind+360;
-  boat_wrt_wind=(float)((int)boat_wrt_wind%360);
+  boat_wrt_wind=convertto360(boat_wrt_wind);
 
   float windDir=sensorData.windDir;
 
@@ -500,6 +497,7 @@ void nShort(void) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
       Serial1.println("FACING RIGHT UP RIGHT");
+      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
       // tailAngle=upRight(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=windDir+optpolartop;
@@ -508,6 +506,7 @@ void nShort(void) {
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
       Serial1.println("FACING RIGHT DIRECT RIGHT");
+      Serial1.println("\n\nIntended Sector: DIRECT RIGHT\n\n");
       // tailAngle=rightTarget(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;
@@ -516,9 +515,11 @@ void nShort(void) {
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
       Serial1.println("FACING RIGHT DIRECT LEFT");
+      Serial1.println("\n\nIntended Sector: _________TURN LEFT\n\n");
 
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
+      delay(5000);
       // tailAngle=leftTarget(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
@@ -527,6 +528,7 @@ void nShort(void) {
     //Up left
     else if (dirangle>360-optpolartop){
       Serial1.println("FACING RIGHT UP LEFT");
+      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
       // tailAngle=upRight(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=windDir+optpolartop;
@@ -535,6 +537,7 @@ void nShort(void) {
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
       Serial1.println("FACING RIGHT BOTTOM LEFT");
+      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
       // tailAngle=downRight(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=windDir+180-optpolarbot;
@@ -543,6 +546,7 @@ void nShort(void) {
     //bottom right
     else {
       Serial1.println("FACING RIGHT BOTTOM RIGHT");
+      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
       // tailAngle=downRight(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=windDir+180-optpolarbot;
@@ -554,6 +558,7 @@ void nShort(void) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
       Serial1.println("FACING LEFT UP RIGHT");
+      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
       // tailAngle=upLeft(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=windDir-optpolartop;
@@ -562,7 +567,9 @@ void nShort(void) {
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
       Serial1.println("FACING LEFT DIRECT RIGHT");
+      Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
+      delay(5000);
       // tailAngle=rightTarget(boatDirection,windDir);
       // sailAngle=tailAngle+15;
       intended_angle=anglewaypoint;
@@ -571,6 +578,7 @@ void nShort(void) {
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
       Serial1.println("FACING LEFT DIRECT LEFT");
+      Serial1.println("\n\nIntended Sector: DIRECT LEFT\n\n");
       // tailAngle=leftTarget(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=anglewaypoint;
@@ -579,6 +587,7 @@ void nShort(void) {
     //Up left
     else if (dirangle>360-optpolartop){
       Serial1.println("FACING LEFT UP LEFT");
+      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
       // tailAngle=upLeft(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=windDir-optpolartop;
@@ -587,6 +596,7 @@ void nShort(void) {
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
       Serial1.println("FACING LEFT BOTTOM LEFT");
+      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
       // tailAngle=downLeft(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=windDir+180+optpolarbot;
@@ -595,6 +605,7 @@ void nShort(void) {
     //bottom right
     else {
       Serial1.println("FACING LEFT BOTTOM RIGHT");
+      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
       // tailAngle=downLeft(boatDirection,windDir);
       // sailAngle=tailAngle-15;
       intended_angle=windDir+180+optpolarbot;
@@ -604,14 +615,19 @@ void nShort(void) {
 
   // ATTEMPT TO USE INTENDED ANGLE
   float offset=boatDirection-intended_angle;
-   Serial1.print("Intended angle: ");
-   Serial1.println(intended_angle);
-  // Serial.print("Intended angle: ");
-  // Serial.println(intended_angle);
-   Serial1.print("Offset: ");
-   Serial1.println(offset);
-  // Serial.print("Offset: ");
-  // Serial.println(offset);
+  Serial1.print("Intended angle: ");
+  Serial1.println(intended_angle);
+  Serial.print("Intended angle: ");
+  Serial.println(intended_angle);
+  Serial1.print("Offset from intended angle: ");
+  Serial1.println(offset);
+  Serial.print("Offset: ");
+  Serial.println(offset);
+
+  // use the offset (a positive or negative angle that shows the amount that we
+  // are facing away from the intended angle) and wind direction to set the sail
+  // then offset the sail to the left or right WRT the tail to give it an angle
+  // of attack
   tailAngle=windDir+offset;
   sailAngle=tailAngle+intended_angle_of_attack;
 
@@ -626,36 +642,37 @@ void nShort(void) {
 
   // This section of code implements avoidance manuever
   // if pixy detects an object in the boats path
- //   getObjects();
-  // int s = xVals.size();
-  // if (s > 1 && xVals.get(s-1) != 400.0 && xVals.get(s-2) != 400.0) {
-  //  double initialReading = xVals.get(s-2);
-  //  double recentReading = xVals.get(s-1);
-  //  double courseChange = initialReading - recentReading;
-  //  recentReading = (recentReading / 159.5) - 1.0; // this makes
-  //  // recentReading from -1.0 to 1.0 with 0.0 being center of the frame
-  //  if (Math.abs(courseChange) < 0.1) {
-  //    // we need to make an evasion manuever
-  //    if (recentReading > 0)
-  //      recentReading = 1 - recentReading;// reverse recentReading measure
-  //        // so that closer to 1 = closer to center
-  //    else
-  //      recentReading = -1 - recentReading;
-  //    sailAngle += recentReading * 45;
-  //    tailAngle += recentReading * 45;
-  //  }
-  //  else if (initialReading > recentReading) {
-  //    // make starboard turn
-  //    recentReading = Math.abs(45.0*recentReading);
-  //    sailAngle += recentReading;
-  //    tailAngle += recentReading;
-  //  }
-  //  else {
-  //    // make port side turn
-  //    recentReading = Math.abs(45.0*recentReading);
-  //    sailAngle -= recentReading;
-  //    tailAngle -= recentReading;
-  //  }
+    getObjects();
+  Serial.println("changing boat direction now");
+   int s = xVals.size();
+   if (s > 1 && xVals[s-1] != 400.0 && xVals[s-2] != 400.0) {
+    double initialReading = xVals[s-2];
+    double recentReading = xVals[s-1];
+    double courseChange = initialReading - recentReading;
+    recentReading = (recentReading / 159.5) - 1.0; // this makes
+    // recentReading from -1.0 to 1.0 with 0.0 being center of the frame
+    if (abs(courseChange) < 0.1) {
+      // we need to make an evasion manuever
+      if (recentReading > 0)
+        recentReading = 1 - recentReading;// reverse recentReading measure
+          // so that closer to 1 = closer to center
+      else
+        recentReading = -1 - recentReading;
+      sailAngle += recentReading * 45;
+      tailAngle += recentReading * 45;
+    }
+    else if (initialReading > recentReading) {
+      // make starboard turn
+      recentReading = abs(45.0*recentReading);
+      sailAngle += recentReading;
+      tailAngle += recentReading;
+    }
+    else {
+      // make port side turn
+      recentReading = abs(45.0*recentReading);
+      sailAngle -= recentReading;
+      tailAngle -= recentReading;
+    }
 
   // }
 
@@ -670,9 +687,11 @@ void nShort(void) {
   //Convert sail and tail from wrt north to wrt boat
   sailAngle=sailAngle-sensorData.boatDir;
   tailAngle=tailAngle-sensorData.boatDir;
+  // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
-  tailAngle = int(tailAngle+360)%360;
 
+  // convert tail to -180-180
+  tailAngle = int(tailAngle+360)%360;
   if (tailAngle> 180) {tailAngle -= 360;}
 
   //Get servo commands from the calculated sail and tail angles
@@ -686,9 +705,7 @@ void nShort(void) {
 // TESTBENCH SAIL AND TAIL MAPPING
   tailAngle = tailMapBench(sailAngle, tailAngle);
   sailAngle = sailMapBench(sailAngle);
-
-  // printServoSailTail();
-
+}
 }
 
 /*Sets servos to the sailAngle and tailAngle*/
@@ -697,22 +714,27 @@ void nServos(void) {
   sailServo.write(sailAngle);
 }
 
-
 /** Updates xVals vector
 *   Only updates x-position
 *   NOTE: This only detects objects set to
 *   signature 1 on the pixy cam */
-//void getObjects() {
-//    uint16_t blocks = pixy.getBlocks();
-//    if (blocks) {
-//        for (int j = 0; j < blocks, j++) {
-//            if (pixy.blocks[j].signature == 1) {
-//                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
-//                xVals.push_back(xLocation);
-//            }
-//        }
-//    }
-//    else {
-//        xVals.push_back(400.0); // no objects were detected
-//    }
-//}
+void getObjects(void) {
+    Serial.println("gettting pixy objects");
+    Serial.println("this is definitive proof now");
+    uint16_t blocks = pixy.getBlocks();
+    Serial.println("I HAVE MADE IT PAST THE BLOCKS COMMANY WHY ARENT I PRINTING");
+    if (blocks != 0) {
+      Serial.println("object detected");
+        for (int j = 0; j < blocks; j++) {
+          Serial.println("for each block");
+            if (pixy.blocks[j].signature == 1) {
+                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
+                xVals.push_back(xLocation);
+            }
+        }
+    }
+    else {
+        xVals.push_back(400.0); // no objects were detected
+    }
+}
+

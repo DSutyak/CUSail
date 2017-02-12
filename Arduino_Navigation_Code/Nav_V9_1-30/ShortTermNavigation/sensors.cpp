@@ -1,6 +1,7 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
+#include <Pixy.h>
 TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
@@ -157,6 +158,11 @@ void initSensors(void) {
 
   //Initialize SPI
   SPI.begin();
+
+  //Begin Pixy
+  Pixy pixy;
+  pixy.init();
+
 }
 
 float dirAverage(int numToAverage, float arrayToAverage[]) {

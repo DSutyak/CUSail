@@ -56,3 +56,6 @@ void nShort(void);
 /*Sets servos to the sailAngle and tailAngle*/
 void nServos(void);
 
+void getObjects(void);
+
+
