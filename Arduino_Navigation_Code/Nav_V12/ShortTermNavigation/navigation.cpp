@@ -169,10 +169,6 @@ void nShort(void) {
 
   printWaypointData();
 
-  //-----------Reached waypoint!----------//
-
-  bool buoy_rounding=true;
-
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
 
