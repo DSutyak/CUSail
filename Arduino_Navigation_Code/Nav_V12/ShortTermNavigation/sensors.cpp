@@ -11,7 +11,7 @@ union u_types {
 } imu_data[3];  // Create 3 unions, one for each euler angle
 
 
-float prevWindDirection = 0;
+float prevWindDirection = 100;
 float angleCorrection = -121;
 
 /*Transfers commands through SPI*/
@@ -211,8 +211,16 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
+  Serial1.print("READING: ");
+  Serial1.print(reading);
+  Serial1.println();
+  
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
+
+  Serial1.print("WIND WRTN: ");
+  Serial1.print(wind_wrtN);
+  Serial1.println();
 
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading*PI/180)) / (1.125) );
   float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading*PI/180)) / (1.125) );
@@ -220,6 +228,10 @@ void sRSensor(void) {
   wind_wrtN *= 180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
 
+  Serial1.print("AVERAGED WIND WRTN: ");
+  Serial1.print(wind_wrtN);
+  Serial1.println();
+  
   sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
 
@@ -266,6 +278,7 @@ void sIMU(void) {
   while (result != 0x01) {  // Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
+    Serial1.println("hey man");
     }
 
   // Get the 12 bytes of return data from the device:

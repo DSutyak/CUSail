@@ -123,6 +123,10 @@ coord_t across_low_dock_test= {42.468923, -76.503655}; //Across the lake from th
 coord_t low_dock={42.468951,-76.502941}; //Right at the lower dock
 coord_t high_dock={42.469552,-76.503353}; //High dock launch point
 
+coord_t dirt_mound={42.454386, -76.475693};
+coord_t appel_door={42.453915, -76.475891};
+coord_t middle_appel={42.454079, -76.475671};
+
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
 void setWaypoints(void) {
@@ -133,8 +137,8 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = sundial;
-  wayPoints[1] = outsideThurston;
+  wayPoints[0] = middle_appel;
+  wayPoints[1] = appel_door;
 }
 
 /*----------------------------------------*/
@@ -147,13 +151,13 @@ void setWaypoints(void) {
 void nShort(void) {
 
   printLocationData();
-  
+
   /*----------Unit testing setters-----------*/
   	//sensorData.lati = 42.4441782290;
   	//sensorData.lati=outsideThurston.latitude;
   	//sensorData.longi=outsideThurston.longitude;
   	//sensorData.longi = -76.4834140241;
-  	//sensorData.windDir = 0;
+//  	sensorData.windDir = 0;
   	//sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
