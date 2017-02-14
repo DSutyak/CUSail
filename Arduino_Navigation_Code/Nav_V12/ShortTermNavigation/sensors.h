@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  CU Sail
-`Cornell University Autonomous Sailboat Team
+ Cornell University Autonomous Sailboat Team
 
  Sensors
  Gathers boat direction w.r.t North, wind direction w.r.t North, boat pitch, boat yaw,
