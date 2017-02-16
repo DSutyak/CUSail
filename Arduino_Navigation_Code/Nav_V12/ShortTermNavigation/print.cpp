@@ -42,11 +42,8 @@ void printHitWaypointData(){
 }
 
 void printSailTailSet(){
-  Serial1.print("Sail angle (0 to 360)");   Serial1.println(sailAngle);
-  Serial1.print("Tail angle (0 to 360)");   Serial1.println(tailAngle);
-  //Print boat and wind direction to make sure data is consistent at this point
-  Serial1.print("sensorData.boatDir: ");   Serial1.println(sensorData.boatDir);
-  Serial1.print("sensorData.windDir: ");   Serial1.println(sensorData.windDir);
+  Serial1.print("Sail angle: ");   Serial1.println(sailAngle);
+  Serial1.print("Tail angle: ");   Serial1.println(tailAngle);
 }
 
 void printServoSailTail(){

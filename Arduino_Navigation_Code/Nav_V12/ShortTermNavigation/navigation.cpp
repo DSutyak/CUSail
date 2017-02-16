@@ -132,13 +132,14 @@ coord_t middle_appel={42.454079, -76.475671};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 2;
+  numWP = 3;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
   wayPoints[0] = middle_appel;
-  wayPoints[1] = appel_door;
+  wayPoints[1] = dirt_mound;
+  wayPoints[2] = appel_door;
 }
 
 /*----------------------------------------*/
@@ -157,7 +158,7 @@ void nShort(void) {
   	//sensorData.lati=outsideThurston.latitude;
   	//sensorData.longi=outsideThurston.longitude;
   	//sensorData.longi = -76.4834140241;
-//  	sensorData.windDir = 0;
+    	sensorData.windDir = 270;
   	//sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
@@ -353,18 +354,18 @@ void nShort(void) {
   sailAngle = sailAngle+360;
   sailAngle = (float)((int)sailAngle%360);
 
-  Serial1.println("Angles w.r.t North");
-  printSailTailSet();
-
-  //Convert sail and tail from wrt north to wrt boat
-  sailAngle = sailAngle - sensorData.boatDir;
-  tailAngle = tailAngle - sensorData.boatDir;
-
-  // convert sail to 0-360
-  sailAngle = int(sailAngle+360)%360;
-
   Serial1.println("Angles w.r.t Boat");
   printSailTailSet();
+
+//  //Convert sail and tail from wrt north to wrt boat
+//  sailAngle = sailAngle - sensorData.boatDir;
+//  tailAngle = tailAngle - sensorData.boatDir;
+//
+//  // convert sail to 0-360
+//  sailAngle = int(sailAngle+360)%360;
+//
+//  Serial1.println("Angles w.r.t Boat");
+//  printSailTailSet();
 
   // convert tail to -180-180
   tailAngle = int(tailAngle+360)%360;
