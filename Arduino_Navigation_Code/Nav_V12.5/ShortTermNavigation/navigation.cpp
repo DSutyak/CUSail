@@ -122,8 +122,6 @@ void setWaypoints(void) {
  * calculated in terms of angle w.r.t the boat direction*/
 void nShort(void) {
 
-  printLocationData();
-
   /*----------Unit testing setters-----------*/
   	//sensorData.lati = 42.4441782290;
   	//sensorData.lati=outsideThurston.latitude;
@@ -143,6 +141,7 @@ void nShort(void) {
   //Dummy normal distance
   float oldnormr=1000;
 
+  printData();
   printWaypointData();
 
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
