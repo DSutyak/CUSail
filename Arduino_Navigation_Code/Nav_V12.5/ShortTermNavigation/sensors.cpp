@@ -9,21 +9,15 @@ PixyI2C pixy;
 TinyGPSPlus gps;
 data_t sensorData;
 
-
-/*--------------------------------------------*/
 double objectVals[2] = {400.0,400.0};
-/*--------------------------------------------*/
-
+float prevWindDirection = 100;
+float angleCorrection = -121;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
     byte b[4];
     float fval;
 } imu_data[3];  // Create 3 unions, one for each euler angle
-
-
-float prevWindDirection = 100;
-float angleCorrection = -121;
 
 /*Transfers commands through SPI*/
 byte transferByte(byte byteToWrite) {
@@ -45,6 +39,34 @@ void endianSwap(byte temp[4]) {
   temp[1] = temp[2];
   temp[2] = myTemp;
 }
+
+/* Updates objectVals array
+ * Only updates x-position
+ * NOTE: This only detects objects set to
+ * signature 1 on the pixy cam 
+ */
+void addObjects(void) {
+    Serial.println("gettting pixy objects");
+    uint16_t blocks = pixy.getBlocks();
+    if (blocks != 0) {
+      Serial.println("object detected");
+        for (int j = 0; j < blocks; j++) {
+            if (pixy.blocks[j].signature == 1) {
+                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
+                double tmp = objectVals[1];
+                objectVals[0] = tmp;
+                objectVals[1] = xLocation;
+            }
+        }
+    }
+    else {
+        Serial.println("No object detected");
+        double tmp = objectVals[1];
+        objectVals[0] = tmp;
+        objectVals[1] = 400.0;
+    }
+}
+
 
 /* Returns servo command for sail servo for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
@@ -144,7 +166,7 @@ void initSensors(void) {
   Serial1.begin(9600);
   Serial3.begin(9600);
 
-  // initialize data structure
+  //Initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
   sensorData = {};
 
@@ -167,7 +189,7 @@ void initSensors(void) {
   //Initialize SPI
   SPI.begin();
 
-  //initialize pixycam
+  //Initialize pixycam
   pixy.init();
 }
 
@@ -190,15 +212,6 @@ void lowAllLEDs(){
 }
 
 /*-------------------------------*/
-
-float dirAverage(int numToAverage, float arrayToAverage[]) {
-    float sum = 0;
-    for(int i=0; i < numToAverage; i++) {
-      sum += arrayToAverage[i];
-    }
-  float avgDir = sum/numToAverage;
-  return avgDir;
-}
 
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
@@ -225,14 +238,15 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
-  Serial1.print("READING: ");
+  Serial1.print("----------Rotary Sensor----------");
+  Serial1.print("Current wind reading w.r.t Boat: ");
   Serial1.print(reading);
   Serial1.println();
   
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
 
-  Serial1.print("WIND WRTN: ");
+  Serial1.print("Current wind reading w.r.t North: ");
   Serial1.print(wind_wrtN);
   Serial1.println();
 
@@ -242,7 +256,7 @@ void sRSensor(void) {
   wind_wrtN *= 180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
 
-  Serial1.print("AVERAGED WIND WRTN: ");
+  Serial1.print("Averaged Wind w.r.t North: ");
   Serial1.print(wind_wrtN);
   Serial1.println();
   
@@ -292,7 +306,7 @@ void sIMU(void) {
   while (result != 0x01) {  // Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
-    Serial1.println("hey man");
+    Serial1.println("IMU Stuck!");
     }
 
   // Get the 12 bytes of return data from the device:
@@ -318,35 +332,6 @@ void sIMU(void) {
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
-
-
-
-/** Updates objectVals array
-*   Only updates x-position
-*   NOTE: This only detects objects set to
-*   signature 1 on the pixy cam */
-void addObjects(void) {
-    Serial.println("gettting pixy objects");
-    uint16_t blocks = pixy.getBlocks();
-    if (blocks != 0) {
-      Serial.println("object detected");
-        for (int j = 0; j < blocks; j++) {
-            if (pixy.blocks[j].signature == 1) {
-                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
-                double tmp = objectVals[1];
-                objectVals[0] = tmp;
-                objectVals[1] = xLocation;
-            }
-        }
-    }
-    else {
-        Serial.println("No object detected");
-        double tmp = objectVals[1];
-        objectVals[0] = tmp;
-        objectVals[1] = 400.0;
-    }
-}
-
 
 
 

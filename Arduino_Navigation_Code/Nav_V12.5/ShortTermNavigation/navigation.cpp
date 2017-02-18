@@ -324,11 +324,8 @@ void nShort(void) {
   sailAngle = sailAngle+360;
   sailAngle = (float)((int)sailAngle%360);
 
-  avoidObject();
-
-  Serial1.println("Angles w.r.t Boat");
-  printSailTailSet();
-
+// Are the sail and tail angles already w.r.t boat ?
+//__________________________________________________
 //  //Convert sail and tail from wrt north to wrt boat
 //  sailAngle = sailAngle - sensorData.boatDir;
 //  tailAngle = tailAngle - sensorData.boatDir;
@@ -338,6 +335,13 @@ void nShort(void) {
 //
 //  Serial1.println("Angles w.r.t Boat");
 //  printSailTailSet();
+//__________________________________________________
+
+  //obstacle avoidance; still needs tuning
+  avoidObject();
+
+  Serial1.println("Angles w.r.t Boat");
+  printSailTailSet();
 
   // convert tail to -180-180
   tailAngle = int(tailAngle+360)%360;

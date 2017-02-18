@@ -3,6 +3,7 @@
 #include "sensors.h"
 #include "navigation.h"
 
+/*Changes the sail and tail on the detection of an object*/
 void avoidObject(void) {  
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {

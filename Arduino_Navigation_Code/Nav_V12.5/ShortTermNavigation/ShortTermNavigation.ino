@@ -32,7 +32,6 @@ void loop() {
   sRSensor(); //Gather wind directio w.r.t North
   sGPS(); //Gather global coordinates
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
-  //objectDetect()
   nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
   nServos(); //Send acquired servo commands
 }
