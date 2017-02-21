@@ -29,6 +29,8 @@ int SI = 75;
 int CLK = 76; 
 int redLED = 22;
 unsigned int angle;
+float angleCorrection = -121;
+float prevWindDirection = 1;
 
 void setup() {
   //Pour a bowl Serial
@@ -72,11 +74,26 @@ void loop() {
   angle = (angle & (0x3FFF));
 
   //covert to a 360 degree scale
-  int pos = ( (unsigned long) angle)*360UL/16384UL;
+  float reading = ( (unsigned long) angle)*360UL/16384UL;
+  reading += angleCorrection;
+  reading = (reading<0)?(reading+360):reading;
 
+   //---filter wind---
+   
+    float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading*PI/180)) / (1.125) );
+    float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading*PI/180)) / (1.125) );
+    float wind = atan2(newSinWind, newCosWind);
+    wind = wind*180/PI;
+    wind = (wind<0)?wind+360:wind;
+    
+    //float wind = ( (prevWindDirection) + (0.125)*(reading))  /(1.125) ;
+   //------
+  prevWindDirection = wind;
+  
   //print angle to the screen
-  Serial.println(pos);
-  Serial1.println(pos);
+  Serial.print("Wind: ");Serial.println(wind);
+  Serial.print("reading: ");Serial.println(reading);
+  Serial1.println(reading);
   
   delay(1000);
 }

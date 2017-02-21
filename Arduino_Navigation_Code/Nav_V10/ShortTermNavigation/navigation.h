@@ -33,6 +33,7 @@ typedef struct coordinate {
 extern float sailAngle;
 extern float tailAngle;
 extern int wpNum; //the current waypoint's number in the wayPoints array
+extern int numWP;
 extern coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
 
 /*----------Functions----------*/

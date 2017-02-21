@@ -77,41 +77,41 @@ void loop() {
   Tail.write(tailMapBench(0, 30));
   delay(5000);
 
-//  Sail.write(sailMapBench(90)); //Sail to 90
-//  delay(5000);
-//  
-//  Tail.write(tailMapBench(90, 60));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(90, 90));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(90, 120));
-//  delay(5000);
-//
-//  Sail.write(sailMapBench(180)); //Sail to 180
-//  delay(5000);
-//  
-//  Tail.write(tailMapBench(180, 150));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(180, 180));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(180, -150));
-//  delay(5000);
-//
-//  Sail.write(sailMapBench(270)); //Sail to 270
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(270, -120));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(270, -90));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(270, -60));
-//  delay(5000);
+  Sail.write(sailMapBench(90)); //Sail to 90
+  delay(5000);
+  
+  Tail.write(tailMapBench(90, 60));
+  delay(5000);  
+  
+  Tail.write(tailMapBench(90, 90));
+  delay(5000);
+
+  Tail.write(tailMapBench(90, 120));
+  delay(5000);
+
+  Sail.write(sailMapBench(180)); //Sail to 180
+  delay(5000);
+  
+  Tail.write(tailMapBench(180, 150));
+  delay(5000);  
+  
+  Tail.write(tailMapBench(180, 180));
+  delay(5000);
+
+  Tail.write(tailMapBench(180, -150));
+  delay(5000);
+
+  Sail.write(sailMapBench(270)); //Sail to 270
+  delay(5000);
+
+  Tail.write(tailMapBench(270, -120));
+  delay(5000);  
+  
+  Tail.write(tailMapBench(270, -90));
+  delay(5000);
+
+  Tail.write(tailMapBench(270, -60));
+  delay(5000);
 
 /*Tail and Sail full test for wrt sail*/
 
@@ -267,10 +267,10 @@ double tailMapBench( double sailAngle, double tailAngle){
   }
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,69,71);
+    newTailAngle=map(newTailAngle,-30,0,70,72);
   }
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,71,73);
+    newTailAngle=map(newTailAngle,0,30,72,74);
   }
   return newTailAngle;
 }

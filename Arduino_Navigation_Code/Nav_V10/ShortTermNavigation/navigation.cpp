@@ -144,13 +144,14 @@ void setWaypoints(void) {
 void nShort(void) {
 
   printLocationData();
-//Unit testing setters
-  //sensorData.lati = 42.4441782290;
-  //sensorData.lati=outsideThurston.latitude;
-  //sensorData.longi=outsideThurston.longitude;
-  //sensorData.longi = -76.4834140241;
-  sensorData.windDir = 0;
-  //sensorData.boatDir = 180;
+  
+  /*----------Unit testing setters-----------*/
+  	//sensorData.lati = 42.4441782290;
+  	//sensorData.lati=outsideThurston.latitude;
+  	//sensorData.longi=outsideThurston.longitude;
+  	//sensorData.longi = -76.4834140241;
+  	//sensorData.windDir = 0;
+  	//sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;

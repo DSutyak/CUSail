@@ -1,16 +1,12 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
-<<<<<<< HEAD
 #include <Pixy.h>
-=======
 #include <PixyI2C.h>
 
 /** Pixy variable **/
 PixyI2C pixy;
 
-
->>>>>>> 7a90865c1dd2bac05fd20a2d5ef677227cf70c9b
 TinyGPSPlus gps;
 data_t sensorData;
 float boatDirections[numBoatDirReads];
