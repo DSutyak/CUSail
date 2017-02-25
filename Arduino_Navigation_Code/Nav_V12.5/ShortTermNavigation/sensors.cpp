@@ -10,7 +10,7 @@ TinyGPSPlus gps;
 data_t sensorData;
 
 double objectVals[2] = {400.0,400.0};
-float prevWindDirection = 100;
+float prevWindDirection = 30;
 float angleCorrection = -121;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
@@ -250,8 +250,8 @@ void sRSensor(void) {
   Serial1.print(wind_wrtN);
   Serial1.println();
 
-  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading*PI/180)) / (1.125) );
-  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading*PI/180)) / (1.125) );
+  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.0625)*sin(reading*PI/180)) / (1.0625) );
+  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.0625)*cos(reading*PI/180)) / (1.0625) );
   wind_wrtN = atan2(newSinWind, newCosWind);
   wind_wrtN *= 180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;

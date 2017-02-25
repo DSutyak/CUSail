@@ -73,6 +73,12 @@ void endianSwap(byte temp[4]) {
 
 void loop() {
 
+  digitalWrite(36, HIGH);
+  delay(1000);
+  digitalWrite(35, HIGH);
+  delay(1000);
+  digitalWrite(22, HIGH);
+
   SPI.beginTransaction(settings);
   
 
@@ -126,5 +132,11 @@ void loop() {
   Serial1.print("Yaw:"), Serial1.println(yaw, 4);
   //Serial.print("Roll (-180 to 180):"), Serial.println(roll, 4); //Uncommment to display
 
-  delay(100);
+  delay(1000);
+   digitalWrite(36, HIGH);
+  delay(1000);
+  digitalWrite(35, HIGH);
+  delay(1000);
+  digitalWrite(22, HIGH);
+  delay(1000);
 }
