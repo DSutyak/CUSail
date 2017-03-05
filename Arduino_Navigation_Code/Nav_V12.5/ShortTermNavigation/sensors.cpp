@@ -9,9 +9,12 @@ PixyI2C pixy;
 TinyGPSPlus gps;
 data_t sensorData;
 
+float prevSinWind = sin(270);
+float prevCosWind = sin(270);
+
 double objectVals[2] = {400.0,400.0};
-float prevWindDirection = 30;
-float angleCorrection = -121;
+float prevWindDirection = 270;
+float angleCorrection = 65;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -240,22 +243,19 @@ void sRSensor(void) {
 
   Serial1.print("----------Rotary Sensor----------");
   Serial1.print("Current wind reading w.r.t Boat: ");
-  Serial1.print(reading);
-  Serial1.println();
+  Serial1.println(reading);
   
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
-
   Serial1.print("Current wind reading w.r.t North: ");
-  Serial1.print(wind_wrtN);
-  Serial1.println();
+  Serial1.println(wind_wrtN);
 
-  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.0625)*sin(reading*PI/180)) / (1.0625) );
-  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.0625)*cos(reading*PI/180)) / (1.0625) );
+  //filter wind
+  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(wind_wrtN*PI/180)) / (0.125) );
+  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(wind_wrtN*PI/180)) / (0.125) );
   wind_wrtN = atan2(newSinWind, newCosWind);
-  wind_wrtN *= 180/PI;
+  wind_wrtN = wind_wrtN*180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
-
   Serial1.print("Averaged Wind w.r.t North: ");
   Serial1.print(wind_wrtN);
   Serial1.println();
