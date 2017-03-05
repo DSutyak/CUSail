@@ -29,8 +29,11 @@ int SI = 75;
 int CLK = 76; 
 int redLED = 22;
 unsigned int angle;
-float angleCorrection = -121;
+float angleCorrection = 65;
 float prevWindDirection = 1;
+float boatDirection = 180;
+float prevSinWind = sin(270*PI/180);
+float prevCosWind = sin(270*PI/180);
 
 void setup() {
   //Pour a bowl Serial
@@ -77,22 +80,25 @@ void loop() {
   float reading = ( (unsigned long) angle)*360UL/16384UL;
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
+  float reading_wrtN = ((int)(reading + boatDirection))%360;
 
    //---filter wind---
-   
-    float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading*PI/180)) / (1.125) );
-    float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading*PI/180)) / (1.125) );
+    float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(reading_wrtN*PI/180)) / (1.125) );
+    float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(reading_wrtN*PI/180)) / (1.125) );
     float wind = atan2(newSinWind, newCosWind);
     wind = wind*180/PI;
     wind = (wind<0)?wind+360:wind;
+
+    prevSinWind = newSinWind;
+    prevCosWind = newCosWind;
+
     
-    //float wind = ( (prevWindDirection) + (0.125)*(reading))  /(1.125) ;
-   //------
+    
   prevWindDirection = wind;
   
   //print angle to the screen
   Serial.print("Wind: ");Serial.println(wind);
-  Serial.print("reading: ");Serial.println(reading);
+  Serial.print("reading: ");Serial.println(reading_wrtN);
   Serial1.println(reading);
   
   delay(1000);
