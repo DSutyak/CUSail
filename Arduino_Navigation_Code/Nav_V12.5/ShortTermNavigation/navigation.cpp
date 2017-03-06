@@ -96,20 +96,29 @@ coord_t high_dock={42.469552,-76.503353}; //High dock launch point
 
 coord_t dirt_mound={42.454386, -76.475693};
 coord_t appel_door={42.453915, -76.475891};
+coord_t appel_farRight={42.454345, -76.474471};
+coord_t appel_topRight={42.454715, -76.474551};
+coord_t appel_topLeft={42.454865, -76.475672};
+coord_t appel_bottomRight={42.453828, -76.474454};
 
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 8;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = sundial;
-  wayPoints[1] = engQuadX;
-  wayPoints[2] = thurstonWestEntrance;
+  wayPoints[0] = appel_bottomRight;
+  wayPoints[1] = appel_topRight;
+  wayPoints[2] = appel_topLeft;
+  wayPoints[3] = appel_door;
+  wayPoints[4] = appel_bottomRight;
+  wayPoints[5] = appel_topRight;
+  wayPoints[6] = appel_topLeft;
+  wayPoints[7] = appel_door;
 }
 
 /*----------------------------------------*/

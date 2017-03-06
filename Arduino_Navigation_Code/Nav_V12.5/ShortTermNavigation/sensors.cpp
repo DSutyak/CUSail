@@ -14,7 +14,8 @@ float prevCosWind = sin(270);
 
 double objectVals[2] = {400.0,400.0};
 float prevWindDirection = 270;
-float angleCorrection = 65;
+float angleCorrection = -117;
+float averageWeighting = 0.0625;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -251,8 +252,8 @@ void sRSensor(void) {
   Serial1.println(wind_wrtN);
 
   //filter wind
-  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.125)*sin(wind_wrtN*PI/180)) / (0.125) );
-  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.125)*cos(wind_wrtN*PI/180)) / (0.125) );
+  float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
+  float newCosWind = ( (cos(prevWindDirection*PI/180) + (averageWeighting)*cos(wind_wrtN*PI/180)) / (1 + averageWeighting) );
   wind_wrtN = atan2(newSinWind, newCosWind);
   wind_wrtN = wind_wrtN*180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
@@ -270,14 +271,8 @@ void sRSensor(void) {
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-    sensorData.longi = gps.location.lng();
-    sensorData.lati = gps.location.lat();
-    sensorData.dateTime.year = gps.date.year();
-    sensorData.dateTime.month = gps.date.month();
-    sensorData.dateTime.day = gps.date.day();
-    sensorData.dateTime.hour = gps.time.hour();       // Hour (0-23) (u8)
-    sensorData.dateTime.minute = gps.time.minute();   // Minute (0-59) (u8)
-    sensorData.dateTime.seconds = gps.time.second();  // Second (0-59) (u8)
+      sensorData.longi = gps.location.lng();
+      sensorData.lati = gps.location.lat();
     }
 
 }
