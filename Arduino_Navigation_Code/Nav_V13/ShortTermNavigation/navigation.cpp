@@ -29,11 +29,17 @@ float tailAngle;
 float intended_angle;
 float intended_angle_of_attack;
 
+bool stationKeeping = true;
+// need to read these values from the arduino
+float time_inside=0;
+float time_req=5;
+
 /*---------Distance to Center Line------*/
 // latitude is y, longitude is x
 float max_distance=100;
 coord_t center_start={1,2};
 coord_t center_end={10,20};
+
 
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
@@ -96,7 +102,11 @@ coord_t high_dock={42.469552,-76.503353}; //High dock launch point
 
 coord_t dirt_mound={42.454386, -76.475693};
 coord_t appel_door={42.453915, -76.475891};
-coord_t middle_appel={42.454079, -76.475671};
+
+coord_t appel_farRight={42.454345, -76.474471};
+coord_t appel_topRight={42.454715, -76.474551};
+coord_t appel_topLeft={42.454865, -76.475672};
+coord_t appel_bottomRight={42.453828, -76.474454};
 
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
@@ -108,9 +118,9 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = middle_appel;
-  wayPoints[1] = appel_door;
-  wayPoints[2] = middle_appel;
+  wayPoints[0] = engQuadX;
+  wayPoints[1] = sundial;
+  wayPoints[2] = thurstonWestEntrance;
 }
 
 /*----------------------------------------*/
@@ -123,16 +133,16 @@ void setWaypoints(void) {
 void nShort(void) {
 
   /*----------Unit testing setters-----------*/
-  	//sensorData.lati = 42.4441782290;
-  	//sensorData.lati=outsideThurston.latitude;
-  	//sensorData.longi=outsideThurston.longitude;
-  	//sensorData.longi = -76.4834140241;
+    //sensorData.lati = 42.4441782290;
+    //sensorData.lati=outsideThurston.latitude;
+    //sensorData.longi=outsideThurston.longitude;
+    //sensorData.longi = -76.4834140241;
     //sensorData.windDir = 270;
-  	//sensorData.boatDir = 180;
+    //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
-  // r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-  // r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+  r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+  r[1] = wayPoints[wpNum].latitude - sensorData.lati;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
   coord_t currentPosition = {sensorData.lati, sensorData.longi};
@@ -141,60 +151,37 @@ void nShort(void) {
   //Dummy normal distance
   float oldnormr=1000;
 
-  
-  float boatDirection = sensorData.boatDir;
-//  boatDirection=360-(boatDirection-90);
-  boatDirection=convertto360(boatDirection);
-
-  // Wind w.r.t the boat
-  // float windboat;
-  // windboat=sensorData.windDir-boatDirection;
-
-  float boat_wrt_wind=boatDirection-sensorData.windDir;
-  boat_wrt_wind=convertto360(boat_wrt_wind);
-
-  float windDir=sensorData.windDir;
-
-  /* station_keeping is the variable that determines whether we run the station
-  keeping code. if we are outside the radius, station_keeping is left at true
-  and we run the normal navigation code to get back to the center
-  a possible alternate is to always try to get to the center regardless of how
-  far away from the center we are
-  */
-  bool station_keeping=true;
-  bool go_back_to_center=false;
-  if(station_keeping){
-    float station_radius=15;
-    coord_t center={42.454386, -76.475693};
-    normr = havDist(center, currentPosition);
-    if(normr<station_radius){
-      // go in the direction the boat is facing
-      // facing right
-      if (boat_wrt_wind<180){
-        intended_angle=windDir+80;
-        intended_angle_of_attack=15;
-      }
-      else{
-        intended_angle=windDir-80;
-        intended_angle_of_attack=-15;
-      }
-      station_keeping=false;
-    }
-    else{
-      // head back towards the center of the circle
-      wayPoints[wpNum]=center;
-      go_back_to_center=true;
-    }
-
-  }
-
   printData();
   printWaypointData();
 
+  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+  anglewaypoint=convertto360(anglewaypoint);
 
 
+  if (stationKeeping){
+    if(time_inside >= time_req ){
+          printHitWaypointData();
+          lightAllLEDs();
+          //delay for 3 seconds
+          delay(3000);
+          lowAllLEDs();
+          // where we will determine where we aim to go at the end of the required amount of time
+          wpNum += 1 ;
+
+          //reset variables because we have reached the old waypoint
+          r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+          r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+          w[0] = cos((sensorData.windDir)*(PI/180.0));
+          w[1] = sin((sensorData.windDir)*(PI/180.0));
+          currentPosition = {sensorData.lati, sensorData.longi};
+          normr = havDist(wayPoints[wpNum], currentPosition);
+        }
+
+  }
+
+  else{
   //----------REACHED WAYPOINT!----------
-    if(((wpNum + 1) < numWP)&&(normr < detectionradius)&&!station_keeping){
+    if(((wpNum + 1) < numWP)&&(normr < detectionradius)){
       printHitWaypointData();
       lightAllLEDs();
       //delay for 3 seconds
@@ -203,8 +190,8 @@ void nShort(void) {
       wpNum += 1 ;
 
       //reset variables because we have reached the old waypoint
-      // r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-      // r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+      r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+      r[1] = wayPoints[wpNum].latitude - sensorData.lati;
       w[0] = cos((sensorData.windDir)*(PI/180.0));
       w[1] = sin((sensorData.windDir)*(PI/180.0));
       currentPosition = {sensorData.lati, sensorData.longi};
@@ -212,20 +199,27 @@ void nShort(void) {
     }
    //------------------------------------
 
-  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+  }
+
+
   anglewaypoint=convertto360(anglewaypoint);
-  Serial1.print("Angle to the waypoint: ");
-  Serial1.print(anglewaypoint);
-  Serial1.println();
 
   float dirangle=anglewaypoint-sensorData.windDir;
   dirangle=convertto360(dirangle);
-  Serial1.print("WRT WIND angle to the waypoint: ");
-  Serial1.print(dirangle);
-  Serial1.println();
 
+  float boatDirection = sensorData.boatDir;
+//  boatDirection=360-(boatDirection-90);
+  boatDirection=convertto360(boatDirection);
 
+  // Wind w.r.t the boat
+  float windboat;
+  windboat=sensorData.windDir-boatDirection;
 
+  float boat_wrt_wind=boatDirection-sensorData.windDir;
+//  boat_wrt_wind=360-(boat_wrt_wind-90);
+  boat_wrt_wind=convertto360(boat_wrt_wind);
+
+  float windDir=sensorData.windDir;
 
 /* heading upwind angles
   general format:
@@ -269,7 +263,7 @@ void nShort(void) {
       Serial1.println("\n\nIntended Sector: _________TURN LEFT\n\n");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      // delay(5000);
+      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = -15;
     }
@@ -309,7 +303,7 @@ void nShort(void) {
       Serial1.println("FACING LEFT DIRECT RIGHT");
       Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      // delay(5000);
+      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = 15;
     }
@@ -357,25 +351,20 @@ void nShort(void) {
   tailAngle = windDir + offset;
   sailAngle = tailAngle + intended_angle_of_attack;
 
-  // tailAngle = (float)((int)tailAngle%360);
-  // tailAngle = tailAngle + 360;
-  // tailAngle = (float)((int)tailAngle%360);
+  tailAngle = (float)((int)tailAngle%360);
+  tailAngle = tailAngle + 360;
+  tailAngle = (float)((int)tailAngle%360);
 
-
-  // sailAngle = (float)((int)sailAngle%360);
-  // sailAngle = sailAngle+360;
-  // sailAngle = (float)((int)sailAngle%360);
+  sailAngle = (float)((int)sailAngle%360);
+  sailAngle = sailAngle+360;
+  sailAngle = (float)((int)sailAngle%360);
 
   //Convert sail and tail from wrt north to wrt boat
   sailAngle = sailAngle - sensorData.boatDir;
   tailAngle = tailAngle - sensorData.boatDir;
 
-
-  tailAngle=convertto360(tailAngle);
-  sailAngle=convertto360(sailAngle);
-
   // convert sail to 0-360
-  // sailAngle = int(sailAngle+360)%360;
+  sailAngle = int(sailAngle+360)%360;
 
   Serial1.println("Angles w.r.t Boat:");
   printSailTailSet();

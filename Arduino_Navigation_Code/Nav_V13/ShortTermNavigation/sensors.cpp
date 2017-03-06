@@ -1,17 +1,21 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
-//#include <PixyI2C.h>
+#include <PixyI2C.h>
 
 //Begin Pixy
-//PixyI2C pixy;
+PixyI2C pixy;
   
 TinyGPSPlus gps;
 data_t sensorData;
 
+float prevSinWind = sin(270);
+float prevCosWind = sin(270);
+
 double objectVals[2] = {400.0,400.0};
-float prevWindDirection = 30;
-float angleCorrection = -121;
+float prevWindDirection = 270;
+float angleCorrection = -117;
+float averageWeighting = 0.0625;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
 union u_types {
@@ -46,25 +50,25 @@ void endianSwap(byte temp[4]) {
  * signature 1 on the pixy cam 
  */
 void addObjects(void) {
-//    Serial.println("gettting pixy objects");
-//    uint16_t blocks = pixy.getBlocks();
-//    if (blocks != 0) {
-//      Serial.println("object detected");
-//        for (int j = 0; j < blocks; j++) {
-//            if (pixy.blocks[j].signature == 1) {
-//                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
-//                double tmp = objectVals[1];
-//                objectVals[0] = tmp;
-//                objectVals[1] = xLocation;
-//            }
-//        }
-//    }
-//    else {
-//        Serial.println("No object detected");
-//        double tmp = objectVals[1];
-//        objectVals[0] = tmp;
-//        objectVals[1] = 400.0;
-//    }
+    Serial.println("gettting pixy objects");
+    uint16_t blocks = pixy.getBlocks();
+    if (blocks != 0) {
+      Serial.println("object detected");
+        for (int j = 0; j < blocks; j++) {
+            if (pixy.blocks[j].signature == 1) {
+                int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
+                double tmp = objectVals[1];
+                objectVals[0] = tmp;
+                objectVals[1] = xLocation;
+            }
+        }
+    }
+    else {
+        Serial.println("No object detected");
+        double tmp = objectVals[1];
+        objectVals[0] = tmp;
+        objectVals[1] = 400.0;
+    }
 }
 
 
@@ -190,7 +194,7 @@ void initSensors(void) {
   SPI.begin();
 
   //Initialize pixycam
-//  pixy.init();
+  pixy.init();
 }
 
 /*----------LED control----------*/
@@ -240,22 +244,19 @@ void sRSensor(void) {
 
   Serial1.print("----------Rotary Sensor----------");
   Serial1.print("Current wind reading w.r.t Boat: ");
-  Serial1.print(reading);
-  Serial1.println();
+  Serial1.println(reading);
   
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
-
   Serial1.print("Current wind reading w.r.t North: ");
-  Serial1.print(wind_wrtN);
-  Serial1.println();
+  Serial1.println(wind_wrtN);
 
-  float newSinWind = ( (sin(prevWindDirection*PI/180) + (0.0625)*sin(reading*PI/180)) / (1.0625) );
-  float newCosWind = ( (cos(prevWindDirection*PI/180) + (0.0625)*cos(reading*PI/180)) / (1.0625) );
+  //filter wind
+  float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
+  float newCosWind = ( (cos(prevWindDirection*PI/180) + (averageWeighting)*cos(wind_wrtN*PI/180)) / (1 + averageWeighting) );
   wind_wrtN = atan2(newSinWind, newCosWind);
-  wind_wrtN *= 180/PI;
+  wind_wrtN = wind_wrtN*180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
-
   Serial1.print("Averaged Wind w.r.t North: ");
   Serial1.print(wind_wrtN);
   Serial1.println();
@@ -270,14 +271,8 @@ void sRSensor(void) {
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-    sensorData.longi = gps.location.lng();
-    sensorData.lati = gps.location.lat();
-    sensorData.dateTime.year = gps.date.year();
-    sensorData.dateTime.month = gps.date.month();
-    sensorData.dateTime.day = gps.date.day();
-    sensorData.dateTime.hour = gps.time.hour();       // Hour (0-23) (u8)
-    sensorData.dateTime.minute = gps.time.minute();   // Minute (0-59) (u8)
-    sensorData.dateTime.seconds = gps.time.second();  // Second (0-59) (u8)
+      sensorData.longi = gps.location.lng();
+      sensorData.lati = gps.location.lat();
     }
 
 }
