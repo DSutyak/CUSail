@@ -22,6 +22,7 @@
 // Code within setup() runs once on receiving power
 void setup() {
   initSensors(); // Run setup code for all sensors
+  Serial1.println("Waiting for GPS to obtain coordinates and time...");
   initNavigation(); // Set the number of waypoints and the current waypoint # to 0
   initServos(); // attach the sail and tailvane servos
   setWaypoints(); // create the course by means of a waypoint array
