@@ -278,6 +278,7 @@ void sGPS(void) {
       sensorData.dateTime.second = gps.time.second();
       sensorData.dateTime.centiSecond = gps.time.centisecond();
     }
+    // Serial1.println(sensorData.dateTime.minute);
 
 }
 

@@ -14,6 +14,7 @@ Servo sailServo;
 float startHour;
 float startMinute;
 float startSecond;
+float startTime;
 
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
@@ -37,7 +38,8 @@ float intended_angle_of_attack;
 bool stationKeeping = true;
 // need to read these values from the arduino
 float time_inside=0;
-float time_req=5;
+//time_req is in seconds
+float time_req=300;
 
 /*---------Distance to Center Line------*/
 // latitude is y, longitude is x
@@ -67,15 +69,16 @@ void initServos(void) {
 * Sets curretn waypoint number and total number of waypoints to 0*/
 void initNavigation(void) {
 	sGPS();
-  while(sensorData.lati != 0 && sensorData.longi != 0)
+  while(sensorData.lati == 0 && sensorData.longi == 0)
   {
   	sGPS();
   }
   wpNum = 0;
   numWP = 0;
   startSecond = sensorData.dateTime.second;
-  startMinute = sensorData.dateTime.second;
+  startMinute = sensorData.dateTime.minute;
   startHour = sensorData.dateTime.hour;
+  startTime=3600*startHour+60*startMinute+startSecond;
 }
 
 /*Sets servos to the sailAngle and tailAngle*/
@@ -174,11 +177,14 @@ void nShort(void) {
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
   time_inside=sensorData.dateTime.minute - startMinute;
-
+  seconds_inside=sensorData.dateTime.second - startSecond;
+  time_inside=sensorData.dateTime.hour*3600+sensorData.dateTime.minute*60+sensorData.dateTime.second;
+  //issue when we cross over from 12:59 to 1:01
 
   if (stationKeeping){
     Serial1.print("Time: "); Serial1.print(time_inside); Serial1.println();
-    if(time_inside >= time_req ){
+    //only go to the next waypoint at exactly 5 minutes
+    if(time_inside >= time_req && seconds_inside>=0 && (wpNum+1)<numWP){
           printHitWaypointData();
           lightAllLEDs();
           //delay for 3 seconds
@@ -279,7 +285,7 @@ void nShort(void) {
       Serial1.println("FACING RIGHT DIRECT LEFT, Intended Sector: _________TURN LEFT");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      delay(5000);
+//      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = -15;
     }
@@ -314,7 +320,7 @@ void nShort(void) {
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
       Serial1.println("FACING LEFT DIRECT RIGHT, Intended Sector: _______TURN RIGHT");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      delay(5000);
+//      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = 15;
     }
