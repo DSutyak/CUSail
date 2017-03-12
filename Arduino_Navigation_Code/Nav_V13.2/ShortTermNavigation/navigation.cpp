@@ -176,32 +176,29 @@ void nShort(void) {
 
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
-  time_inside=sensorData.dateTime.minute - startMinute;
-  seconds_inside=sensorData.dateTime.second - startSecond;
   time_inside=sensorData.dateTime.hour*3600+sensorData.dateTime.minute*60+sensorData.dateTime.second;
   //issue when we cross over from 12:59 to 1:01
 
   if (stationKeeping){
     Serial1.print("Time: "); Serial1.print(time_inside); Serial1.println();
     //only go to the next waypoint at exactly 5 minutes
-    if(time_inside >= time_req && seconds_inside>=0 && (wpNum+1)<numWP){
-          printHitWaypointData();
-          lightAllLEDs();
-          //delay for 3 seconds
-          delay(3000);
-          lowAllLEDs();
-          // where we will determine where we aim to go at the end of the required amount of time
-          wpNum += 1 ;
+    if(time_inside >= time_req && (wpNum+1)<numWP){
+        printHitWaypointData();
+        lightAllLEDs();
+        //delay for 3 seconds
+        delay(3000);
+        lowAllLEDs();
+        // where we will determine where we aim to go at the end of the required amount of time
+        wpNum += 1 ;
 
-          //reset variables because we have reached the old waypoint
-          r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-          r[1] = wayPoints[wpNum].latitude - sensorData.lati;
-          w[0] = cos((sensorData.windDir)*(PI/180.0));
-          w[1] = sin((sensorData.windDir)*(PI/180.0));
-          currentPosition = {sensorData.lati, sensorData.longi};
-          normr = havDist(wayPoints[wpNum], currentPosition);
-        }
-
+        //reset variables because we have reached the old waypoint
+        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+        w[0] = cos((sensorData.windDir)*(PI/180.0));
+        w[1] = sin((sensorData.windDir)*(PI/180.0));
+        currentPosition = {sensorData.lati, sensorData.longi};
+        normr = havDist(wayPoints[wpNum], currentPosition);
+      }
   }
 
   else{
