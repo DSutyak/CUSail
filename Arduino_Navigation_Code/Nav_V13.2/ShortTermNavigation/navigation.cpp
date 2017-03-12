@@ -164,14 +164,20 @@ void nShort(void) {
   //Dummy normal distance
   float oldnormr=1000;
 
-  printData();
+  // printData();
+  // checking when we have gps
+  if(sensorData.lati == 0){
+    Serial1.println("______NO GPS______");
+  }
   printWaypointData();
 
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
+  time_inside=sensorData.dateTime.minute - startMinute;
 
 
   if (stationKeeping){
+    Serial1.print("Time: "); Serial1.print(time_inside); Serial1.println();
     if(time_inside >= time_req ){
           printHitWaypointData();
           lightAllLEDs();
@@ -258,22 +264,19 @@ void nShort(void) {
   if (boat_wrt_wind<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.println("FACING RIGHT UP RIGHT");
-      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
+      Serial1.println("FACING RIGHT UP RIGHT, Intended Sector: UP RIGHT");
       intended_angle= windDir + optpolartop;
       intended_angle_of_attack = 15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.println("FACING RIGHT DIRECT RIGHT");
-      Serial1.println("\n\nIntended Sector: DIRECT RIGHT\n\n");
+      Serial1.println("FACING RIGHT DIRECT RIGHT, Intended Sector: DIRECT RIGHT");
       intended_angle = anglewaypoint;
       intended_angle_of_attack = 15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.println("FACING RIGHT DIRECT LEFT");
-      Serial1.println("\n\nIntended Sector: _________TURN LEFT\n\n");
+      Serial1.println("FACING RIGHT DIRECT LEFT, Intended Sector: _________TURN LEFT");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
       delay(5000);
@@ -282,22 +285,19 @@ void nShort(void) {
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.println("FACING RIGHT UP LEFT");
-      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
+      Serial1.println("FACING RIGHT UP LEFT, Intended Sector: UP RIGHT");
       intended_angle = windDir + optpolartop;
       intended_angle_of_attack = 15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.println("FACING RIGHT BOTTOM LEFT");
-      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
+      Serial1.println("FACING RIGHT BOTTOM LEFT, Intended Sector: BOTTOM RIGHT");
       intended_angle = windDir + 180 - optpolarbot;
       intended_angle_of_attack = 15;
     }
     //bottom right
     else {
-      Serial1.println("FACING RIGHT BOTTOM RIGHT");
-      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
+      Serial1.println("FACING RIGHT BOTTOM RIGHT, Intended Sector: BOTTOM RIGHT");
       intended_angle = windDir + 180 - optpolarbot;
       intended_angle_of_attack = 15;
     }
@@ -306,15 +306,13 @@ void nShort(void) {
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.println("FACING LEFT UP RIGHT");
-      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
+      Serial1.println("FACING LEFT UP RIGHT, Intended Sector: UP LEFT");
       intended_angle = windDir - optpolartop;
       intended_angle_of_attack = -15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.println("FACING LEFT DIRECT RIGHT");
-      Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
+      Serial1.println("FACING LEFT DIRECT RIGHT, Intended Sector: _______TURN RIGHT");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
       delay(5000);
       intended_angle = anglewaypoint;
@@ -322,29 +320,25 @@ void nShort(void) {
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.println("FACING LEFT DIRECT LEFT");
-      Serial1.println("\n\nIntended Sector: DIRECT LEFT\n\n");
+      Serial1.println("FACING LEFT DIRECT LEFT, Intended Sector: DIRECT LEFT");
       intended_angle = anglewaypoint;
       intended_angle_of_attack = -15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.println("FACING LEFT UP LEFT");
-      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
+      Serial1.println("FACING LEFT UP LEFT, Intended Sector: UP LEFT");
       intended_angle = windDir - optpolartop;
       intended_angle_of_attack = -15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.println("FACING LEFT BOTTOM LEFT");
-      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
+      Serial1.println("FACING LEFT BOTTOM LEFT, Intended Sector: BOTTOM LEFT");
       intended_angle = windDir + 180 + optpolarbot;
       intended_angle_of_attack = -15;
     }
     //bottom right
     else {
-      Serial1.println("FACING LEFT BOTTOM RIGHT");
-      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
+      Serial1.println("FACING LEFT BOTTOM RIGHT, Intended Sector: BOTTOM LEFT");
       intended_angle = windDir + 180 + optpolarbot;
       intended_angle_of_attack = -15;
     }
@@ -352,10 +346,10 @@ void nShort(void) {
 
   // ATTEMPT TO USE INTENDED ANGLE
   float offset = boatDirection-intended_angle;
-  Serial1.print("Intended angle: ");
-  Serial1.println(intended_angle);
-  Serial1.print("Offset from intended angle: ");
-  Serial1.println(offset);
+  // Serial1.print("Intended angle: ");
+  // Serial1.println(intended_angle);
+  // Serial1.print("Offset from intended angle: ");
+  // Serial1.println(offset);
 
   // Use the offset (a positive or negative angle that shows the amount that we
   // are facing away from the intended angle) and wind direction to set the sail
@@ -379,8 +373,8 @@ void nShort(void) {
   // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
 
-  Serial1.println("Angles w.r.t Boat:");
-  printSailTailSet();
+  // Serial1.println("Angles w.r.t Boat:");
+  // printSailTailSet();
 
   //obstacle avoidance; still needs tuning
 //  avoidObject();
