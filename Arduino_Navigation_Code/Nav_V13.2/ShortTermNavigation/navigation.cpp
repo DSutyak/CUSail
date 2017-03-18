@@ -123,6 +123,7 @@ coord_t appel_farRight={42.454345, -76.474471};
 coord_t appel_topRight={42.454715, -76.474551};
 coord_t appel_topLeft={42.454865, -76.475672};
 coord_t appel_bottomRight={42.453828, -76.474454};
+coord_t appel_bottomLeft={42.453923, -76.476063};
 
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
