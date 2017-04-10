@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 import sys
 
@@ -10,6 +11,7 @@ def gui(file_name):
   lines= F.readlines()
   waypoints=[]
   gps=[]
+  wind_values=[]
   raw_ascii=""
   # convert log file in hex to a string in ascii
   for x in range(1,len(lines)):
@@ -37,12 +39,46 @@ def gui(file_name):
     if len(string_data)>13 and string_data[:13]=="Next Waypoint":
       # get lat and lon of the waypoint from the line
       index1=string_data.index(',')
-      lat= string_data[18:index1]
-      lon= string_data[index1+2:-1]
+      lat= float(string_data[18:index1])
+      lon= float(string_data[index1+2:-1])
       # if we havent added the waypoint to the waypoints array, add it
       # probably can be removed, or made more efficient so as not to search
       if [lat,lon] not in waypoints:
         waypoints.append([lat,lon])
+    if len(string_data)>12 and string_data[:4]=="Wind":
+      index=string_data.index(':')
+      wind_value=float(string_data[index+1:])
+      # print wind_value
+      wind_values.append(wind_value)
+
+      # plot x, y, u, v
+
+  vector_length=7
+
+  # gps.append([0,10])
+  # wind_values.append(270)
+
+  xs, ys, us, vs=[],[],[],[]
+  for index in range(0,len(gps)):
+    x=gps[index][0]
+    y=gps[index][1]
+    wind=wind_values[index]
+    # convert to radian coordinate frame
+    wind=(450-wind)%360
+    wind_radian=wind*math.pi/180
+    # print wind
+    u=(vector_length*math.cos(wind_radian))
+    v=(vector_length*math.sin(wind_radian))
+  # rotate 90 degrees ccw then flip across x by x=y, y=x
+    xs.append(y)
+    ys.append(x)
+    us.append(u)
+    vs.append(v)
+
+  # print xs, ys, us, vs
+
+
+
 
   # bottom stairs, bottom left thurston, middle right of x, bottom small stairs
   # test_waypoints=[[42.444240, -76.483258],[42.444259, -76.484435],[42.444545, -76.483094],[42.444808, -76.483158]]
@@ -53,15 +89,21 @@ def gui(file_name):
   # rotate 90 degrees ccw then flip across x by x=y, y=x
   wx, wy, gx, gy=[],[],[],[]
   for x in waypoints:
-    # wx.append(x[0])
     wx.append(x[1])
     wy.append(x[0])
+    # wx.append(x[0])
+    # wy.append(x[1])
   for x in gps:
     gx.append(x[1])
     gy.append(x[0])
+    # wx.append(x[0])
+    # wy.append(x[1])
   plt.axes().set_aspect('equal', 'datalim')
   plt.scatter(wx,wy,c='r')
   plt.scatter(gx,gy,c='b')
+  # x, y, u, v
+  plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
+  plt.draw()
   plt.show()
 
 # main loop of program
