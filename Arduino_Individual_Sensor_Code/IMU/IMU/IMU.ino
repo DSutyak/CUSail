@@ -131,12 +131,4 @@ void loop() {
   Serial.print("Yaw:"), Serial.println(yaw, 4);
   Serial1.print("Yaw:"), Serial1.println(yaw, 4);
   //Serial.print("Roll (-180 to 180):"), Serial.println(roll, 4); //Uncommment to display
-
-  delay(1000);
-   digitalWrite(36, HIGH);
-  delay(1000);
-  digitalWrite(35, HIGH);
-  delay(1000);
-  digitalWrite(22, HIGH);
-  delay(1000);
 }

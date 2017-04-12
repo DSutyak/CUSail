@@ -53,13 +53,15 @@ void addObjects(void) {
     Serial.println("gettting pixy objects");
     uint16_t blocks = pixy.getBlocks();
     if (blocks != 0) {
-      Serial.println("object detected");
         for (int j = 0; j < blocks; j++) {
             if (pixy.blocks[j].signature == 1) {
+              Serial.println("object detected");
                 int32_t xLocation = pixy.blocks[j].x; // range: 0 to 319
                 double tmp = objectVals[1];
                 objectVals[0] = tmp;
                 objectVals[1] = xLocation;
+              Serial.println(objectVals[0]);
+              Serial.println(objectVals[1]);
             }
         }
     }
@@ -125,16 +127,16 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 72, 78.5);
+    newSailAngle = map(sailAngle, 0, 90, 72, 77);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 78.5, 84);
+    newSailAngle = map(sailAngle, 90, 180, 77, 83);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 84, 90);
+    newSailAngle = map(sailAngle, 180, 270, 83, 88);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 90, 96);
+   newSailAngle = map(sailAngle, 270, 360, 88, 94);
   }
   return newSailAngle;
 }
@@ -155,10 +157,10 @@ double tailMapBench( double sailAngle, double tailAngle){
   }
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,70,72);
+    newTailAngle=map(newTailAngle,-30,0,85,45);
   }
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,72,74);
+    newTailAngle=map(newTailAngle,0,30,45,5);
   }
   return newTailAngle;
 }

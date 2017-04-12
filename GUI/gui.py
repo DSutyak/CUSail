@@ -26,6 +26,7 @@ def gui(file_name):
   # look in the lines for Lat Lon coordinates
   for x in range(0,len(lines_ascii)):
     string_data=lines_ascii[x]
+    print string_data
     # print string_data
     # filter out lines that start w "Latitude"
     if len(string_data)>8 and string_data[:8]=='Latitude':

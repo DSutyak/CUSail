@@ -29,7 +29,7 @@ int SI = 75;
 int CLK = 76; 
 int redLED = 22;
 unsigned int angle;
-float angleCorrection = -117;
+float angleCorrection = -125;
 float prevWindDirection = 1;
 float boatDirection = 0;
 float prevSinWind = sin(270*PI/180);

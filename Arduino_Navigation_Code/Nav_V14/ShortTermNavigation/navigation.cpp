@@ -111,14 +111,18 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = appel_bottomRight;
-  wayPoints[1] = appel_topRight;
-  wayPoints[2] = appel_topLeft;
-  wayPoints[3] = appel_door;
-  wayPoints[4] = appel_bottomRight;
-  wayPoints[5] = appel_topRight;
-  wayPoints[6] = appel_topLeft;
-  wayPoints[7] = appel_door;
+//  wayPoints[0] = appel_bottomRight;
+//  wayPoints[1] = appel_topRight;
+//  wayPoints[2] = appel_topLeft;
+//  wayPoints[3] = appel_door;
+//  wayPoints[4] = appel_bottomRight;
+//  wayPoints[5] = appel_topRight;
+//  wayPoints[6] = appel_topLeft;
+//  wayPoints[7] = appel_door;
+  wayPoints[0] = engQuadX;
+  wayPoints[1] = sundial;
+  wayPoints[2] = hollister;
+
 }
 
 /*----------------------------------------*/
@@ -131,12 +135,12 @@ void setWaypoints(void) {
 void nShort(void) {
 
   /*----------Unit testing setters-----------*/
-  	//sensorData.lati = 42.4441782290;
-  	//sensorData.lati=outsideThurston.latitude;
-  	//sensorData.longi=outsideThurston.longitude;
-  	//sensorData.longi = -76.4834140241;
-    //sensorData.windDir = 270;
-  	//sensorData.boatDir = 180;
+    //sensorData.lati = 42.4441782290;
+    //sensorData.lati=outsideThurston.latitude;
+    //sensorData.longi=outsideThurston.longitude;
+    //sensorData.longi = -76.4834140241;
+    sensorData.windDir = 270;
+    //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
@@ -236,7 +240,7 @@ void nShort(void) {
       Serial1.println("\n\nIntended Sector: _________TURN LEFT\n\n");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      delay(5000);
+//      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = -15;
     }
@@ -276,7 +280,7 @@ void nShort(void) {
       Serial1.println("FACING LEFT DIRECT RIGHT");
       Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-      delay(5000);
+//      delay(5000);
       intended_angle = anglewaypoint;
       intended_angle_of_attack = 15;
     }
@@ -339,10 +343,11 @@ void nShort(void) {
   // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
 
-  Serial1.println("Angles w.r.t Boat:");
+//  Serial1.println("Angles w.r.t Boat:");
   printSailTailSet();
 
   //obstacle avoidance; still needs tuning
+  Serial1.println("Check for obstacles");
 //  avoidObject();
 //
 //  Serial1.println("Angles w.r.t Boat after pixy correction:");

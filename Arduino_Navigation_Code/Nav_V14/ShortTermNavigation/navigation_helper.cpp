@@ -7,6 +7,7 @@
 void avoidObject(void) {  
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
+    Serial1.println("Avoiding object");
     double initialReading = objectVals[1];
     double recentReading = objectVals[0];
     double courseChange = initialReading - recentReading;
