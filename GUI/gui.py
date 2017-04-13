@@ -26,7 +26,7 @@ def gui(file_name):
   # look in the lines for Lat Lon coordinates
   for x in range(0,len(lines_ascii)):
     string_data=lines_ascii[x]
-    print string_data
+    # print string_data
     # print string_data
     # filter out lines that start w "Latitude"
     if len(string_data)>8 and string_data[:8]=='Latitude':
@@ -100,10 +100,10 @@ def gui(file_name):
     # wx.append(x[0])
     # wy.append(x[1])
   plt.axes().set_aspect('equal', 'datalim')
-  plt.scatter(wx,wy,c='r')
+  # plt.scatter(wx,wy,c='r')
   plt.scatter(gx,gy,c='b')
   # x, y, u, v
-  plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
+  # plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
   plt.draw()
   plt.show()
 
