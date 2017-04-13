@@ -5,8 +5,8 @@
 #include "navigation.h"
 
 void printData(){
-  Serial1.print("Latitude: "); Serial1.println(sensorData.lati);
-  Serial1.print("Longitude: "); Serial1.println(sensorData.longi);
+  Serial1.print("Latitude: "); Serial1.println(sensorData.lati,8);
+  Serial1.print("Longitude: "); Serial1.println(sensorData.longi,8);
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
 }
@@ -16,9 +16,9 @@ void printWaypointData(){
   Serial1.print("Next Waypoint #");
   Serial1.print(wpNum);
   Serial1.print(": ");
-  Serial1.print(wayPoints[wpNum].latitude);
+  Serial1.print(wayPoints[wpNum].latitude,8);
   Serial1.print(", ");
-  Serial1.println(wayPoints[wpNum].longitude);
+  Serial1.println(wayPoints[wpNum].longitude,8);
 }
 
 void printHitWaypointData(){
