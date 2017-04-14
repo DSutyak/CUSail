@@ -31,12 +31,16 @@ def gui(file_name):
     # filter out lines that start w "Latitude"
     if len(string_data)>8 and string_data[:8]=='Latitude':
       # get the latitude coordinate and the longitude coord from the next line
+      # print string_data
+      # print lines_ascii[x+1]
       lat=float(string_data[10:-1])
       # increment the counter
-      x+=1
-      lon=float(string_data[10:-1])
+      # x+=1
+      lon=float(lines_ascii[x+1][10:-1])
       # add to the gps coordinates
-      gps.append([lat,lon])
+      if lat != 0 and lon !=0:
+        gps.append([lat,lon])
+      # print lat,lon
     if len(string_data)>13 and string_data[:13]=="Next Waypoint":
       # get lat and lon of the waypoint from the line
       index1=string_data.index(',')
@@ -54,27 +58,29 @@ def gui(file_name):
 
       # plot x, y, u, v
 
-  vector_length=7
+  vector_length=.0005
 
   # gps.append([0,10])
   # wind_values.append(270)
 
   xs, ys, us, vs=[],[],[],[]
   for index in range(0,len(gps)):
-    x=gps[index][0]
-    y=gps[index][1]
-    wind=wind_values[index]
-    # convert to radian coordinate frame
-    wind=(450-wind)%360
-    wind_radian=wind*math.pi/180
-    # print wind
-    u=(vector_length*math.cos(wind_radian))
-    v=(vector_length*math.sin(wind_radian))
-  # rotate 90 degrees ccw then flip across x by x=y, y=x
-    xs.append(y)
-    ys.append(x)
-    us.append(u)
-    vs.append(v)
+    if index%20==0:
+      x=gps[index][0]
+      y=gps[index][1]
+      wind=wind_values[index]
+      # convert to radian coordinate frame
+      wind=(450-wind)%360
+      wind_radian=wind*math.pi/180
+      # print wind
+      u=(vector_length*math.cos(wind_radian))
+      v=(vector_length*math.sin(wind_radian))
+    # rotate 90 degrees ccw then flip across x by x=y, y=x
+      if abs(x)>1 and abs(y)>1:
+        xs.append(y)
+        ys.append(x)
+        us.append(-u)
+        vs.append(-v)
 
   # print xs, ys, us, vs
 
@@ -90,20 +96,20 @@ def gui(file_name):
   # rotate 90 degrees ccw then flip across x by x=y, y=x
   wx, wy, gx, gy=[],[],[],[]
   for x in waypoints:
-    wx.append(x[1])
-    wy.append(x[0])
-    # wx.append(x[0])
-    # wy.append(x[1])
+    # print x
+    if abs(x[0])>1 and abs(x[1])>1:
+      wx.append(x[1])
+      wy.append(x[0])
   for x in gps:
-    gx.append(x[1])
-    gy.append(x[0])
-    # wx.append(x[0])
-    # wy.append(x[1])
+    # print x[0], x[1]
+    if abs(x[0])>1 and abs(x[1])>1:
+      gx.append(x[1])
+      gy.append(x[0])
   plt.axes().set_aspect('equal', 'datalim')
-  # plt.scatter(wx,wy,c='r')
+  plt.scatter(wx,wy,c='r')
   plt.scatter(gx,gy,c='b')
   # x, y, u, v
-  # plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
+  plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
   plt.draw()
   plt.show()
 
