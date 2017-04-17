@@ -3,129 +3,69 @@ Servo Sail;
 Servo Tail;
 
 /* Used to calibrate and test sail and tail servos, using their respective servo 
- *  mappings. Uncomment tests as required.*/
+ *  mappings.*/
 
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
+int zeroSail = 0; //Set to 1 to run zeroing code;
+int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
-
- 
  Sail.attach(sailPin);
  Tail.attach(tailPin); 
  //pour a bowl of Serial
  Serial.begin(9600);
- 
 }
 
 
 void loop() {
 
-//  Sail.write(sailMapBench(0)); //Sail to 0
-//  //delay(5000);
-//  
-//  Tail.write(tailMapBench(0, -30));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(0, 0));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(0, 30));
-//  delay(5000);
+  if (zeroSail){
+    Sail.write(sailMapBench(0));
+  }
+  else if (sailTailBoatTest){
+    Sail.write(sailMap(0)); //Sail to 0 
+    delay(5000);
+    Tail.write(tailMap(0, -30));
+    delay(5000);  
+    Tail.write(tailMap(0, 0));
+    delay(5000);
+    Tail.write(tailMap(0, 30));
+    delay(5000);
+    Sail.write(sailMap(90)); //Sail to 90
+    delay(5000);
+    Tail.write(tailMap(90, 60));
+    delay(5000);  
+    Tail.write(tailMap(90, 90));
+    delay(5000);
+    Tail.write(tailMap(90, 120));
+    delay(5000);
+    Sail.write(sailMap(180)); //Sail to 180
+    delay(5000);
+    Tail.write(tailMap(180, 150));
+    delay(5000);  
+    Tail.write(tailMap(180, 180));
+    delay(5000);
+    Tail.write(tailMap(180, -150));
+    delay(5000);
+    Sail.write(sailMap(270)); //Sail to 270
+    delay(5000);
+    Tail.write(tailMap(270, -120));
+    delay(5000);  
+    Tail.write(tailMap(270, -90));
+    delay(5000);
+    Tail.write(tailMap(270, -60));
+    delay(5000)
+  }
+  else if (sailTailBenchTest){
+  }
+  
 
-//  Sail.write(sailMapBench(90)); //Sail to 0
-//  delay(5000);
-//  
-//  Tail.write(tailMapBench(90, 60));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(90, 90));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(90, 120));
-//  delay(5000);
-//
-//  Sail.write(sailMapBench(180)); //Sail to 180
-//  delay(5000);
-//  
-//  Tail.write(tailMapBench(180, 150));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(180, 180));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(180, -150));
-//  delay(5000);
-//
-//  Sail.write(sailMapBench(270)); //Sail to 270
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(270, -120));
-//  delay(5000);  
-//  
-//  Tail.write(tailMapBench(270, -90));
-//  delay(5000);
-//
-//  Tail.write(tailMapBench(270, -60));
-//  delay(5000);
-
-//  Sail.write(sailMapBench(360)); //Sail to 270
-//  delay(5000);
-
-/*Tail and Sail full test for wrt sail*/
-//
-//  Sail.write(sailMap(0)); //Sail to 0
-//  delay(5000);
-//
-//  Tail.write(tailMap(0, -30));
-//  delay(5000);  
-//  
-//  Tail.write(tailMap(0, 0));
-//  delay(5000);
-//
-//  Tail.write(tailMap(0, 30));
-//  delay(5000);
-//
-//  Sail.write(sailMap(90)); //Sail to 90
-//  delay(5000);
-//  
-//  Tail.write(tailMap(90, 60));
-//  delay(5000);  
-//  
-//  Tail.write(tailMap(90, 90));
-//  delay(5000);
-//
-//  Tail.write(tailMap(90, 120));
-//  delay(5000);
-//
-//  Sail.write(sailMap(180)); //Sail to 180
-//  delay(5000);
-//  
-//  Tail.write(tailMap(180, 150));
-//  delay(5000);  
-//  
-//  Tail.write(tailMap(180, 180));
-//  delay(5000);
-//
-//  Tail.write(tailMap(180, -150));
-//  delay(5000);
-//
-//  Sail.write(sailMap(270)); //Sail to 270
-//  delay(5000);
-//
-//  Tail.write(tailMap(270, -120));
-//  delay(5000);  
-//  
-//  Tail.write(tailMap(270, -90));
-//  delay(5000);
-//
-//  Tail.write(tailMap(270, -60));
-//  delay(5000)
 }
 
 /*-------------------Sail and Tail Mapping Functions---------------------*/
-
 
 /* Returns servo command for sail servo for inputted sail angle 
  * Precondition: Sail Angle in 0.. 360

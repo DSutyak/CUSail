@@ -80,16 +80,16 @@ void addObjects(void) {
 double sailMap(double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 71, 91.5);
+    newSailAngle = map(sailAngle, 0, 90, 142, 125.5);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 91.5, 111.5);
+    newSailAngle = map(sailAngle, 90, 180, 125.5, 109);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 111.5, 131);
+    newSailAngle = map(sailAngle, 180, 270, 109.5, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 131, 146.5);
+   newSailAngle = map(sailAngle, 270, 360,91.5, 74.5);
   }
   return newSailAngle;
 }
@@ -98,13 +98,13 @@ double sailMap(double sailAngle){
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
 double tailMap(double sailAngle, double tailAngle){
-
+ 
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
-  }
-
+  } 
+  
   double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
-
+  
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
     newTailAngle+=360;
@@ -112,14 +112,18 @@ double tailMap(double sailAngle, double tailAngle){
   else if(newTailAngle>180){
     newTailAngle-=360;
   }
+
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,38,84);
+    newTailAngle=map(newTailAngle,-30,0,130,100); 
   }
+  
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,85,144);
+    newTailAngle=map(newTailAngle,0,30,100,70); 
   }
+
   return newTailAngle;
+  
 }
 
 
