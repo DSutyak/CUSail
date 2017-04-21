@@ -40,11 +40,9 @@ typedef struct dataStructure {
 #define SO              74
 #define SI              75
 #define CLK             76
-#define redLED1         22
-#define redLED2         44
-#define blueLED         35
-#define yellowLED       36
-#define greenLED        53 // Power LED
+#define orangeLED       34 //Saffron
+#define redLED          35
+#define greenLED        36
 
 /*--------------------------- Global Variables ---------------------------*/
 extern data_t sensorData; //Defines the boat's state, in type data_t
