@@ -82,11 +82,10 @@ coord_t thurstonWestEntrance={42.444245, -76.484068}; //west entrance to thursto
 
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the Cornell Sailing Center
-coord_t lakeOut12 = {42.469847,-76.504522}; //Out in the lake, to the left of the Cornell Sailing Center
-coord_t lakeOut2 = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
-coord_t lakeOut3 = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
-coord_t shore = {42.469717,-76.503341}; //Far end of the docks, to the left of the Cornell Sailing Center
-coord_t shore2 = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
+coord_t lakeOut4 = {42.469847,-76.504522}; //Out in the lake, to the left of the Cornell Sailing Center
+coord_t lakeOut_beach_far = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
+coord_t lakeOut_beach = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
+coord_t shore_beach = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
 coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking from the beach to the left of the Cornell Sailing Center
 coord_t across_low_dock= {42.468887, -76.504546}; //Across the lake from the low dock
@@ -111,18 +110,14 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-//  wayPoints[0] = appel_bottomRight;
-//  wayPoints[1] = appel_topRight;
-//  wayPoints[2] = appel_topLeft;
-//  wayPoints[3] = appel_door;
-//  wayPoints[4] = appel_bottomRight;
-//  wayPoints[5] = appel_topRight;
-//  wayPoints[6] = appel_topLeft;
-//  wayPoints[7] = appel_door;
-  wayPoints[0] = engQuadX;
-  wayPoints[1] = sundial;
-  wayPoints[2] = hollister;
-
+  wayPoints[0] = lakeOut4;
+  wayPoints[1] = high_dock;
+  wayPoints[2] = lakeOut_beach_far;
+  wayPoints[3] = lakeOut4;
+  wayPoints[4] = high_dock;
+  wayPoints[5] = lakeOut_beach;
+  wayPoints[6] = lakeOut_beach_far;
+  wayPoints[7] = high_dock;
 }
 
 /*----------------------------------------*/
@@ -139,7 +134,7 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    // sensorData.windDir = 270;
+    sensorData.windDir = 330;
     //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint
@@ -364,12 +359,12 @@ void nShort(void) {
 
 
 // REAL BOAT SAIL AND TAIL MAPPING
-  // tailAngle = tailMap(sailAngle, tailAngle);
-  // sailAngle = sailMap(sailAngle);
+   tailAngle = tailMap(sailAngle, tailAngle);
+   sailAngle = sailMap(sailAngle);
 
 // TESTBENCH SAIL AND TAIL MAPPING
-  tailAngle = tailMapBench(sailAngle, tailAngle);
-  sailAngle = sailMapBench(sailAngle);
+//  tailAngle = tailMapBench(sailAngle, tailAngle);
+//  sailAngle = sailMapBench(sailAngle);
 
 }
 

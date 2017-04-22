@@ -1,4 +1,4 @@
-  /*YEI 3 Space Sensor
+/*YEI 3 Space Sensor
   Measures Roll, Pitch and Yaw
 
  Required Pins

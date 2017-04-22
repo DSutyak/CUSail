@@ -9,7 +9,7 @@ int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
 int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int sailTailBoatTest =1; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
@@ -23,7 +23,7 @@ void setup() {
 void loop() {
 
   if (zeroSail){
-    Sail.write(sailMapBench(0));
+    Sail.write(sailMap(0));
   }
   else if (sailTailBoatTest){
     Sail.write(sailMap(0)); //Sail to 0 
@@ -57,7 +57,15 @@ void loop() {
     Tail.write(tailMap(270, -90));
     delay(5000);
     Tail.write(tailMap(270, -60));
-    delay(5000)
+    delay(5000);
+    Sail.write(sailMap(360)); //Sail to 270
+    delay(5000);
+    Tail.write(tailMap(360, -120));
+    delay(5000);  
+    Tail.write(tailMap(360, -90));
+    delay(5000);
+    Tail.write(tailMap(360, -60));
+    delay(5000);
   }
   else if (sailTailBenchTest){
   }
