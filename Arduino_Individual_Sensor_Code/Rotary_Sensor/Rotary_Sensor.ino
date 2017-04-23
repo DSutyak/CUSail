@@ -29,7 +29,8 @@ int SI = 75;
 int CLK = 76; 
 int redLED = 22;
 unsigned int angle;
-float angleCorrection = -125;
+float angleCorrection = -26
+; 
 float prevWindDirection = 1;
 float boatDirection = 0;
 float prevSinWind = sin(270*PI/180);
@@ -41,6 +42,7 @@ void setup() {
   Serial1.begin(9600); //Xbee
 
   //Set Pin Modes
+  pinMode(36, OUTPUT);
   pinMode(CSN, OUTPUT);
   pinMode(SI, OUTPUT);
   pinMode(SO, INPUT);
@@ -50,6 +52,8 @@ void setup() {
   
   //Set Slave Select High to Start i.e disable chip
   digitalWrite(CSN, HIGH);
+  //Turn green LED On
+  digitalWrite(36, HIGH);
   
   //Initialize SPI 
   SPI.begin();
@@ -80,6 +84,7 @@ void loop() {
   float reading = ( (unsigned long) angle)*360UL/16384UL;
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
+  reading  = (int) reading%360;
   float reading_wrtN = ((int)(reading + boatDirection))%360;
 
    //---filter wind---

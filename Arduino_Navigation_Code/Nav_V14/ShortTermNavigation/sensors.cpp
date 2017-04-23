@@ -80,16 +80,16 @@ void addObjects(void) {
 double sailMap(double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 71, 91.5);
+    newSailAngle = map(sailAngle, 0, 90, 142, 125.5);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 91.5, 111.5);
+    newSailAngle = map(sailAngle, 90, 180, 125.5, 109);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 111.5, 131);
+    newSailAngle = map(sailAngle, 180, 270, 109.5, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 131, 146.5);
+   newSailAngle = map(sailAngle, 270, 360,91.5, 74.5);
   }
   return newSailAngle;
 }
@@ -98,13 +98,13 @@ double sailMap(double sailAngle){
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
 double tailMap(double sailAngle, double tailAngle){
-
+ 
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
-  }
-
+  } 
+  
   double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
-
+  
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
     newTailAngle+=360;
@@ -112,14 +112,18 @@ double tailMap(double sailAngle, double tailAngle){
   else if(newTailAngle>180){
     newTailAngle-=360;
   }
+
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,38,84);
+    newTailAngle=map(newTailAngle,-30,0,130,100); 
   }
+  
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,85,144);
+    newTailAngle=map(newTailAngle,0,30,100,70); 
   }
+
   return newTailAngle;
+  
 }
 
 
@@ -182,15 +186,14 @@ void initSensors(void) {
   pinMode(SI, OUTPUT);
   pinMode(SO, INPUT);
   pinMode(CLK, OUTPUT);
-  pinMode(redLED1, OUTPUT);
-  pinMode(redLED2, OUTPUT);
+  pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
-  pinMode(blueLED, OUTPUT);
-  pinMode(yellowLED, OUTPUT);
+  pinMode(orangeLED, OUTPUT);
 
   //Set Slave Select signals High i.e disable chips
   digitalWrite(RS_CSN, HIGH);
   digitalWrite(IMU_CSN, HIGH);
+  digitalWrite(greenLED, HIGH);
 
   //Initialize SPI
   SPI.begin();
@@ -202,19 +205,15 @@ void initSensors(void) {
 /*----------LED control----------*/
 
 void lightAllLEDs(){
-  digitalWrite(redLED1, HIGH);
-  digitalWrite(redLED2, HIGH);
-  digitalWrite(yellowLED, HIGH);
-  digitalWrite(blueLED, HIGH);
+  digitalWrite(redLED, HIGH);
+  digitalWrite(orangeLED, HIGH);
   digitalWrite(greenLED, HIGH);
 }
 
 void lowAllLEDs(){
-  digitalWrite(redLED1, LOW);
-  digitalWrite(redLED2, LOW);
-  digitalWrite(yellowLED, LOW);
-  digitalWrite(blueLED, LOW);
-  digitalWrite(greenLED, HIGH);
+  digitalWrite(redLED, LOW);
+  digitalWrite(orangeLED, LOW);
+  digitalWrite(greenLED, LOW);
 }
 
 /*-------------------------------*/
@@ -304,8 +303,11 @@ void sIMU(void) {
     delay(1);
     result = transferByte(0xFF);
     Serial1.println("IMU Stuck!");
+    digitalWrite(redLED, HIGH);
     }
 
+  digitalWrite(redLED, LOW);
+  
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
     for (int jj=0; jj<4; jj++) {

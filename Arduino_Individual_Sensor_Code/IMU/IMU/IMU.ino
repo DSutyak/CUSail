@@ -1,4 +1,4 @@
-  /*YEI 3 Space Sensor
+/*YEI 3 Space Sensor
   Measures Roll, Pitch and Yaw
 
  Required Pins
@@ -27,7 +27,6 @@ const int CSN = 65;
 const int SO = 74;
 const int SI = 75;
 const int CLK = 76;
-int magDeclination = 0;
  
 // Needed to convert the bytes from SPI to float
 union u_types {
@@ -73,12 +72,6 @@ void endianSwap(byte temp[4]) {
 
 void loop() {
 
-  digitalWrite(36, HIGH);
-  delay(1000);
-  digitalWrite(35, HIGH);
-  delay(1000);
-  digitalWrite(22, HIGH);
-
   SPI.beginTransaction(settings);
   
 
@@ -118,7 +111,7 @@ void loop() {
     endianSwap(data[mm].b);
   }
   
-  float yaw = (data[1].fval)*(180/PI) + magDeclination; //yaw angle with respect to North in degrees
+  float yaw = (data[1].fval)*(180/PI); //yaw angle with respect to North in degrees
   
   if (yaw<0){ //convert to 0.. 360 scale
     yaw += 360;
@@ -127,8 +120,6 @@ void loop() {
   float pitch  = (data[0].fval)*(180/PI); //pitch angle in radians
   float roll = (data[2].fval)*(180/PI); //roll angle in radians
 
-  //Serial.print("Pitch (-90 to 90):"), Serial.println(pitch, 4); //Uncomment to display
   Serial.print("Yaw:"), Serial.println(yaw, 4);
   Serial1.print("Yaw:"), Serial1.println(yaw, 4);
-  //Serial.print("Roll (-180 to 180):"), Serial.println(roll, 4); //Uncommment to display
 }
