@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import random
 
 import sys
 
@@ -12,6 +13,8 @@ def gui(file_name):
   waypoints=[]
   gps=[]
   wind_values=[]
+  final_speed_values=[]
+  speed_values=[]
   raw_ascii=""
   # convert log file in hex to a string in ascii
   for x in range(1,len(lines)):
@@ -57,6 +60,10 @@ def gui(file_name):
       wind_values.append(wind_value)
 
       # plot x, y, u, v
+  # testing speed values
+  for x in gps:
+    random_speed=random.uniform(0,3)
+    speed_values.append(random_speed)
 
   vector_length=.0005
 
@@ -76,13 +83,16 @@ def gui(file_name):
       u=(vector_length*math.cos(wind_radian))
       v=(vector_length*math.sin(wind_radian))
     # rotate 90 degrees ccw then flip across x by x=y, y=x
+      final_speed_values.append(speed_values[index])
       if abs(x)>1 and abs(y)>1:
         xs.append(y)
         ys.append(x)
         us.append(-u)
         vs.append(-v)
 
+
   # print xs, ys, us, vs
+
 
 
 
@@ -108,8 +118,14 @@ def gui(file_name):
   plt.axes().set_aspect('equal', 'datalim')
   plt.scatter(wx,wy,c='r')
   plt.scatter(gx,gy,c='b')
+
+  for i,txt in enumerate(speed_values):
+    if i%20==0:
+      # plt.annotate(str(txt),(gps[i][1],gps[i][0]))
+      plt.annotate(str(round(txt,3)),(gx[i],gy[i]))
+
   # x, y, u, v
-  plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=1)
+  plt.quiver(xs,ys,us,vs,angles='xy',scale_units='xy', scale=.5)
   plt.draw()
   plt.show()
 
