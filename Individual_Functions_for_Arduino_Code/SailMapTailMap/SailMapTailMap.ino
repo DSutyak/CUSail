@@ -9,7 +9,7 @@ int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
 int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest =1; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
@@ -17,6 +17,8 @@ void setup() {
  Tail.attach(tailPin); 
  //pour a bowl of Serial
  Serial.begin(9600);
+ pinMode(36,OUTPUT);
+ digitalWrite(36,HIGH);
 }
 
 
@@ -27,47 +29,87 @@ void loop() {
   }
   else if (sailTailBoatTest){
     Sail.write(sailMap(0)); //Sail to 0 
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(0, -30));
-    delay(5000);  
+    delay(2500);  
     Tail.write(tailMap(0, 0));
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(0, 30));
-    delay(5000);
+    delay(2500);
     Sail.write(sailMap(90)); //Sail to 90
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(90, 60));
-    delay(5000);  
+    delay(2500);  
     Tail.write(tailMap(90, 90));
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(90, 120));
-    delay(5000);
+    delay(2500);
     Sail.write(sailMap(180)); //Sail to 180
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(180, 150));
-    delay(5000);  
+    delay(2500);  
     Tail.write(tailMap(180, 180));
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(180, -150));
-    delay(5000);
+    delay(2500);
     Sail.write(sailMap(270)); //Sail to 270
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(270, -120));
-    delay(5000);  
+    delay(2500);  
     Tail.write(tailMap(270, -90));
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(270, -60));
-    delay(5000);
+    delay(2500);
     Sail.write(sailMap(360)); //Sail to 270
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(360, -120));
-    delay(5000);  
+    delay(2500);  
     Tail.write(tailMap(360, -90));
-    delay(5000);
+    delay(2500);
     Tail.write(tailMap(360, -60));
-    delay(5000);
+    delay(2500);
   }
   else if (sailTailBenchTest){
+//    Sail.write(sailMapBench(0)); //Sail to 0 
+//    delay(5000);
+//    Tail.write(tailMapBench(0, -30));
+//    delay(5000);  
+//    Tail.write(tailMapBench(0, 0));
+//    delay(5000);
+//    Tail.write(tailMapBench(0, 30));
+//    delay(5000);
+//    Sail.write(sailMapBench(90)); //Sail to 90
+//    delay(5000);
+//    Tail.write(tailMapBench(90, 60));
+//    delay(5000);  
+//    Tail.write(tailMapBench(90, 90));
+//    delay(5000);
+//    Tail.write(tailMapBench(90, 120));
+//    delay(5000);
+//    Sail.write(sailMapBench(180)); //Sail to 180
+//    delay(5000);
+//    Tail.write(tailMapBench(180, 150));
+//    delay(5000);  
+//    Tail.write(tailMapBench(180, 180));
+//    delay(5000);
+//    Tail.write(tailMapBench(180, -150));
+//    delay(5000);
+    Sail.write(sailMapBench(270)); //Sail to 270
+    delay(5000);
+    Tail.write(tailMapBench(270, -120));
+    delay(5000);  
+    Tail.write(tailMapBench(270, -90));
+    delay(5000);
+    Tail.write(tailMapBench(270, -60));
+    delay(5000);
+    Sail.write(sailMapBench(360)); //Sail to 360
+    delay(5000);
+    Tail.write(tailMapBench(360, -120));
+    delay(5000);  
+    Tail.write(tailMapBench(360, -90));
+    delay(5000);
+    Tail.write(tailMapBench(360, -60));
+    delay(5000);
   }
   
 
@@ -82,16 +124,16 @@ double sailMap(double sailAngle){
   double newSailAngle;
   
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 142, 125.5);
+    newSailAngle = map(sailAngle, 0, 90, 142, 125);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 125.5, 109);
+    newSailAngle = map(sailAngle, 90, 180, 125, 108);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 109.5, 91);
+    newSailAngle = map(sailAngle, 180, 270, 108, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360,91.5, 74.5);
+   newSailAngle = map(sailAngle, 270, 360,91, 74);
   }
   return newSailAngle;
 }
@@ -131,16 +173,16 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 72, 77);
+    newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 77, 83);
+    newSailAngle = map(sailAngle, 90, 180, 105, 110.25);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 83, 88);
+    newSailAngle = map(sailAngle, 180, 270, 110.25, 115.99);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 88, 94);
+   newSailAngle = map(sailAngle, 270, 360, 115.99, 121);
   }
   return newSailAngle;
 }
@@ -161,10 +203,10 @@ double tailMapBench( double sailAngle, double tailAngle){
   }
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,85,45);
+    newTailAngle=map(newTailAngle,-30,0,70,45);
   }
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,45,5);
+    newTailAngle=map(newTailAngle,0,30,45,13);
   }
   return newTailAngle;
 }

@@ -134,7 +134,7 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    sensorData.windDir = 330;
+    sensorData.windDir = 350;
     //sensorData.boatDir = 180;
 
   //find the normal distance to the waypoint

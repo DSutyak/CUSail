@@ -80,16 +80,16 @@ void addObjects(void) {
 double sailMap(double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 142, 125.5);
+    newSailAngle = map(sailAngle, 0, 90, 142, 125);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 125.5, 109);
+    newSailAngle = map(sailAngle, 90, 180, 125, 108);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 109.5, 91);
+    newSailAngle = map(sailAngle, 180, 270, 108, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360,91.5, 74.5);
+   newSailAngle = map(sailAngle, 270, 360,91, 74);
   }
   return newSailAngle;
 }
@@ -200,6 +200,17 @@ void initSensors(void) {
 
   //Initialize pixycam
   pixy.init();
+
+//  while(sensorData.lati == 0.00 || sensorData.longi == 0.00){
+//   digitalWrite(orangeLED, HIGH);
+//   Serial1.print("Latitude                      "); Serial1.println(sensorData.lati, 6);
+//   Serial1.print("Longitude                     "); Serial1.println(sensorData.longi, 6);
+//   Serial1.print("Hours                         "); Serial1.println(sensorData.dateTime.hour); // Hour (0-23)=
+//   Serial1.print("Minutes                       "); Serial1.println(sensorData.dateTime.minute); // Minute (0-59) 
+//   Serial1.print("Seconds                       "); Serial1.println(sensorData.dateTime.seconds); // Second (0-59)
+//   sGPS();
+//  }
+  digitalWrite(orangeLED, LOW);
 }
 
 /*----------LED control----------*/
@@ -274,6 +285,9 @@ void sGPS(void) {
     gps.encode(Serial3.read());
       sensorData.longi = gps.location.lng();
       sensorData.lati = gps.location.lat();
+      sensorData.dateTime.hour = gps.time.hour();
+      sensorData.dateTime.minute = gps.time.minute();
+      sensorData.dateTime.seconds = gps.time.second();
     }
 
 }
