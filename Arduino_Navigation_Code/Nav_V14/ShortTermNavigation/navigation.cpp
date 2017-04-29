@@ -72,11 +72,9 @@ coord_t hollister = {42.444259, -76.484435}; //Hollister Hall
 coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
 coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
 coord_t engQuadX = {42.444612, -76.483492}; //Center of Engineering Quad
-coord_t bottomStairs = {42.444240, -76.483258}; //Bottom of stairs, outside West entrance to Duffield Hall
 coord_t northBottomStairs = {42.444735, -76.483275}; //Bottom of stairs, to the left of North entrance to Duffield Hall
 coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
 coord_t sundial = {42.4448630, -76.4835293}; //Sundial on the engineering quad
-coord_t northQuadStair= {42.444751, -76.483267}; //bottom of the north stairs
 coord_t bottomRightIntersection= {42.444242, -76.483247}; //path intersection bottom right of quad
 coord_t thurstonWestEntrance={42.444245, -76.484068}; //west entrance to thurston on the path
 
