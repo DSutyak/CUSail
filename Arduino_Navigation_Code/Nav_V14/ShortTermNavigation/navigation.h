@@ -24,7 +24,7 @@ typedef struct coordinate {
 //Optimal angle to go at if we cannot go directly to the waypoint
 //Puts us on a tack or jibe
 //Different values for top and bottom of polar plot
-#define optPolarTop 45
+#define optPolarTop 20
 #define optPolarBot 40
 #define angleOfAttack 15
 #define detectionRadius 10

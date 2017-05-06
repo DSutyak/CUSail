@@ -26,6 +26,7 @@ float w[2]; //w[0]: Cosine of the wind direction w.r.t North,
 float sailAngle;
 float tailAngle;
 // the angle that we intend to sail at WRT North
+
 float intended_angle;
 float intended_angle_of_attack;
 
@@ -57,6 +58,7 @@ void initServos(void) {
 void initNavigation(void) {
   wpNum = 0;
   numWP = 0;
+  sensorData.sailAngle = 0;
 }
 
 /*Sets servos to the sailAngle and tailAngle*/
@@ -83,11 +85,11 @@ coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the 
 coord_t lakeOut4 = {42.469847,-76.504522}; //Out in the lake, to the left of the Cornell Sailing Center
 coord_t lakeOut_beach_far = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
 coord_t lakeOut_beach = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
+coord_t lakeOut_beach2 = {42.470535, -76.50489}; 
+coord_t lakeOut_beach3 = {42.471124, -76.505757};
 coord_t shore_beach = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
 coord_t acrossBeach = {42.467918, -76.525419}; //Across the lake, when looking from the beach to the left of the Cornell Sailing Center
-coord_t across_low_dock= {42.468887, -76.504546}; //Across the lake from the low dock
-coord_t across_low_dock_test= {42.468923, -76.503655}; //Across the lake from the low dock, halfway to the main point
 coord_t low_dock={42.468951,-76.502941}; //Right at the lower dock
 coord_t high_dock={42.469552,-76.503353}; //High dock launch point
 
@@ -103,19 +105,14 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 8;
+  numWP = 3;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut4;
-  wayPoints[1] = high_dock;
-  wayPoints[2] = lakeOut_beach_far;
-  wayPoints[3] = lakeOut4;
-  wayPoints[4] = high_dock;
-  wayPoints[5] = lakeOut_beach;
-  wayPoints[6] = lakeOut_beach_far;
-  wayPoints[7] = high_dock;
+  wayPoints[0] = lakeOut_beach2;
+  wayPoints[1] = shore_beach;
+  //wayPoints[2] = shore_beach;
 }
 
 /*----------------------------------------*/
@@ -132,8 +129,10 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    sensorData.windDir = 350;
+    //sensorData.windDir = 345;
     //sensorData.boatDir = 180;
+
+    sensorData.windDir = ((int)(sensorData.windDir + sensorData.sailAngle))%360;
 
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
@@ -328,6 +327,8 @@ void nShort(void) {
   sailAngle = (float)((int)sailAngle%360);
   sailAngle = sailAngle+360;
   sailAngle = (float)((int)sailAngle%360);
+
+  sensorData.sailAngle = sailAngle;
 
   //Convert sail and tail from wrt north to wrt boat
   sailAngle = sailAngle - sensorData.boatDir;

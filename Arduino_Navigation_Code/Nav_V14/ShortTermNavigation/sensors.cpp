@@ -14,7 +14,7 @@ float prevCosWind = sin(270);
 
 double objectVals[2] = {400.0,400.0};
 float prevWindDirection = 270;
-float angleCorrection = -117;
+float angleCorrection = -26;
 float averageWeighting = 0.0625;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
@@ -260,7 +260,7 @@ void sRSensor(void) {
   
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
-  Serial1.print("Current wind reading w.r.t North: ");
+  //Serial1.print("Current wind reading w.r.t North: ");
   Serial1.println(wind_wrtN);
 
   //filter wind
@@ -273,8 +273,10 @@ void sRSensor(void) {
   Serial1.print(wind_wrtN);
   Serial1.println();
   
-  sensorData.windDir = wind_wrtN;
-  prevWindDirection = wind_wrtN;
+  //sensorData.windDir = wind_wrtN;
+  //prevWindDirection = wind_wrtN;
+  sensorData.windDir = reading;
+  prevWindDirection = reading;
 
 }
 

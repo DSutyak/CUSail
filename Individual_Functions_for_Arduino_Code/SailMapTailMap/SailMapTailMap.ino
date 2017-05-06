@@ -8,8 +8,8 @@ Servo Tail;
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
-int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int zeroSail = 1; //Set to 1 to run zeroing code;
+int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
@@ -70,30 +70,30 @@ void loop() {
     delay(2500);
   }
   else if (sailTailBenchTest){
-//    Sail.write(sailMapBench(0)); //Sail to 0 
-//    delay(5000);
-//    Tail.write(tailMapBench(0, -30));
-//    delay(5000);  
-//    Tail.write(tailMapBench(0, 0));
-//    delay(5000);
-//    Tail.write(tailMapBench(0, 30));
-//    delay(5000);
-//    Sail.write(sailMapBench(90)); //Sail to 90
-//    delay(5000);
-//    Tail.write(tailMapBench(90, 60));
-//    delay(5000);  
-//    Tail.write(tailMapBench(90, 90));
-//    delay(5000);
-//    Tail.write(tailMapBench(90, 120));
-//    delay(5000);
-//    Sail.write(sailMapBench(180)); //Sail to 180
-//    delay(5000);
-//    Tail.write(tailMapBench(180, 150));
-//    delay(5000);  
-//    Tail.write(tailMapBench(180, 180));
-//    delay(5000);
-//    Tail.write(tailMapBench(180, -150));
-//    delay(5000);
+    Sail.write(sailMapBench(0)); //Sail to 0 
+    delay(5000);
+    Tail.write(tailMapBench(0, -30));
+    delay(5000);  
+    Tail.write(tailMapBench(0, 0));
+    delay(5000);
+    Tail.write(tailMapBench(0, 30));
+    delay(5000);
+    Sail.write(sailMapBench(90)); //Sail to 90
+    delay(5000);
+    Tail.write(tailMapBench(90, 60));
+    delay(5000);  
+    Tail.write(tailMapBench(90, 90));
+    delay(5000);
+    Tail.write(tailMapBench(90, 120));
+    delay(5000);
+    Sail.write(sailMapBench(180)); //Sail to 180
+    delay(5000);
+    Tail.write(tailMapBench(180, 150));
+    delay(5000);  
+    Tail.write(tailMapBench(180, 180));
+    delay(5000);
+    Tail.write(tailMapBench(180, -150));
+    delay(5000);
     Sail.write(sailMapBench(270)); //Sail to 270
     delay(5000);
     Tail.write(tailMapBench(270, -120));
@@ -159,11 +159,11 @@ double tailMap(double sailAngle, double tailAngle){
 
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,130,100); 
+    newTailAngle=map(newTailAngle,-30,0,140,100); 
   }
   
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,100,70); 
+    newTailAngle=map(newTailAngle,0,30,100,60); 
   }
 
   return newTailAngle;
