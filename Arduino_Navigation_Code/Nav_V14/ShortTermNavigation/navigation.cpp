@@ -58,7 +58,6 @@ void initServos(void) {
 void initNavigation(void) {
   wpNum = 0;
   numWP = 0;
-  sensorData.sailAngle = 0;
 }
 
 /*Sets servos to the sailAngle and tailAngle*/
@@ -105,14 +104,16 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 5;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut_beach2;
+  wayPoints[0] = lakeOut_beach;
   wayPoints[1] = shore_beach;
-  //wayPoints[2] = shore_beach;
+  wayPoints[2] = lakeOut_beach;
+  wayPoints[3] = lakeOut4;
+  wayPoints[4] = shore_beach;
 }
 
 /*----------------------------------------*/
@@ -130,10 +131,9 @@ void nShort(void) {
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
     //sensorData.windDir = 345;
-    //sensorData.boatDir = 180;
-
-    sensorData.windDir = ((int)(sensorData.windDir + sensorData.sailAngle))%360;
-
+    //sensorData.boatDir = 0;
+    //sensorData.sailAngleNorth = 90;
+    
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
   r[1] = wayPoints[wpNum].latitude - sensorData.lati;
@@ -328,8 +328,6 @@ void nShort(void) {
   sailAngle = sailAngle+360;
   sailAngle = (float)((int)sailAngle%360);
 
-  sensorData.sailAngle = sailAngle;
-
   //Convert sail and tail from wrt north to wrt boat
   sailAngle = sailAngle - sensorData.boatDir;
   tailAngle = tailAngle - sensorData.boatDir;
@@ -338,10 +336,8 @@ void nShort(void) {
   sailAngle = int(sailAngle+360)%360;
 
 //  Serial1.println("Angles w.r.t Boat:");
-  printSailTailSet();
 
   //obstacle avoidance; still needs tuning
-  Serial1.println("Check for obstacles");
 //  avoidObject();
 //
 //  Serial1.println("Angles w.r.t Boat after pixy correction:");
@@ -355,7 +351,11 @@ void nShort(void) {
   if (sailAngle < 0) {
     sailAngle += 360;
   }
-
+    
+  printSailTailSet();
+  
+  sensorData.sailAngleBoat = sailAngle;
+  sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
    tailAngle = tailMap(sailAngle, tailAngle);

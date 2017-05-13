@@ -14,7 +14,8 @@ float prevCosWind = sin(270);
 
 double objectVals[2] = {400.0,400.0};
 float prevWindDirection = 270;
-float angleCorrection = -26;
+//float angleCorrection = 27;//Small sail angle correction
+float angleCorrection = -26; //Big sail angle correction
 float averageWeighting = 0.0625;
 
 // Type to convert the bytes from SPI to float (Used as part of the IMU code)
@@ -211,6 +212,15 @@ void initSensors(void) {
 //   sGPS();
 //  }
   digitalWrite(orangeLED, LOW);
+
+  sensorData.boatDir = 0; //Boat direction w.r.t North
+  sensorData.sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
+  sensorData.tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
+  sensorData.pitch = 0;
+  sensorData.roll = 0;
+  sensorData.windDir = 0; // Wind direction w.r.t North
+  sensorData.longi = 0; // Longitude of current global position;
+  sensorData.lati = 0; // Longitude of current global position;
 }
 
 /*----------LED control----------*/
@@ -254,14 +264,13 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
-  Serial1.print("----------Rotary Sensor----------");
+  Serial1.print("----------Rotary Sensor----------\n");
   Serial1.print("Current wind reading w.r.t Boat: ");
   Serial1.println(reading);
   
   //get angle with respect to North
-  float wind_wrtN = ((int)(reading + sensorData.boatDir))%360;
-  //Serial1.print("Current wind reading w.r.t North: ");
-  Serial1.println(wind_wrtN);
+  float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
+  wind_wrtN = ((int)(wind_wrtN + sensorData.boatDir))%360;
 
   //filter wind
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
@@ -269,16 +278,10 @@ void sRSensor(void) {
   wind_wrtN = atan2(newSinWind, newCosWind);
   wind_wrtN = wind_wrtN*180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
-  Serial1.print("Averaged Wind w.r.t North: ");
-  Serial1.print(wind_wrtN);
-  Serial1.println();
   
-  //sensorData.windDir = wind_wrtN;
-  //prevWindDirection = wind_wrtN;
-  sensorData.windDir = reading;
-  prevWindDirection = reading;
-
-}
+  sensorData.windDir = wind_wrtN;
+  prevWindDirection = wind_wrtN;
+  }
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
