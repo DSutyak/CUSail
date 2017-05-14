@@ -39,6 +39,11 @@ coord_t center_end={10,20};
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
 
+bool stationKeeping = true;
+// need to read these values from the arduino
+float time_inside=0;
+float time_req=5;
+
 /* takes a coordinate and returns the distance from the coordinate to the center line */
 float center_distance(coord_t position){
   float top= fabs(slope*position.longitude+position.latitude+intercept);
@@ -84,7 +89,7 @@ coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the 
 coord_t lakeOut4 = {42.469847,-76.504522}; //Out in the lake, to the left of the Cornell Sailing Center
 coord_t lakeOut_beach_far = {42.469065,-76.506674}; //Out in the lake, to the right of the Cornell Sailing Center
 coord_t lakeOut_beach = {42.470894,-76.504712}; //Out in the lake, to the right of the Cornell Sailing Center but further North
-coord_t lakeOut_beach2 = {42.470535, -76.50489}; 
+coord_t lakeOut_beach2 = {42.470535, -76.50489};
 coord_t lakeOut_beach3 = {42.471124, -76.505757};
 coord_t shore_beach = {42.470862,-76.503950}; //Beach, to the right of the Cornell Sailing Center
 coord_t acrossDock = {42.465702, -76.524625}; //Across the lake, when looking from the far edge of the dock to the right of the Cornell Sailing Center
@@ -133,7 +138,7 @@ void nShort(void) {
     //sensorData.windDir = 345;
     //sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
-    
+
   //find the normal distance to the waypoint
   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
   r[1] = wayPoints[wpNum].latitude - sensorData.lati;
@@ -152,6 +157,36 @@ void nShort(void) {
   anglewaypoint=convertto360(anglewaypoint);
 
 
+  /*
+  when not doing station keeping, set boolean stationKeeping to false
+
+  station keeping code: if we have not reached the required time, keep going
+  to the same waypoint over and over (we will never register hitting it)
+  set the waypoint to be the middle of the square of the station
+  once we reach the allotted time, increment our waypoint counter and
+  head to the next waypoint which will be a waypoint which is outside the box
+  */
+  if (stationKeeping){
+    if(time_inside >= time_req ){
+          printHitWaypointData();
+          lightAllLEDs();
+          //delay for 3 seconds
+          delay(3000);
+          lowAllLEDs();
+          // where we will determine where we aim to go at the end of the required amount of time
+          wpNum += 1 ;
+
+          //reset variables because we have reached the old waypoint
+          r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+          r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+          w[0] = cos((sensorData.windDir)*(PI/180.0));
+          w[1] = sin((sensorData.windDir)*(PI/180.0));
+          currentPosition = {sensorData.lati, sensorData.longi};
+          normr = havDist(wayPoints[wpNum], currentPosition);
+        }
+
+  }
+  else{
   //----------REACHED WAYPOINT!----------
     if(((wpNum + 1) < numWP)&&(normr < detectionradius)){
       printHitWaypointData();
@@ -170,6 +205,7 @@ void nShort(void) {
       normr = havDist(wayPoints[wpNum], currentPosition);
     }
    //------------------------------------
+  }
 
   anglewaypoint=convertto360(anglewaypoint);
 
@@ -351,9 +387,9 @@ void nShort(void) {
   if (sailAngle < 0) {
     sailAngle += 360;
   }
-    
+
   printSailTailSet();
-  
+
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
 
