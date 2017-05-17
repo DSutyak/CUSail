@@ -37,10 +37,9 @@ void loop()
   static int i = 0;
   int j;
   uint16_t blocks;
-  char buf[32]; 
+  char buf[32];
   
   blocks = pixy.getBlocks();
-  
   if (blocks)
   {
     i++;
@@ -49,6 +48,7 @@ void loop()
     // frame would bog down the Arduino
     if (i%50==0)
     {
+      Serial.print("ObjDetected");
       sprintf(buf, "Detected %d:\n", blocks);
       Serial.print(buf);
       for (j=0; j<blocks; j++)

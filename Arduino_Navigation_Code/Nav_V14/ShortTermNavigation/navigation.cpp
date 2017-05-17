@@ -114,7 +114,7 @@ void setWaypoints(void) {
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut_beach;
+  wayPoints[0] = engQuadX;
   wayPoints[1] = shore_beach;
   wayPoints[2] = lakeOut_beach;
   wayPoints[3] = lakeOut4;
@@ -149,7 +149,7 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    //sensorData.windDir = 345;
+    sensorData.windDir = 270;
     //sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 

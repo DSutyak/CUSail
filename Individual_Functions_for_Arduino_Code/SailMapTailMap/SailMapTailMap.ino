@@ -8,8 +8,8 @@ Servo Tail;
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
-int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int zeroSail = 1; //Set to 1 to run zeroing code;
+int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
@@ -172,16 +172,16 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
+    newSailAngle = map(sailAngle, 0, 90, 99.5, 106);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 105, 110.25);
+    newSailAngle = map(sailAngle, 90, 180, 106, 111);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 110.25, 115.99);
+    newSailAngle = map(sailAngle, 180, 270, 111, 116);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 115.99, 121);
+   newSailAngle = map(sailAngle, 270, 360, 116, 121);
   }
   return newSailAngle;
 }

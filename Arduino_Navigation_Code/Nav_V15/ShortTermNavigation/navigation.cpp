@@ -30,22 +30,21 @@ float tailAngle;
 
 float intended_angle;
 float intended_angle_of_attack;
-
-/*---------Distance to Center Line------*/
 // latitude is y, longitude is x
 float max_distance=100;
 coord_t center_start={1,2};
 coord_t center_end={10,20};
 
+bool stationKeeping = 0;;
+
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
 
-bool stationKeeping = true;
 // need to read these values from the arduino
 float time_inside=0;
 // time required to stay inside the box for station keeping
 // 5 minutes*60 seconds*1000millis=300,000
-float time_req=300000;
+float time_req=420000;
 
 // 3 minutes*60 seconds*1000millis=300,000
 float max_turn_time=180000;
@@ -147,13 +146,16 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 5;
+  numWP = 4;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = engQuadX;
-  wayPoints[1] = sundial;
+  wayPoints[0] = lakeOut;
+  wayPoints[1] = lakeOut_beach_far;
+  wayPoints[2] = high_dock;
+  wayPoints[3] = lakeOut4;
+  
 
   // nav test with wind from 340
   /*
@@ -183,7 +185,7 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    sensorData.windDir = 270;
+    //sensorData.windDir = 270;
     //sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
@@ -214,6 +216,8 @@ void nShort(void) {
   once we reach the allotted time, increment our waypoint counter and
   head to the next waypoint which will be a waypoint which is outside the box
   */
+  Serial1.print("Time: ");
+  Serial1.println(milTime);
   if (stationKeeping){
     if(milTime >= time_req ){
       printHitWaypointData();
@@ -231,6 +235,7 @@ void nShort(void) {
       w[1] = sin((sensorData.windDir)*(PI/180.0));
       currentPosition = {sensorData.lati, sensorData.longi};
       normr = havDist(wayPoints[wpNum], currentPosition);
+      stationKeeping=0;
     }
 
   }
