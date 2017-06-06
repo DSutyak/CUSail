@@ -35,6 +35,7 @@ float max_distance=100;
 coord_t center_start={1,2};
 coord_t center_end={10,20};
 
+//set to 0 if we are not doing station keeping or 1 if we are
 bool stationKeeping = 0;;
 
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
@@ -50,11 +51,14 @@ float time_req=420000;
 float max_turn_time=180000;
 float start_turn_time=0;
 // 10 seconds*1000 millis=10000
-float time_to_turn=15000;
+float time_to_turn=18000;
 float prev_intended_angle=270;
-float prev_intended_angle_of_attack=15;
+float prev_intended_angle_of_attack=10;
 bool turning=false;
 bool turn_finished=true;
+bool start_end_wp=false;
+bool continue_end_wp=false;
+float final_intended_angle;
 
 
 // float left_bank=42
@@ -155,6 +159,7 @@ void setWaypoints(void) {
   wayPoints[1] = lakeOut_beach_far;
   wayPoints[2] = high_dock;
   wayPoints[3] = lakeOut4;
+  wayPoints[4] = shore_beach;
   
 
   // nav test with wind from 340
@@ -241,23 +246,45 @@ void nShort(void) {
   }
   else{
   //----------REACHED WAYPOINT!----------
-    if(((wpNum + 1) < numWP)&&(normr < detectionradius)){
-      printHitWaypointData();
-      lightAllLEDs();
-      //delay for 3 seconds
-      delay(3000);
-      lowAllLEDs();
-      wpNum += 1 ;
+    // if(((wpNum + 1) < numWP)&&(normr < detectionradius)){
+    //   printHitWaypointData();
+    //   lightAllLEDs();
+    //   //delay for 3 seconds
+    //   delay(3000);
+    //   lowAllLEDs();
+    //   wpNum += 1 ;
 
-      //reset variables because we have reached the old waypoint
-      r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-      r[1] = wayPoints[wpNum].latitude - sensorData.lati;
-      w[0] = cos((sensorData.windDir)*(PI/180.0));
-      w[1] = sin((sensorData.windDir)*(PI/180.0));
-      currentPosition = {sensorData.lati, sensorData.longi};
-      normr = havDist(wayPoints[wpNum], currentPosition);
-    }
+    //   //reset variables because we have reached the old waypoint
+    //   r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+    //   r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+    //   w[0] = cos((sensorData.windDir)*(PI/180.0));
+    //   w[1] = sin((sensorData.windDir)*(PI/180.0));
+    //   currentPosition = {sensorData.lati, sensorData.longi};
+    //   normr = havDist(wayPoints[wpNum], currentPosition);
+    // }
    //------------------------------------
+    if(normr < detectionradius){
+      if ((wpNum + 1) < numWP){
+        printHitWaypointData();
+        lightAllLEDs();
+        //delay for 3 seconds
+        delay(3000);
+        lowAllLEDs();
+        wpNum += 1 ;
+
+        //reset variables because we have reached the old waypoint
+        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+        w[0] = cos((sensorData.windDir)*(PI/180.0));
+        w[1] = sin((sensorData.windDir)*(PI/180.0));
+        currentPosition = {sensorData.lati, sensorData.longi};
+        normr = havDist(wayPoints[wpNum], currentPosition);
+      }
+      else{
+        // if we are at the last waypoint, start to save the sail and tail angles so we continue in a straight line
+        if (!start_end_wp){start_end_wp=true;}
+      }
+    }
   }
 
   anglewaypoint=convertto360(anglewaypoint);
@@ -396,112 +423,119 @@ void nShort(void) {
   }
 
   // turning code
-/*void updateTime(void){
-  milTime = millis();
+
+
+/*
+//figure out if we're at the start and need to reset finished or if we have actually completed a turn
+if (milTime%turntimereq>turntime && turnfinished){
+  //if we havent turned yet (aka turntimereq hasnt happened yet)
+  if (milTime%turntimereq - time_to_turn<0){
+    turnfinished=true;
+  }
 }
-
-void startTurn(float init_sailAngle, float init_tailAngle, float start_time){
-  prev_sail=init_sailAngle;
-  prev_tail=init_tailAngle;
-  start_turn_time=start_time;
-}
-
-
-figure out if we're at the start and need to reset finished or if we have actually completed a turn
-if time%turntimereq>turntime && turnfinished:
-  if we havent turned yet (aka turntimereq hasnt happened yet)
-  if time%turntimereq - time_to_turn<0:
-    turnfinished=true
-
-if time%turntimereq>turntime && !turnfinished && !turning:
-  turning=true
-  if facing left:
+if (milTime%turntimereq>turntime && !turnfinished && !turning){
+  turning=true;
+  if facing left{
     sail and tail = upright angle
-  else sail and tail= upleft angle
+  }
+  else { 
+    sail and tail= upleft angle
+  }
+}
 
-if turning && !turnfinished && (start_turn_time+time_to_turn)<current time:
-  turning=false
-  turnfinished=true
+  if ((turning && !turnfinished) && (start_turn_time+time_to_turn)<milTime){
+    turning=false;
+    turnfinished=true;
+}
 
 
 */
   // need to know if we are at the start of a turn or the end
-  // if (turn_finished){
-  //   float t=(int)millis%((int)max_turn_time)-time_to_turn;
-  //   if (t<0){
-  //     turn_finished=false;
-  //   }
-  // }
+  if (turn_finished){
+    float t=(int)millis%((int)max_turn_time)-time_to_turn;
+    if (t<0){
+      turn_finished=false;
+    }
+  }
+  // if we havent finished a turn yet and we are not turning, need to turn
+  else if (!turn_finished && !turning){
+    // we turn by storing the intended angle in the opposite direction as we are
+    // currently facing
+    if (boat_wrt_wind<180) {
+      //Up right so need to go up left
+      if (dirangle<optpolartop && dirangle>0){
+        intended_angle= windDir - optpolartop;
+        intended_angle_of_attack = -15;
+      }
+      //Up left so need to go up left
+      else if (dirangle>360-optpolartop){
+        intended_angle = windDir - optpolartop;
+        intended_angle_of_attack = -15;
+      }
+      //bottom left so need to go bottom left
+      else if (dirangle < 180 + optpolarbot && dirangle > 180){
+        intended_angle = windDir + 180 + optpolarbot;
+        intended_angle_of_attack = -15;
+      }
+      //bottom right so need to go bottom left
+      else if (dirangle > 180 - optpolarbot &&  dirangle < 180){
+        intended_angle = windDir + 180 + optpolarbot;
+        intended_angle_of_attack = -15;
+      }
+      // we can head directly to the waypoint left or right so complete the turn
+      else{
+        finishTurn();
+      }
+    }
+    //boat facing to left
+    else{
+      //Up right so need to go up right
+      if (dirangle<optpolartop && dirangle>0){
+        intended_angle = windDir + optpolartop;
+        intended_angle_of_attack = 15;
+      }
+      //Up left so need to go up right
+      else if (dirangle>360-optpolartop){
+        intended_angle = windDir + optpolartop;
+        intended_angle_of_attack = 15;
+      }
+      //bottom left so need to go bottom right
+      else if (dirangle < 180 + optpolarbot && dirangle > 180){
+        intended_angle = windDir + 180 - optpolarbot;
+        intended_angle_of_attack = 15;
+      }
+      //bottom right so need to go bottom right
+      else if (dirangle > 180 - optpolarbot && dirangle < 180){
+        intended_angle = windDir + 180 - optpolarbot;
+        intended_angle_of_attack = 15;
+      }
+      // we can head directly to the waypoint left or right so complete the turn
+      else{
+        finishTurn();
+      }
 
-  // // if we havent finished a turn yet and we are not turning, need to turn
-  // else if (!turn_finished && !turning){
-  //   // we turn by storing the intended angle in the opposite direction as we are
-  //   // currently facing
-  //   if (boat_wrt_wind<180) {
-  //     //Up right so need to go up left
-  //     if (dirangle<optpolartop && dirangle>0){
-  //       intended_angle= windDir - optpolartop;
-  //       intended_angle_of_attack = -15;
-  //     }
-  //     //Up left so need to go up left
-  //     else if (dirangle>360-optpolartop){
-  //       intended_angle = windDir - optpolartop;
-  //       intended_angle_of_attack = -15;
-  //     }
-  //     //bottom left so need to go bottom left
-  //     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-  //       intended_angle = windDir + 180 + optpolarbot;
-  //       intended_angle_of_attack = -15;
-  //     }
-  //     //bottom right so need to go bottom left
-  //     else if (dirangle > 180 - optpolarbot &&  dirangle < 180){
-  //       intended_angle = windDir + 180 + optpolarbot;
-  //       intended_angle_of_attack = -15;
-  //     }
-  //     // we can head directly to the waypoint left or right so complete the turn
-  //     else{
-  //       finishTurn();
-  //     }
-  //   }
-  //   //boat facing to left
-  //   else{
-  //     //Up right so need to go up right
-  //     if (dirangle<optpolartop && dirangle>0){
-  //       intended_angle = windDir + optpolartop;
-  //       intended_angle_of_attack = 15;
-  //     }
-  //     //Up left so need to go up right
-  //     else if (dirangle>360-optpolartop){
-  //       intended_angle = windDir + optpolartop;
-  //       intended_angle_of_attack = 15;
-  //     }
-  //     //bottom left so need to go bottom right
-  //     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-  //       intended_angle = windDir + 180 - optpolarbot;
-  //       intended_angle_of_attack = 15;
-  //     }
-  //     //bottom right so need to go bottom right
-  //     else if (dirangle > 180 - optpolarbot && dirangle < 180){
-  //       intended_angle = windDir + 180 - optpolarbot;
-  //       intended_angle_of_attack = 15;
-  //     }
-  //     // we can head directly to the waypoint left or right so complete the turn
-  //     else{
-  //       finishTurn();
-  //     }
+    }
+    // store this intended angle
+    startTurn(intended_angle,intended_angle_of_attack, (int)millis);
+  }
+ // finished a turn
+  else if (turning && !turn_finished && (int)start_turn_time+(int)time_to_turn<(int)millis){
+    finishTurn();
+  }
+  // we dont need to reset any variables, so continue with the turn
+  else if (turning){
+    holdTurn();
+  }
 
-  //   }
-  //   // store this intended angle
-  //   startTurn(intended_angle,intended_angle_of_attack, (int)millis);
-  // }
-  // // finished a turn
-  // else if (turning && !turn_finished && (int)start_turn_time+(int)time_to_turn<(int)millis){
-  //   finishTurn();
-  // }
-  // // we dont need to reset any variables, so continue with the turn
-  // else if (turning){
-  //   holdTurn();
-  // }
+
+// if we have hit the last waypoint, continue at the same intended angle
+  if (start_end_wp){
+    final_intended_angle=intended_angle;
+    continue_end_wp=true;
+  }
+  if (continue_end_wp){
+    intended_angle=final_intended_angle;
+  }
 
   // USE INTENDED ANGLE
   float offset = boatDirection-intended_angle;
