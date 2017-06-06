@@ -50,6 +50,7 @@ float time_req=420000;
 // 3 minutes*60 seconds*1000millis=300,000
 float max_turn_time=180000;
 float start_turn_time=0;
+float start_box_time;
 // 10 seconds*1000 millis=10000
 float time_to_turn=18000;
 float prev_intended_angle=270;
@@ -224,12 +225,35 @@ void nShort(void) {
   Serial1.print("Time: ");
   Serial1.println(milTime);
   if (stationKeeping){
-    if(milTime >= time_req ){
+    /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
+       if we are going to the first waypoint, set radius to 20. 
+       also, store the start time that we hit the waypoint, so we can accurately stay inside
+       the box for 5 minutes
+       once we hit, increase the waypoint number to 1, which will make our boat continue to
+       sail to the center of the box
+       once 5 minutes are up, increase the waypoint number to 2 and set station keeping to false
+       in this way we will sail out the box to wp2 which is outisde the box
+    */
+    if (wpNum==0){
+      detectionradius=20;
+      if(normr < detectionradius){
+        printHitWaypointData();
+        // where we will determine where we aim to go at the end of the required amount of time
+        wpNum += 1 ;
+
+        //reset variables because we have reached the old waypoint
+        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+        w[0] = cos((sensorData.windDir)*(PI/180.0));
+        w[1] = sin((sensorData.windDir)*(PI/180.0));
+        currentPosition = {sensorData.lati, sensorData.longi};
+        normr = havDist(wayPoints[wpNum], currentPosition);
+        start_box_time=milTime;
+      }
+    }
+    //we have  reached the 5 minute time (current time - the time we entered the box at)
+    else if(milTime- start_box_time >= time_req ){
       printHitWaypointData();
-      lightAllLEDs();
-      //delay for 3 seconds
-      delay(3000);
-      lowAllLEDs();
       // where we will determine where we aim to go at the end of the required amount of time
       wpNum += 1 ;
 
