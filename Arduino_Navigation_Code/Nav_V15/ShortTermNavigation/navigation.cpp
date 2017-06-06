@@ -165,15 +165,50 @@ void setWaypoints(void) {
 
   // nav test with wind from 340
   /*
-  {42.47094, -76.504745}
-  {42.470432, -76.505028}
-  {42.470318, -76.504906}
-  {42.470348, -76.504654}
-  {42.470493, -76.504143}
-  {42.47065, -76.504028}
-  {42.470764, -76.504135}
-  {42.47094, -76.504745}
-  https://binged.it/2qgjHbs
+  numWP = 9;
+  wpNum = 0;
+
+  wayPoints[0]= {42.470432, -76.505028}; //nav_0
+  wayPoints[1]={42.470318, -76.504906}; //nav_1
+  wayPoints[2]={42.470348, -76.504654}; //nav_2
+  wayPoints[3]={42.470493, -76.504143}; //nav_3
+  wayPoints[4]={42.47065, -76.504028}; //nav_4
+  wayPoints[5]={42.470764, -76.504135}; //nav_5
+  wayPoints[6]={42.470943, -76.504326};//nav_6
+  wayPoints[7]={42.47094, -76.504745};  //nav_7
+  wayPoints[8]={42.471104, -76.504883}; //nav_8
+
+  */
+
+  //endurance race
+  /*
+  wayPoints[0]={42.474224, -76.507195};
+  wayPoints[1]={42.473209, -76.510284};
+  wayPoints[2]={42.469063, -76.508011};
+  wayPoints[3]={42.469856, -76.505264};
+  */
+  /*
+  Navigation challenge: set waypoints, assuming wind from above, in numerical order
+  around the buoys represented by x's
+
+
+                              8
+
+
+                        x     7     x
+                                                    6
+
+
+
+
+
+
+
+        0    x                                  x      5
+
+            1                                      4
+                  2                           3
+
   */
 }
 
