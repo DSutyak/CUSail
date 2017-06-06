@@ -116,11 +116,11 @@ double tailMap(double sailAngle, double tailAngle){
 
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,130,100); 
+    newTailAngle=map(newTailAngle,-30,0,140,100); 
   }
   
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,100,70); 
+    newTailAngle=map(newTailAngle,0,30,100,60); 
   }
 
   return newTailAngle;

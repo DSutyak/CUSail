@@ -8,8 +8,8 @@ Servo Tail;
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
-int zeroSail = 1; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int zeroSail = 0; //Set to 1 to run zeroing code;
+int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
@@ -71,27 +71,27 @@ void loop() {
   else if (sailTailBenchTest){
     Sail.write(sailMapBench(0)); //Sail to 0 
     delay(5000);
-    Tail.write(tailMapBench(0, -30));
+    Tail.write(tailMapBench(0, -10));
     delay(5000);  
     Tail.write(tailMapBench(0, 0));
     delay(5000);
-    Tail.write(tailMapBench(0, 30));
+    Tail.write(tailMapBench(0, 10));
     delay(5000);
     Sail.write(sailMapBench(90)); //Sail to 90
     delay(5000);
-    Tail.write(tailMapBench(90, 60));
+    Tail.write(tailMapBench(90, 70));
     delay(5000);  
     Tail.write(tailMapBench(90, 90));
     delay(5000);
-    Tail.write(tailMapBench(90, 120));
+    Tail.write(tailMapBench(90, 100));
     delay(5000);
     Sail.write(sailMapBench(180)); //Sail to 180
     delay(5000);
-    Tail.write(tailMapBench(180, 150));
+    Tail.write(tailMapBench(180, 170));
     delay(5000);  
     Tail.write(tailMapBench(180, 180));
     delay(5000);
-    Tail.write(tailMapBench(180, -150));
+    Tail.write(tailMapBench(180, -170));
     delay(5000);
     Sail.write(sailMapBench(270)); //Sail to 270
     delay(5000);
