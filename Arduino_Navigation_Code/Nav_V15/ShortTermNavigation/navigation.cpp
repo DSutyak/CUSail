@@ -61,6 +61,10 @@ bool start_end_wp=false;
 bool continue_end_wp=false;
 float final_intended_angle;
 
+//set to true when doing endurance, when we reach the last waypoint, reset wpNum to 0
+bool endurance=false;
+
+
 
 // float left_bank=42
 
@@ -151,7 +155,7 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 4;
+  numWP = 5;
   wpNum = 0;
 
   //Set way points to desired coordinates.
@@ -182,10 +186,24 @@ void setWaypoints(void) {
 
   //endurance race
   /*
+
+  numWP=16;
+  wpNum=0;
   wayPoints[0]={42.474224, -76.507195};
-  wayPoints[1]={42.473209, -76.510284};
-  wayPoints[2]={42.469063, -76.508011};
-  wayPoints[3]={42.469856, -76.505264};
+  wayPoints[1]={42.473862, -76.508194};
+  wayPoints[3]={42.473209, -76.510284};
+  wayPoints[4]={42.472359, -76.51004};
+  wayPoints[5]={42.471474, -76.509651};
+  wayPoints[6]={42.470634, -76.509155};
+  wayPoints[7]={42.469826, -76.508621};
+  wayPoints[8]={42.469063, -76.508011};
+  wayPoints[9]={42.469334, -76.507187};
+  wayPoints[10]={42.469635, -76.506279};
+  wayPoints[11]={42.469856, -76.505264};
+  wayPoints[12]={42.470695, -76.505699};
+  wayPoints[13]={42.471519, -76.506134};
+  wayPoints[14]={42.472309, -76.506645};
+  wayPoints[15]={42.473183, -76.50695};
   */
   /*
   Navigation challenge: set waypoints, assuming wind from above, in numerical order
@@ -340,6 +358,24 @@ void nShort(void) {
         normr = havDist(wayPoints[wpNum], currentPosition);
       }
       else{
+        //if we are doing endurance, reset the wpNum to 0
+        if (endurance){
+          printHitWaypointData();
+          lightAllLEDs();
+          //delay for 3 seconds
+          delay(3000);
+          lowAllLEDs();
+          wpNum += 1 ;
+
+          //reset variables because we have reached the old waypoint
+          r[0] = wayPoints[wpNum].longitude - sensorData.longi;
+          r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+          w[0] = cos((sensorData.windDir)*(PI/180.0));
+          w[1] = sin((sensorData.windDir)*(PI/180.0));
+          currentPosition = {sensorData.lati, sensorData.longi};
+          normr = havDist(wayPoints[wpNum], currentPosition);
+          wpNum=0;
+        }
         // if we are at the last waypoint, start to save the sail and tail angles so we continue in a straight line
         if (!start_end_wp){start_end_wp=true;}
       }
