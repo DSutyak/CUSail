@@ -253,9 +253,9 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
-  Serial1.print("----------Rotary Sensor----------\n");
-  Serial1.print("Current wind reading w.r.t Boat: ");
-  Serial1.println(reading);
+//  Serial1.print("----------Rotary Sensor----------\n");
+//  Serial1.print("Current wind reading w.r.t Boat: ");
+//  Serial1.println(reading);
   
   //get angle with respect to North
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
@@ -310,7 +310,7 @@ void sIMU(void) {
   while (result != 0x01) {  // Repeat until device is Ready
     delay(1);
     result = transferByte(0xFF);
-    Serial1.println("IMU Stuck!");
+//    Serial1.println("IMU Stuck!");
     digitalWrite(redLED, HIGH);
     }
 

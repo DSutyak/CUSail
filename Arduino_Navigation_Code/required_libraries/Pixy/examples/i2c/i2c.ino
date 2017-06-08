@@ -29,24 +29,27 @@ void setup()
   Serial.print("Starting...\n");
   
   pixy.init();
+  Serial.println("Finished");
 }
 
 
 void loop() 
 { 
+//  Serial.print("looping");
   static int i = 0;
   int j;
   uint16_t blocks;
   char buf[32];
   
   blocks = pixy.getBlocks();
+//  Serial.print("finished getting blocks");
   if (blocks)
   {
     i++;
     
     // do this (print) every 50 frames because printing every
     // frame would bog down the Arduino
-    if (i%50==0)
+//    if (i%50==0)
     {
       Serial.print("ObjDetected");
       sprintf(buf, "Detected %d:\n", blocks);
@@ -58,6 +61,6 @@ void loop()
         pixy.blocks[j].print();
       }
     }
-  }  
+//  }  
 }
 

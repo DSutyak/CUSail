@@ -36,7 +36,7 @@ coord_t center_start={1,2};
 coord_t center_end={10,20};
 
 //set to 0 if we are not doing station keeping or 1 if we are
-bool stationKeeping = 0;;
+bool stationKeeping = 0;
 
 float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
 float intercept= center_start.latitude - slope * center_start.longitude;
@@ -45,7 +45,7 @@ float intercept= center_start.latitude - slope * center_start.longitude;
 float time_inside=0;
 // time required to stay inside the box for station keeping
 // 5 minutes*60 seconds*1000millis=300,000
-float time_req=420000;
+float time_req=270000;
 
 // 3 minutes*60 seconds*1000millis=300,000
 float max_turn_time=180000;
@@ -64,6 +64,14 @@ float final_intended_angle;
 //set to true when doing endurance, when we reach the last waypoint, reset wpNum to 0
 bool endurance=false;
 
+//set to true when doing obstacle avoidance
+bool avoid_test=true;
+bool avoiding=false;
+float avoid_intended;
+//the angle that we change our intended angle by in order to avoid an object
+float turn_angle=1;
+//1 is right, -1 is left, 0 is not seen yet
+int avoid_direction=0;
 
 
 // float left_bank=42
@@ -117,6 +125,82 @@ void finishTurn(){
   turn_finished=true;
 }
 
+void avoidObject(void) {  
+   addObjects();
+   if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
+    // if (!avoiding){
+      avoiding=true;
+      double initialReading = objectVals[1];
+      double recentReading = objectVals[0];
+      // double courseChange = initialReading - recentReading;
+      double courseChange=recentReading-initialReading;
+      Serial1.print("initial: ");
+      Serial1.println(initialReading);
+      Serial1.print("recent: ");
+      Serial1.println(recentReading);
+      Serial1.print("avoiddirection: ");
+      Serial1.println(avoid_direction);
+      //if its the first time we have seen an object
+      if (avoid_direction==0){
+        //right to left
+        if (initialReading>150){
+          avoid_direction=1;
+        }
+        //left to right
+        else{
+          avoid_direction=-1;
+        }
+      }
+      avoid_intended+=avoid_direction*turn_angle;
+      avoid_intended=(float)(((int)avoid_intended+360) %360);
+      Serial1.print(avoid_intended);
+      Serial1.println();
+      //recentReading = (recentReading / 159.5) - 1.0; // this makes
+      // recentReading from -1.0 to 1.0 with 0.0 being center of the frame
+      // if (abs(courseChange) < 0.5) {
+      //   // we need to make an evasion manuever
+      //   if (recentReading > 0)
+      //     recentReading = 1 - recentReading;// reverse recentReading measure
+      //       // so that closer to 1 = closer to center
+      //   else
+      //     recentReading = -1 - recentReading;
+      //   sailAngle += recentReading * 15;
+      //   tailAngle += recentReading * 15;
+      // }
+      // else if (initialReading > recentReading) {
+      //   // make starboard turn
+      //   recentReading = abs(15.0*recentReading);
+      //   sailAngle += recentReading;
+      //   tailAngle += recentReading;
+
+      // }
+      // else {
+      //   // make port side turn
+      //   recentReading = abs(15.0*recentReading);
+      //   sailAngle -= recentReading;
+      //   tailAngle -= recentReading;
+      // }
+      //right side?
+      // if (recentReading>0){
+      //   avoid_intended=intended_angle+turn_angle;
+      //   avoiding=true;
+      // }
+      // //left side
+      // else{
+      //   avoid_intended=intended_angle-turn_angle;
+      //   avoiding=true;
+      // }
+    // }
+  }
+  //we cannot detect an object, so stop the temporary intended angle and sail
+  // towards the target
+  else {
+    avoiding=false;
+  }
+  
+  // tailAngle = (float)( 
+}
+
 /*----------Stored Coordinates----------*/
 //Coordinates in and around the Engineering Quad, Cornell university
 coord_t olin = {42.445457, -76.484322}; //Olin Hall
@@ -154,22 +238,24 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 * by creating the wayPoints array*/
 void setWaypoints(void) {
 
+
   //Make the waypoint array
-  numWP = 5;
+  numWP = 2;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = lakeOut;
-  wayPoints[1] = lakeOut_beach_far;
-  wayPoints[2] = high_dock;
-  wayPoints[3] = lakeOut4;
-  wayPoints[4] = shore_beach;
+  wayPoints[0] = sundial;
+  wayPoints[1] = outsideThurston;
   
 
-  // nav test with wind from 340
+  
+  
   /*
-  numWP = 9;
+  // nav test with wind from 340
+  
+//  numWP = 9;
+  numWP=8;
   wpNum = 0;
 
   wayPoints[0]= {42.470432, -76.505028}; //nav_0
@@ -180,10 +266,32 @@ void setWaypoints(void) {
   wayPoints[5]={42.470764, -76.504135}; //nav_5
   wayPoints[6]={42.470943, -76.504326};//nav_6
   wayPoints[7]={42.47094, -76.504745};  //nav_7
-  wayPoints[8]={42.471104, -76.504883}; //nav_8
+  //wayPoints[8]={42.471104, -76.504883}; //nav_8
 
   */
+  
 
+  
+  //STATION KEEPING TEST
+  /*
+  numWP=3;
+  wpNum=0;
+  wayPoints[0]={42.470737, -76.504707}; //nav_0
+  wayPoints[1]={42.470737, -76.504707}; //nav_1
+  wayPoints[2]={42.470863, -76.503975}; //nav_2
+
+  */
+  /*
+   //station keeping lakehouse test
+  //going to lakehouse then back to picnic
+
+  numWP=3;
+  wpNum=0;
+  wayPoints[0]={42.47049, -76.503212}; //nav_0
+  wayPoints[1]={42.47049, -76.503212}; //nav_1
+  wayPoints[2]={42.470783, -76.503357}; //nav_2
+  */
+  
   //endurance race
   /*
 
@@ -244,7 +352,7 @@ void nShort(void) {
     //sensorData.lati=outsideThurston.latitude;
     //sensorData.longi=outsideThurston.longitude;
     //sensorData.longi = -76.4834140241;
-    //sensorData.windDir = 270;
+    sensorData.windDir = 270;
     //sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
@@ -258,9 +366,18 @@ void nShort(void) {
 
   //Dummy normal distance
   float oldnormr=1000;
+  if(sensorData.lati==0){
+    Serial1.println("Don't have GPS");
+  }
+  // printData();
+  // printWaypointData();
+  Serial1.print("WP:");
+  Serial1.print(wpNum);
+  Serial1.print(";");
 
-  printData();
-  printWaypointData();
+  Serial1.print("D:");
+  Serial1.print(normr);
+  Serial1.print(";");
 
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
@@ -275,8 +392,9 @@ void nShort(void) {
   once we reach the allotted time, increment our waypoint counter and
   head to the next waypoint which will be a waypoint which is outside the box
   */
-  Serial1.print("Time: ");
-  Serial1.println(milTime);
+  Serial1.print("T:");
+  Serial1.print(milTime);
+  Serial1.print("; ");
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
        if we are going to the first waypoint, set radius to 20. 
@@ -290,7 +408,7 @@ void nShort(void) {
     if (wpNum==0){
       detectionradius=20;
       if(normr < detectionradius){
-        printHitWaypointData();
+        // printHitWaypointData();
         // where we will determine where we aim to go at the end of the required amount of time
         wpNum += 1 ;
 
@@ -306,7 +424,7 @@ void nShort(void) {
     }
     //we have  reached the 5 minute time (current time - the time we entered the box at)
     else if(milTime- start_box_time >= time_req ){
-      printHitWaypointData();
+      // printHitWaypointData();
       // where we will determine where we aim to go at the end of the required amount of time
       wpNum += 1 ;
 
@@ -342,11 +460,11 @@ void nShort(void) {
    //------------------------------------
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
-        printHitWaypointData();
-        lightAllLEDs();
+        // printHitWaypointData();
+        // lightAllLEDs();
         //delay for 3 seconds
-        delay(3000);
-        lowAllLEDs();
+        // delay(3000);
+        // lowAllLEDs();
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
@@ -360,11 +478,11 @@ void nShort(void) {
       else{
         //if we are doing endurance, reset the wpNum to 0
         if (endurance){
-          printHitWaypointData();
-          lightAllLEDs();
+          // printHitWaypointData();
+          // lightAllLEDs();
           //delay for 3 seconds
-          delay(3000);
-          lowAllLEDs();
+          // delay(3000);
+          // lowAllLEDs();
           wpNum += 1 ;
 
           //reset variables because we have reached the old waypoint
@@ -377,7 +495,7 @@ void nShort(void) {
           wpNum=0;
         }
         // if we are at the last waypoint, start to save the sail and tail angles so we continue in a straight line
-        if (!start_end_wp){start_end_wp=true;}
+        // if (!start_end_wp){start_end_wp=true;}
       }
     }
   }
@@ -425,22 +543,19 @@ void nShort(void) {
   if (boat_wrt_wind<180) {
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.println("FACING RIGHT UP RIGHT");
-      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
+      Serial1.print("RIGHT UP RIGHT->UP RIGHT");
       intended_angle= windDir + optpolartop;
       intended_angle_of_attack = 15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.println("FACING RIGHT DIRECT RIGHT");
-      Serial1.println("\n\nIntended Sector: DIRECT RIGHT\n\n");
+      Serial1.print("RIGHT DIRECT RIGHT->DIRECT RIGHT");
       intended_angle = anglewaypoint;
       intended_angle_of_attack = 15;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.println("FACING RIGHT DIRECT LEFT");
-      Serial1.println("\n\nIntended Sector: _________TURN LEFT\n\n");
+      Serial1.print("RIGHT DIRECT LEFT->TURN LEFT");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
 //      delay(5000);
@@ -449,22 +564,19 @@ void nShort(void) {
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.println("FACING RIGHT UP LEFT");
-      Serial1.println("\n\nIntended Sector: UP RIGHT\n\n");
+      Serial1.print("RIGHT UP LEFT->UP RIGHT");
       intended_angle = windDir + optpolartop;
       intended_angle_of_attack = 15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.println("FACING RIGHT BOTTOM LEFT");
-      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
+      Serial1.print("RIGHT BOTTOM LEFT->BOTTOM RIGHT");
       intended_angle = windDir + 180 - optpolarbot;
       intended_angle_of_attack = 15;
     }
     //bottom right
     else {
-      Serial1.println("FACING RIGHT BOTTOM RIGHT");
-      Serial1.println("\n\nIntended Sector: BOTTOM RIGHT\n\n");
+      Serial1.print("RIGHT BOTTOM RIGHT->BOTTOM RIGHT");
       intended_angle = windDir + 180 - optpolarbot;
       intended_angle_of_attack = 15;
     }
@@ -473,15 +585,13 @@ void nShort(void) {
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.println("FACING LEFT UP RIGHT");
-      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
+      Serial1.print("LEFT UP RIGHT->UP LEFT");
       intended_angle = windDir - optpolartop;
       intended_angle_of_attack = -15;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.println("FACING LEFT DIRECT RIGHT");
-      Serial1.println("\n\nIntended Sector: _______TURN RIGHT\n\n");
+      Serial1.print("LEFT DIRECT RIGHT->TURN RIGHT");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
 //      delay(5000);
       intended_angle = anglewaypoint;
@@ -489,29 +599,25 @@ void nShort(void) {
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.println("FACING LEFT DIRECT LEFT");
-      Serial1.println("\n\nIntended Sector: DIRECT LEFT\n\n");
+      Serial1.print("LEFT DIRECT LEFT->DIRECT LEFT");
       intended_angle = anglewaypoint;
       intended_angle_of_attack = -15;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.println("FACING LEFT UP LEFT");
-      Serial1.println("\n\nIntended Sector: UP LEFT\n\n");
+      Serial1.print("LEFT UP LEFT->UP LEFT");
       intended_angle = windDir - optpolartop;
       intended_angle_of_attack = -15;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.println("FACING LEFT BOTTOM LEFT");
-      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
+      Serial1.print("LEFT BOTTOM LEFT->BOTTOM LEFT");
       intended_angle = windDir + 180 + optpolarbot;
       intended_angle_of_attack = -15;
     }
     //bottom right
     else {
-      Serial1.println("FACING LEFT BOTTOM RIGHT");
-      Serial1.println("\n\nIntended Sector: BOTTOM LEFT\n\n");
+      Serial1.print("LEFT BOTTOM RIGHT->BOTTOM LEFT");
       intended_angle = windDir + 180 + optpolarbot;
       intended_angle_of_attack = -15;
     }
@@ -545,6 +651,8 @@ if (milTime%turntimereq>turntime && !turnfinished && !turning){
 
 
 */
+
+/*
   // need to know if we are at the start of a turn or the end
   if (turn_finished){
     float t=(int)millis%((int)max_turn_time)-time_to_turn;
@@ -622,22 +730,32 @@ if (milTime%turntimereq>turntime && !turnfinished && !turning){
     holdTurn();
   }
 
+  */
+
 
 // if we have hit the last waypoint, continue at the same intended angle
-  if (start_end_wp){
-    final_intended_angle=intended_angle;
-    continue_end_wp=true;
-  }
-  if (continue_end_wp){
-    intended_angle=final_intended_angle;
+  // if (start_end_wp){
+  //   final_intended_angle=intended_angle;
+  //   continue_end_wp=true;
+  // }
+  // if (continue_end_wp){
+  //   intended_angle=final_intended_angle;
+  // }
+  Serial1.print(";Int_angle: ");
+  Serial1.print(intended_angle);
+  if (avoid_test){
+    avoidObject();
+    if (avoiding){
+      intended_angle=avoid_intended;
+    }
   }
 
   // USE INTENDED ANGLE
   float offset = boatDirection-intended_angle;
-  Serial1.print("Intended angle: ");
-  Serial1.println(intended_angle);
-  Serial1.print("Offset from intended angle: ");
-  Serial1.println(offset);
+  // Serial1.print("Intended angle: ");
+  // Serial1.println(intended_angle);
+  // Serial1.print("Offset from intended angle: ");
+  // Serial1.println(offset);
 
   // Use the offset (a positive or negative angle that shows the amount that we
   // are facing away from the intended angle) and wind direction to set the sail
@@ -678,9 +796,9 @@ if (milTime%turntimereq>turntime && !turnfinished && !turning){
     sailAngle += 360;
   }
 
-  printSailTailSet();
+  // printSailTailSet();
 
-  sensorData.sailAngleBoat = sailAngle;
+  sensorData.sailAngleBoat = sailAngle; 
   sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
