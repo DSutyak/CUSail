@@ -101,9 +101,9 @@ void loop() {
   prevWindDirection = wind;
   
   //print angle to the screen
-  //Serial.print("Wind: ");Serial.println(wind);
+  Serial.print("rawWind wrt Sail: ");Serial.println(reading);
   Serial.print("reading: ");Serial.println(reading_wrtN);
-  Serial1.println(reading);
+//  Serial1.println(reading);
 }
 
 

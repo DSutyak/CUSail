@@ -254,10 +254,12 @@ void sRSensor(void) {
   reading = (reading<0)?(reading+360):reading;
 
 //  Serial1.print("----------Rotary Sensor----------\n");
-//  Serial1.print("Current wind reading w.r.t Boat: ");
+//  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);
   
   //get angle with respect to North
+//  Serial1.print("sailAngle: ");
+//  Serial1.println(sensorData.sailAngleBoat);
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
   wind_wrtN = ((int)(wind_wrtN + sensorData.boatDir))%360;
 
@@ -267,6 +269,9 @@ void sRSensor(void) {
   wind_wrtN = atan2(newSinWind, newCosWind);
   wind_wrtN = wind_wrtN*180/PI;
   wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
+
+//  Serial1.print("Raw Wind WRT NORTH: ");
+//  Serial1.println(wind_wrtN);
   
   sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
@@ -336,6 +341,8 @@ void sIMU(void) {
   }
   
   sensorData.boatDir = boatDir;
+//  Serial1.print("BoatDIR raw:");
+//  Serial1.println(boatDir);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }

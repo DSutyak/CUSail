@@ -8,8 +8,8 @@ Servo Tail;
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
-int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int zeroSail = 1; //Set to 1 to run zeroing code;
+int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
 int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
