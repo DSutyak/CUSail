@@ -1,0 +1,36 @@
+Readme for running sailboat
+
+Navigation Test
+Zero the sail
+Run the 0 90 180 270 test
+get 9 waypoints according to the configuration in the comments of navigation.cpp
+set waypoint 0 to be the bottom left waypoint around the bottom left buoy
+set avoid_test to false
+set endurance to false
+set station_keeping to 0
+make sure that all unit tests are commented out
+push code and run
+
+Endurance Test
+Zero the sail
+Run the 0 90 180 270 test
+get 16 (or more) waypoints according to the configuration in the comments of navigation.cpp
+set waypoint 0 to be the bottom left waypoint around the bottom left buoy
+set avoid_test to false
+set endurance to trues
+set station_keeping to 0
+make sure that all unit tests are commented out
+push code and run
+
+Station Keeping Test
+Zero the sail
+Run the 0 90 180 270 test
+get 3 waypoints according to the configuration in the comments of navigation.cpp
+	wp0 is the center of the square
+	wp1 is the center of the square
+	wp2 is outside the square across the wind
+set avoid_test to false
+set endurance to false
+set station_keeping to 1
+make sure that all unit tests are commented out
+push code and run
