@@ -109,16 +109,13 @@ coord_t appel_bottomRight={42.453828, -76.474454};
 void setWaypoints(void) {
 
   //Make the waypoint array
-  numWP = 5;
+  numWP = 2;
   wpNum = 0;
 
   //Set way points to desired coordinates.
   //Assignmment must be of the type coord_t.
-  wayPoints[0] = engQuadX;
-  wayPoints[1] = shore_beach;
-  wayPoints[2] = lakeOut_beach;
-  wayPoints[3] = lakeOut4;
-  wayPoints[4] = shore_beach;
+  wayPoints[0] = outsideThurston;
+  wayPoints[1] = outsideDuffield;
 
 
   // nav test with wind from 340

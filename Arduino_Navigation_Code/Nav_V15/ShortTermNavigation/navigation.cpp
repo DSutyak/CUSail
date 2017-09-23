@@ -45,7 +45,7 @@ float intercept= center_start.latitude - slope * center_start.longitude;
 float time_inside=0;
 // time required to stay inside the box for station keeping
 // 5 minutes*60 seconds*1000millis=300,000
-// 4:45*60 seconds*1000millis=
+// 4:25*60 seconds*1000millis=
 float time_req=285000;
 
 // 3 minutes*60 seconds*1000millis=300,000
@@ -62,11 +62,11 @@ bool start_end_wp=false;
 bool continue_end_wp=false;
 float final_intended_angle;
 
-//set to true when doing endurance, when we reach the last waypoint, reset wpNum to 0
+//set to true when doing , when we reach the last waypoint, reset wpNum to 0
 bool endurance=true;
 
 //set to true when doing obstacle avoidance
-bool avoid_test=true;
+bool avoid_test=false;
 bool avoiding=false;
 float avoid_intended;
 //the angle that we change our intended angle by in order to avoid an object
@@ -194,6 +194,29 @@ coord_t appel_topRight={42.454715, -76.474551};
 coord_t appel_topLeft={42.454865, -76.475672};
 coord_t appel_bottomRight={42.453828, -76.474454};
 
+// COORDINATES AT US NAVAL ACADEMY
+coord_t end_0 = {38.982585,-76.477650};
+coord_t end_1 = {38.982893, -76.477089};
+coord_t end_2 = {38.982273, -76.476141};
+coord_t end_3 = {38.982130, -76.475690};
+coord_t end_4 = {38.982436, -76.475389};
+coord_t end_5 = {38.982820, -76.475041};
+coord_t end_6 = {38.983139, -76.474748};
+coord_t end_7 = {38.983570, -76.474500};
+coord_t end_8 = {38.984001, -76.475111};
+coord_t end_9 = {38.984429, -76.475765};
+coord_t end_10 = {38.984887, -76.476336};
+coord_t end_11 = {38.985242, -76.476844};
+coord_t end_12 = {38.985730, -76.477460};
+coord_t end_13 = {38.985274, -76.477820};
+coord_t end_14 = {38.984842, -76.478194};
+coord_t end_15 = {38.984389, -76.478585};
+coord_t end_16 = {38.984030, -76.479000};
+coord_t end_17 = {38.983646, -76.478501};
+coord_t end_18 = {38.983304, -76.478074};
+coord_t end_19 = {38.982930, -76.477625};
+
+
 /*Sets waypoints for navigation
 * by creating the wayPoints array*/
 void setWaypoints(void) {
@@ -208,11 +231,11 @@ void setWaypoints(void) {
 //  wayPoints[0] = {42.470718, -76.503181};
 //  wayPoints[1] = {42.47065, -76.503448};
  
-  wayPoints[0] = engQuadX;
-  wayPoints[1] = outsideThurston;
+  wayPoints[0] = sundial;
+  wayPoints[1] = hollister;
 
-  
-  
+
+
   /*
   // nav test with wind from 340
   
@@ -311,11 +334,11 @@ void nShort(void) {
 
   /*----------Unit testing setters-----------*/
     //sensorData.lati = 42.4441782290;
-     sensorData.lati=outsideThurston.latitude;
-     sensorData.longi=outsideThurston.longitude;
+ // sensorData.lati=outsideThurston.latitude;
+  // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-//    sensorData.windDir = 340;
-    // sensorData.boatDir = 0;
+  sensorData.windDir = 270;
+   // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
   //find the normal distance to the waypoint
@@ -375,7 +398,7 @@ void nShort(void) {
        in this way we will sail out the box to wp2 which is outisde the box
     */
     if (wpNum==0){
-      detectionradius=20;
+      detectionradius=25;
       if(normr < detectionradius){
         // printHitWaypointData();
         // where we will determine where we aim to go at the end of the required amount of time

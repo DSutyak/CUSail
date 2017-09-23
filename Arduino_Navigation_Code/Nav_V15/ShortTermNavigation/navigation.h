@@ -14,7 +14,7 @@
 /*----------Type Definitions----------*/
 typedef struct coordinate {
   double latitude; // float latitude
-  double longitude; // float longitude
+  double longitude; // float longitudes
 } coord_t;
 
 /*----------Predefined Variables----------*/

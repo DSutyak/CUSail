@@ -61,6 +61,6 @@ void loop()
         pixy.blocks[j].print();
       }
     }
-//  }  
+  }  
 }
 
