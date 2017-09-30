@@ -351,25 +351,25 @@ void nShort(void) {
 
   //Dummy normal distance
   float oldnormr=1000;
-  if(sensorData.lati==0){
-    Serial1.println("Don't have GPS");
-  }
-  // printData();
-  // printWaypointData();
-  Serial1.print("WP:");
-  Serial1.print(wpNum);
-  Serial1.print(";");
+  // if(sensorData.lati==0){
+  //   Serial1.println("Don't have GPS");
+  // }
+  printData();
+  printWaypointData();
+  // Serial1.print("WP:");
+  // Serial1.print(wpNum);
+  // Serial1.print(";");
 
-  Serial1.print("D:");
-  Serial1.print(normr);
-  Serial1.print(";");
+  // Serial1.print("D:");
+  // Serial1.print(normr);
+  // Serial1.print(";");
 
-  Serial1.print("W:");
-  Serial1.print(sensorData.windDir);
-  Serial1.print(";");
-  Serial1.print("BD:");
-  Serial1.print(sensorData.boatDir);
-  Serial1.print(";");
+  // Serial1.print("W:");
+  // Serial1.print(sensorData.windDir);
+  // Serial1.print(";");
+  // Serial1.print("BD:");
+  // Serial1.print(sensorData.boatDir);
+  // Serial1.print(";");
   float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
   anglewaypoint=convertto360(anglewaypoint);
 
@@ -383,10 +383,10 @@ void nShort(void) {
   once we reach the allotted time, increment our waypoint counter and
   head to the next waypoint which will be a waypoint which is outside the box
   */
-  Serial1.print("T:");
-  float milInt=milTime/1000;
-  Serial1.print(milInt);
-  Serial1.print("; ");
+  // Serial1.print("T:");
+  // float milInt=milTime/1000;
+  // Serial1.print(milInt);
+  // Serial1.print("; ");
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
        if we are going to the first waypoint, set radius to 20. 
@@ -400,7 +400,7 @@ void nShort(void) {
     if (wpNum==0){
       detectionradius=25;
       if(normr < detectionradius){
-        // printHitWaypointData();
+        printHitWaypointData();
         // where we will determine where we aim to go at the end of the required amount of time
         wpNum += 1 ;
 
@@ -416,7 +416,7 @@ void nShort(void) {
     }
     //we have  reached the 5 minute time (current time - the time we entered the box at)
     else if(milTime- start_box_time >= time_req ){
-      // printHitWaypointData();
+      printHitWaypointData();
       // where we will determine where we aim to go at the end of the required amount of time
       wpNum += 1 ;
 
