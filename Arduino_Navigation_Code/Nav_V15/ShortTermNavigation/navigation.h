@@ -17,6 +17,11 @@ typedef struct coordinate {
   double longitude; // float longitudes
 } coord_t;
 
+typedef struct coordinate {
+  double x; // float x coord
+  double y; // float y coord
+} coord_xy;
+
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100
 #define tailServoPin 8
@@ -55,12 +60,10 @@ void updateTime(void);
 void setWaypoints(void);
 
 /*Short Term Navigation Algorithm
-* Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle. 
+* Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle.
 * sailAngle and tailAngle are set in terms of servo command numbers, but are first
 * calculated in terms of angle w.r.t the boat direction*/
 void nShort(void);
 
 /*Sets servos to the sailAngle and tailAngle*/
 void nServos(void);
-
-
