@@ -10,6 +10,7 @@
 Servo tailServo;
 Servo sailServo;
 
+//TO BE UPDATED TO XY
 /*----------Navigation Variables----------*/
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
