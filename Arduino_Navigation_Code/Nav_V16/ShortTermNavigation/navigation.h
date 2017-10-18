@@ -1,9 +1,12 @@
 /*-----------------------------------------------------------------
  CU Sail
  Cornell University Autonomous Sailboat Team
+
  Navigation
  Allows determination of the appropriate Sail and Tail angle and setting of the Servos
+
  Code has been tested and run on an Arduino Due
+
  Sail Servo: HS-785HB by Hitec
  Tail Servo: HS-5646WP by Hitec
 --------------------------------------------------------------------*/
@@ -13,6 +16,11 @@ typedef struct coordinate {
   double latitude; // float latitude
   double longitude; // float longitudes
 } coord_t;
+
+typedef struct coordinate {
+  double x; // float x coord
+  double y; // float y coord
+} coord_xy;
 
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100

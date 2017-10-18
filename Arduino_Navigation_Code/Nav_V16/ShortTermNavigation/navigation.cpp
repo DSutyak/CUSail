@@ -126,7 +126,7 @@ void finishTurn(){
   turn_finished=true;
 }
 
-void avoidObject(void) {
+void avoidObject(void) {  
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
     // if (!avoiding){
@@ -157,8 +157,8 @@ void avoidObject(void) {
   else {
     avoiding=false;
   }
-
-  // tailAngle = (float)(
+  
+  // tailAngle = (float)( 
 }
 
 /*----------Stored Coordinates----------*/
@@ -230,7 +230,7 @@ void setWaypoints(void) {
   //Assignmment must be of the type coord_t.
 //  wayPoints[0] = {42.470718, -76.503181};
 //  wayPoints[1] = {42.47065, -76.503448};
-
+ 
   wayPoints[0] = sundial;
   wayPoints[1] = hollister;
 
@@ -238,10 +238,11 @@ void setWaypoints(void) {
 
   /*
   // nav test with wind from 340
-
+  
 //  numWP = 9;
   numWP=8;
   wpNum = 0;
+
   wayPoints[0]= {42.470432, -76.505028}; //nav_0
   wayPoints[1]={42.470318, -76.504906}; //nav_1
   wayPoints[2]={42.470348, -76.504654}; //nav_2
@@ -251,10 +252,11 @@ void setWaypoints(void) {
   wayPoints[6]={42.470943, -76.504326};//nav_6
   wayPoints[7]={42.47094, -76.504745};  //nav_7
   //wayPoints[8]={42.471104, -76.504883}; //nav_8
+
   */
+  
 
-
-
+  
   //STATION KEEPING TEST
   /*
   numWP=3;
@@ -262,19 +264,22 @@ void setWaypoints(void) {
   wayPoints[0]={42.470737, -76.504707}; //nav_0
   wayPoints[1]={42.470737, -76.504707}; //nav_1
   wayPoints[2]={42.470863, -76.503975}; //nav_2
+
   */
   /*
    //station keeping lakehouse test
   //going to lakehouse then back to picnic
+
   numWP=3;
   wpNum=0;
   wayPoints[0]={42.47049, -76.503212}; //nav_0
   wayPoints[1]={42.47049, -76.503212}; //nav_1
   wayPoints[2]={42.470783, -76.503357}; //nav_2
   */
-
+  
   //endurance race
   /*
+
   numWP=16;
   wpNum=0;
   wayPoints[0]={42.474224, -76.507195};
@@ -296,12 +301,25 @@ void setWaypoints(void) {
   /*
   Navigation challenge: set waypoints, assuming wind from above, in numerical order
   around the buoys represented by x's
+
+
                               8
+
+
                         x     7     x
                                                     6
+
+
+
+
+
+
+
         0    x                                  x      5
+
             1                                      4
                   2                           3
+
   */
 }
 
@@ -358,6 +376,7 @@ void nShort(void) {
 
   /*
   when not doing station keeping, set boolean stationKeeping to false
+
   station keeping code: if we have not reached the required time, keep going
   to the same waypoint over and over (we will never register hitting it)
   set the waypoint to be the middle of the square of the station
@@ -370,7 +389,7 @@ void nShort(void) {
   // Serial1.print("; ");
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
-       if we are going to the first waypoint, set radius to 20.
+       if we are going to the first waypoint, set radius to 20. 
        also, store the start time that we hit the waypoint, so we can accurately stay inside
        the box for 5 minutes
        once we hit, increase the waypoint number to 1, which will make our boat continue to
@@ -468,6 +487,7 @@ void nShort(void) {
     w is wind wrt north
     opttop and optboat are 45 or 40 eg
     boatdir is boat wrt north
+
   general: if boat is facing right, and cant sail directly to WP or turn to WP,
     tailangle= wind -offset
     facing left: tailangle=wind+offset
@@ -622,7 +642,7 @@ void nShort(void) {
 
   // printSailTailSet();
 
-  sensorData.sailAngleBoat = sailAngle;
+  sensorData.sailAngleBoat = sailAngle; 
   sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
@@ -636,3 +656,9 @@ void nShort(void) {
 //  sailAngle = sailMapBench(sailAngle);
 
 }
+
+
+
+
+
+

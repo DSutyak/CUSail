@@ -3,8 +3,35 @@
 #include "sensors.h"
 #include "navigation.h"
 
-/*Changes the sail and tail on the detection of an object*/
 
+coord_xy origin;
+double latOffset;
+double longOffset;
+double longScale;
+const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
+
+/*Creates origin for XY plane and scales to meters*/
+void setOrigin(coord_t startPoint){
+  origin = new coord_xy((double) 0, (double) 0);
+  longOffset = startPoint.longitude; //used to generate X coordinate
+  latOffset = startPoint.latitude; //used to generate Y coodinate
+  longScale = cos(latOffset * M_PI/180);  //scaling factor to account for changing distance between longitude lines
+}
+
+/*Converts coordinate in latitude and longitude to xy*/
+coord_xy xyPoint(coord_t latlong){
+  double x = (latlong.longitude - longOffset) * longScale * latToMeter;
+  double y = (latlong.latitude - latOffset) * latToMeter;
+
+  return new coord_xy(x, y);
+}
+
+/*finds the distance between two xy points*/
+double xyDist(coord_xy point1, coord_xy point2){
+  double dx = point1.x - point2.x;
+  double dy = point1.y - point2.y;
+  return sqrt(dx * dx + dy * dy);
+}
 
 /*Returns angle (with respect to North) between two global coordinates.*/
 float angleToTarget(float lat1, float long1, float lat2, float long2){
