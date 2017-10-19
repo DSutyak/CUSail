@@ -17,3 +17,12 @@ double havDist(coord_t  first, coord_t second);
 
 /*converts an angle to a 0-360 range*/
 float convertto360(float angle);
+
+/*Sets the origin of the XY plane to a starting point*/
+void setOrigin(coord_t startPoint)
+
+/*Converts a lat-long point to be a Cartesian point with respect to the origin*/
+coord_xy xyPoint(coord_t latlong)
+
+/*Finds the distance between two Cartesian coordiantes*/
+double xyDist(coord_xy point1, coord_xy point2)
