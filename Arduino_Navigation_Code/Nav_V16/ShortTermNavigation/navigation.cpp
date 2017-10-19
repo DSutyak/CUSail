@@ -18,7 +18,7 @@ float detectionradius = detectionRadius; //how far away the boat marks a waypoin
 float optpolartop = optPolarTop;
 float optpolarbot = optPolarBot;
 float angleofattack = angleOfAttack;
-coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
+coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
             //r[1]: Lattitude difference b/w current position and waypoint
@@ -226,13 +226,14 @@ void setWaypoints(void) {
   numWP = 2;
   wpNum = 0;
 
-  //Set way points to desired coordinates.
-  //Assignmment must be of the type coord_t.
-//  wayPoints[0] = {42.470718, -76.503181};
-//  wayPoints[1] = {42.47065, -76.503448};
- 
-  wayPoints[0] = sundial;
-  wayPoints[1] = hollister;
+  /**
+   * waypoint 0 is the origin.  the name of your origin should go in the setOrigin function
+   * origin goes in wayPoints[0]
+   * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
+   */
+  setOrigin(sundial)
+  wayPoints[0] = xyPoint(sundial);
+  wayPoints[1] = xyPoint(hollister);
 
 
 
