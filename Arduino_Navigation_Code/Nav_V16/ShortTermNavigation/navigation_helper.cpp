@@ -34,17 +34,14 @@ double xyDist(coord_xy point1, coord_xy point2){
 }
 
 /*Returns angle (with respect to North) between two global coordinates.*/
-float angleToTarget(float lat1, float long1, float lat2, float long2){
-  lat1=lat1 * M_PI/180;
-  lat2=lat2 * M_PI/180;
-  float dLong=(long2-long1) * M_PI/180;
-  float y = sin(dLong) * cos(lat2);
-  float x = cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(dLong);
-  float brng = atan2(y, x) * 180/ M_PI;
-  if (brng<0){
-    brng+=360;
+float angleToTarget(coord_xy coord1, coord_xy coord2){
+  double dx = fabs(coord1.x-coord2.x);
+  double dy = fabs(coord1.y-coord2.y);
+  double angle = atan(dx/dy) * 180/M_PI;
+  if (angle<0){
+    angle+=360;
   }
-  return brng;
+  return angle;
 }
 
 /*Returns great circle distance (in meters) between two global coordinates.*/
