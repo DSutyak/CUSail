@@ -2,6 +2,8 @@
 #include <SPI.h>
 #include "TinyGPS++.h"
 #include <PixyI2C.h>
+#include <navigation.h>
+#include <navigation_helper.h>
 
 //Begin Pixy
 PixyI2C pixy;
@@ -210,6 +212,8 @@ void initSensors(void) {
   sensorData.windDir = 0; // Wind direction w.r.t North
   sensorData.longi = 0; // Longitude of current global position;
   sensorData.lati = 0; // Longitude of current global position;
+  sensorData.x = 0;
+  sensorData.y = 0;
 }
 
 /*----------LED control----------*/
@@ -279,11 +283,16 @@ void sRSensor(void) {
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
+coord_xy point_xy;
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
       sensorData.longi = gps.location.lng();
       sensorData.lati = gps.location.lat();
+      point = xyPoint(new coord_t(sensorData.longi,sensorData.lati));
+      sensorData.x=point.x;
+      sensorData.y=point.y;
+      
       sensorData.dateTime.hour = gps.time.hour();
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
