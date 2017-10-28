@@ -8,13 +8,13 @@
 
 extern coord_xy origin;
 /*Sets the origin of the XY plane to a starting point*/
-void setOrigin(coord_t startPoint)
+void setOrigin(coord_t startPoint);
 
 /*Converts a lat-long point to be a Cartesian point with respect to the origin*/
-coord_xy xyPoint(coord_t latlong)
+coord_xy xyPoint(coord_t latlong);
 
 /*Finds the distance between two Cartesian coordiantes*/
-double xyDist(coord_xy point1, coord_xy point2)
+double xyDist(coord_xy point1, coord_xy point2);
 
 /*Changes the sail and tail on the detection of an object*/
 void avoidObject(void);
