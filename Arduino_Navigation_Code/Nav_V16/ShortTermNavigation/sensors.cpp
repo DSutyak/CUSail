@@ -7,7 +7,7 @@
 
 //Begin Pixy
 PixyI2C pixy;
-  
+
 TinyGPSPlus gps;
 data_t sensorData;
 
@@ -50,7 +50,7 @@ void endianSwap(byte temp[4]) {
 /* Updates objectVals array
  * Only updates x-position
  * NOTE: This only detects objects set to
- * signature 1 on the pixy cam 
+ * signature 1 on the pixy cam
  */
 void addObjects(void) {
     Serial.println("gettting pixy objects");
@@ -101,13 +101,13 @@ double sailMap(double sailAngle){
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
 double tailMap(double sailAngle, double tailAngle){
- 
+
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
-  } 
-  
+  }
+
   double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
-  
+
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
     newTailAngle+=360;
@@ -118,15 +118,15 @@ double tailMap(double sailAngle, double tailAngle){
 
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,160,100); 
+    newTailAngle=map(newTailAngle,-30,0,160,100);
   }
-  
+
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,100,60); 
+    newTailAngle=map(newTailAngle,0,30,100,60);
   }
 
   return newTailAngle;
-  
+
 }
 
 
@@ -260,7 +260,7 @@ void sRSensor(void) {
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);
-  
+
   //get angle with respect to North
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
@@ -276,7 +276,7 @@ void sRSensor(void) {
 
 //  Serial1.print("Raw Wind WRT NORTH: ");
 //  Serial1.println(wind_wrtN);
-  
+
   sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
   }
@@ -287,12 +287,11 @@ coord_xy point_xy;
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-      sensorData.longi = gps.location.lng();
-      sensorData.lati = gps.location.lat();
-      point = xyPoint(new coord_t(sensorData.longi,sensorData.lati));
+      
+      point = xyPoint(new coord_t(gps.location.lng(),gps.location.lat()));
       sensorData.x=point.x;
       sensorData.y=point.y;
-      
+
       sensorData.dateTime.hour = gps.time.hour();
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
@@ -329,7 +328,7 @@ void sIMU(void) {
     }
 
   digitalWrite(redLED, LOW);
-  
+
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
     for (int jj=0; jj<4; jj++) {
@@ -348,13 +347,10 @@ void sIMU(void) {
   if (boatDir < 0) {
     boatDir += 360;
   }
-  
+
   sensorData.boatDir = boatDir;
 //  Serial1.print("BoatDIR raw:");
 //  Serial1.println(boatDir);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
-
-
-

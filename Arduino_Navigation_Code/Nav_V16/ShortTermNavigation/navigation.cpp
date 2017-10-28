@@ -14,10 +14,10 @@ Servo sailServo;
 unsigned long  milTime; //Miliseconds since program started
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = detectionRadius; //how far away the boat marks a waypoint "reached"
-float optpolartop = optPolarTop;
-float optpolarbot = optPolarBot;
-float angleofattack = angleOfAttack;
+float detectionradius = 15; //how far away the boat marks a waypoint "reached"
+float optpolartop = 60; //Optimal upwind angle for waypoints requiring a tack
+float optpolarbot = 60; //Optimal downwind angle for waypoints requiring a tack
+float angleofattack = 10;
 coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
@@ -126,7 +126,7 @@ void finishTurn(){
   turn_finished=true;
 }
 
-void avoidObject(void) {  
+void avoidObject(void) {
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
     // if (!avoiding){
@@ -157,8 +157,8 @@ void avoidObject(void) {
   else {
     avoiding=false;
   }
-  
-  // tailAngle = (float)( 
+
+  // tailAngle = (float)(
 }
 
 /*----------Stored Coordinates----------*/
@@ -239,7 +239,8 @@ void setWaypoints(void) {
 
   /*
   // nav test with wind from 340
-  
+
+//Points for lake test on Cayuga
 //  numWP = 9;
   numWP=8;
   wpNum = 0;
@@ -255,10 +256,10 @@ void setWaypoints(void) {
   //wayPoints[8]={42.471104, -76.504883}; //nav_8
 
   */
-  
 
-  
-  //STATION KEEPING TEST
+
+
+  //STATION KEEPING TEST on Cayuga
   /*
   numWP=3;
   wpNum=0;
@@ -268,7 +269,7 @@ void setWaypoints(void) {
 
   */
   /*
-   //station keeping lakehouse test
+   //station keeping lakehouse test (on land)
   //going to lakehouse then back to picnic
 
   numWP=3;
@@ -277,8 +278,8 @@ void setWaypoints(void) {
   wayPoints[1]={42.47049, -76.503212}; //nav_1
   wayPoints[2]={42.470783, -76.503357}; //nav_2
   */
-  
-  //endurance race
+
+  //endurance race on Cayuga
   /*
 
   numWP=16;
@@ -347,7 +348,7 @@ void nShort(void) {
   r[1] = wayPoints[wpNum].latitude - sensorData.lati;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_t currentPosition = {sensorData.lati, sensorData.longi};
+  coord_xy currentPosition = {sensorData.lati, sensorData.longi};
   normr = havDist(wayPoints[wpNum], currentPosition);
 
   //Dummy normal distance
@@ -390,7 +391,7 @@ void nShort(void) {
   // Serial1.print("; ");
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
-       if we are going to the first waypoint, set radius to 20. 
+       if we are going to the first waypoint, set radius to 20.
        also, store the start time that we hit the waypoint, so we can accurately stay inside
        the box for 5 minutes
        once we hit, increase the waypoint number to 1, which will make our boat continue to
@@ -643,7 +644,7 @@ void nShort(void) {
 
   // printSailTailSet();
 
-  sensorData.sailAngleBoat = sailAngle; 
+  sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
@@ -657,9 +658,3 @@ void nShort(void) {
 //  sailAngle = sailMapBench(sailAngle);
 
 }
-
-
-
-
-
-
