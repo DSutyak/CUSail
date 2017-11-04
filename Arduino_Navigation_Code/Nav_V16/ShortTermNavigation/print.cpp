@@ -5,8 +5,8 @@
 #include "navigation.h"
 
 void printData(){
-  Serial1.print("Latitude: "); Serial1.println(sensorData.y,10);
-  Serial1.print("Longitude: "); Serial1.println(sensorData.x,10);
+  Serial1.print("X Coord: "); Serial1.println(sensorData.y,10);
+  Serial1.print("Y Coord: "); Serial1.println(sensorData.x,10);
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
 }
