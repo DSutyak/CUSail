@@ -12,7 +12,7 @@ const int latToMeter = 111318; //Conversion factor from latitude/longitude to me
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
-  origin = new coord_xy((double) 0, (double) 0);
+  origin = coord_xy({(double) 0, (double) 0});
   longOffset = startPoint.longitude; //used to generate X coordinate
   latOffset = startPoint.latitude; //used to generate Y coodinate
   longScale = cos(latOffset * M_PI/180);  //scaling factor to account for changing distance between longitude lines
@@ -23,7 +23,7 @@ coord_xy xyPoint(coord_t latlong){
   double x = (latlong.longitude - longOffset) * longScale * latToMeter;
   double y = (latlong.latitude - latOffset) * latToMeter;
 
-  return new coord_xy(x, y);
+  return coord_xy({x, y});
 }
 
 /*finds the distance between two xy points*/

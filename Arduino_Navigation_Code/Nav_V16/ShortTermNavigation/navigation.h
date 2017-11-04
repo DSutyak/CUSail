@@ -17,7 +17,7 @@ typedef struct coordinate {
   double longitude; // float longitudes
 } coord_t;
 
-typedef struct coordinate {
+typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;

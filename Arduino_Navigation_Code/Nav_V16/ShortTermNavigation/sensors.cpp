@@ -2,8 +2,8 @@
 #include <SPI.h>
 #include "TinyGPS++.h"
 #include <PixyI2C.h>
-#include <navigation.h>
-#include <navigation_helper.h>
+#include "navigation.h"
+#include "navigation_helper.h"
 
 //Begin Pixy
 PixyI2C pixy;
@@ -287,10 +287,10 @@ coord_xy point_xy;
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-      
+      if( origin != NULL){
       point = xyPoint(new coord_t(gps.location.lng(),gps.location.lat()));
       sensorData.x=point.x;
-      sensorData.y=point.y;
+      sensorData.y=point.y;}
 
       sensorData.dateTime.hour = gps.time.hour();
       sensorData.dateTime.minute = gps.time.minute();

@@ -31,8 +31,8 @@ typedef struct dataStructure {
   float pitch;
   float roll;
   float windDir; // Wind direction w.r.t North
-  double x
-  double y
+  double x;
+  double y;
   date_t dateTime; // Current date and time, of type date_t
 } data_t;
 
