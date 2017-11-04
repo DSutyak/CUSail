@@ -344,12 +344,12 @@ void nShort(void) {
     //sensorData.sailAngleNorth = 90;
 
   //find the normal distance to the waypoint
-  r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-  r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+  r[0] = wayPoints[wpNum].x - sensorData.y;
+  r[1] = wayPoints[wpNum].y - sensorData.x;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_xy currentPosition = {sensorData.lati, sensorData.longi};
-  normr = havDist(wayPoints[wpNum], currentPosition);
+  coord_xy currentPosition = {sensorData.x, sensorData.y};
+  normr = xyDist(wayPoints[wpNum], currentPosition);
 
   //Dummy normal distance
   float oldnormr=1000;
@@ -372,7 +372,7 @@ void nShort(void) {
   // Serial1.print("BD:");
   // Serial1.print(sensorData.boatDir);
   // Serial1.print(";");
-  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+  float anglewaypoint=angleToTarget(new coord_xy(sensorData.x, sensorData.y), wayPoints[wpNum]);
   anglewaypoint=convertto360(anglewaypoint);
 
 
@@ -407,12 +407,12 @@ void nShort(void) {
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
-        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+        r[0] = wayPoints[wpNum].x - sensorData.y;
+        r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.lati, sensorData.longi};
-        normr = havDist(wayPoints[wpNum], currentPosition);
+        currentPosition = {sensorData.x, sensorData.y};
+        normr = xyDist(wayPoints[wpNum], currentPosition);
         start_box_time=milTime;
       }
     }
@@ -456,7 +456,7 @@ void nShort(void) {
           r[1] = wayPoints[wpNum].latitude - sensorData.lati;
           w[0] = cos((sensorData.windDir)*(PI/180.0));
           w[1] = sin((sensorData.windDir)*(PI/180.0));
-          currentPosition = {sensorData.lati, sensorData.longi};
+          currentPosition = {sensorData.x, sensorData.y};
           normr = havDist(wayPoints[wpNum], currentPosition);
           wpNum=0;
         }
