@@ -344,19 +344,13 @@ void nShort(void) {
     //sensorData.sailAngleNorth = 90;
 
   //find the normal distance to the waypoint
-<<<<<<< HEAD
-  r[0] = wayPoints[wpNum].x - sensorData.y;
-  r[1] = wayPoints[wpNum].y - sensorData.x;
-  w[0] = cos((sensorData.windDir)*(PI/180.0));
-  w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_xy currentPosition = {sensorData.x, sensorData.y};
-=======
+
   r[0] = wayPoints[wpNum].x - sensorData.x;
   r[1] = wayPoints[wpNum].y - sensorData.y;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
   coord_xy currentPosition = {sensorData.y, sensorData.x};
->>>>>>> origin/xyPlane
+
   normr = xyDist(wayPoints[wpNum], currentPosition);
 
   //Dummy normal distance
@@ -380,11 +374,10 @@ void nShort(void) {
   // Serial1.print("BD:");
   // Serial1.print(sensorData.boatDir);
   // Serial1.print(";");
-<<<<<<< HEAD
-  float anglewaypoint=angleToTarget(new coord_xy(sensorData.x, sensorData.y), wayPoints[wpNum]);
-=======
-  float anglewaypoint=angleToTarget(sensorData.y, sensorData.x, wayPoints[wpNum].y, wayPoints[wpNum].x);
->>>>>>> origin/xyPlane
+
+  float anglewaypoint=angleToTarget(coord_xy({sensorData.x, sensorData.y}), wayPoints[wpNum]);
+
+
   anglewaypoint=convertto360(anglewaypoint);
 
 
@@ -419,19 +412,13 @@ void nShort(void) {
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
-<<<<<<< HEAD
-        r[0] = wayPoints[wpNum].x - sensorData.y;
-        r[1] = wayPoints[wpNum].y - sensorData.y;
-        w[0] = cos((sensorData.windDir)*(PI/180.0));
-        w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.x, sensorData.y};
-=======
+
         r[0] = wayPoints[wpNum].x - sensorData.x;
         r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
         currentPosition = {sensorData.y, sensorData.x};
->>>>>>> origin/xyPlane
+
         normr = xyDist(wayPoints[wpNum], currentPosition);
         start_box_time=milTime;
       }
@@ -476,13 +463,10 @@ void nShort(void) {
           r[1] = wayPoints[wpNum].y - sensorData.y;
           w[0] = cos((sensorData.windDir)*(PI/180.0));
           w[1] = sin((sensorData.windDir)*(PI/180.0));
-<<<<<<< HEAD
-          currentPosition = {sensorData.x, sensorData.y};
-          normr = havDist(wayPoints[wpNum], currentPosition);
-=======
+
           currentPosition = {sensorData.y, sensorData.x};
           normr = xyDist(wayPoints[wpNum], currentPosition);
->>>>>>> origin/xyPlane
+
           wpNum=0;
         }
       }

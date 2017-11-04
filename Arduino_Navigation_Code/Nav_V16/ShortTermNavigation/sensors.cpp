@@ -210,8 +210,8 @@ void initSensors(void) {
   sensorData.pitch = 0;
   sensorData.roll = 0;
   sensorData.windDir = 0; // Wind direction w.r.t North
-  sensorData.longi = 0; // Longitude of current global position;
-  sensorData.lati = 0; // Longitude of current global position;
+  sensorData.x = 0; // Longitude of current global position;
+  sensorData.y = 0; // Longitude of current global position;
   sensorData.x = 0;
   sensorData.y = 0;
 }
@@ -283,12 +283,12 @@ void sRSensor(void) {
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
-coord_xy point_xy;
+coord_xy point;
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-      if( origin != NULL){
-      point = xyPoint(new coord_t(gps.location.lng(),gps.location.lat()));
+      if( origin.x != 0){
+      point = xyPoint( coord_t({gps.location.lng(),gps.location.lat()}));
       sensorData.x=point.x;
       sensorData.y=point.y;}
 
