@@ -173,6 +173,8 @@ coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, l
 coord_t sundial = {42.4448630, -76.4835293}; //Sundial on the engineering quad
 coord_t bottomRightIntersection= {42.444242, -76.483247}; //path intersection bottom right of quad
 coord_t thurstonWestEntrance={42.444245, -76.484068}; //west entrance to thurston on the path
+coord_t ctb{42.442539, -76.485019};
+coord_t stairsToCTown{42.444057, -76.484228}; //top of stairs between bard and hollister
 
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the Cornell Sailing Center
@@ -231,9 +233,11 @@ void setWaypoints(void) {
    * origin goes in wayPoints[0]
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
-  setOrigin(sundial);
-  wayPoints[0] = xyPoint(sundial);
-  wayPoints[1] = xyPoint(hollister);
+  setOrigin(engQuadX);
+  wayPoints[0] = xyPoint(engQuadX);
+  wayPoints[1] = xyPoint(sundial);
+  wayPoints[2] = xyPoint(engQuadX);
+  
 
 
 

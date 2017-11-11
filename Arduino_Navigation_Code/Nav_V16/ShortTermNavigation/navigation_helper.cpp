@@ -12,6 +12,11 @@ const int latToMeter = 111318; //Conversion factor from latitude/longitude to me
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
+  Serial1.print("Origin set at ");
+//  Serial1.print(startpoint.latitude);
+  Serial1.print(" North : ");
+  //Serial1.print(startpoint.longitude);
+  Serial1.println(" west");
   origin = coord_xy({(double) 0, (double) 0});
   longOffset = startPoint.longitude; //used to generate X coordinate
   latOffset = startPoint.latitude; //used to generate Y coodinate
