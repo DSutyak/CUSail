@@ -661,13 +661,13 @@ void nShort(void) {
   sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
-   tailAngle = tailMap(sailAngle, tailAngle);
-   sailAngle = sailMap(sailAngle);
+//   tailAngle = tailMap(sailAngle, tailAngle);
+//   sailAngle = sailMap(sailAngle);
 
    Serial1.println();
 
 // TESTBENCH SAIL AND TAIL MAPPING
-//  tailAngle = tailMapBench(sailAngle, tailAngle);
-//  sailAngle = sailMapBench(sailAngle);
+  tailAngle = tailMapBench(sailAngle, tailAngle);
+  sailAngle = sailMapBench(sailAngle);
 
 }

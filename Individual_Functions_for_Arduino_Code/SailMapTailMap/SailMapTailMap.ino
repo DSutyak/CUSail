@@ -9,8 +9,8 @@ int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
 int zeroSail = 0; //Set to 1 to run zeroing code;
-int sailTailBoatTest = 1; //Set to 1 to run Sail and Tail mapping test on the BOAT
-int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
+int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
+int sailTailBenchTest = 1; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
  Sail.attach(sailPin);
@@ -71,27 +71,27 @@ void loop() {
   else if (sailTailBenchTest){
     Sail.write(sailMapBench(0)); //Sail to 0 
     delay(2000);
-    Tail.write(tailMapBench(0, -10));
+    Tail.write(tailMapBench(270, -120));
     delay(2000);  
-    Tail.write(tailMapBench(0, 0));
+    Tail.write(tailMapBench(270, -90));
     delay(2000);
-    Tail.write(tailMapBench(0, 10));
+    Tail.write(tailMapBench(270, -60));
     delay(2000);
     Sail.write(sailMapBench(90)); //Sail to 90
     delay(2000);
-    Tail.write(tailMapBench(90, 70));
+    Tail.write(tailMapBench(270, -120));
     delay(2000);  
-    Tail.write(tailMapBench(90, 90));
+    Tail.write(tailMapBench(270, -90));
     delay(2000);
-    Tail.write(tailMapBench(90, 100));
+    Tail.write(tailMapBench(270, -60));
     delay(2000);
     Sail.write(sailMapBench(180)); //Sail to 180
     delay(2000);
-    Tail.write(tailMapBench(180, 170));
+    Tail.write(tailMapBench(270, -120));
     delay(2000);  
-    Tail.write(tailMapBench(180, 180));
+    Tail.write(tailMapBench(270, -90));
     delay(2000);
-    Tail.write(tailMapBench(180, -170));
+    Tail.write(tailMapBench(270, -60));
     delay(2000);
     Sail.write(sailMapBench(270)); //Sail to 270
     delay(2000);
@@ -103,11 +103,11 @@ void loop() {
     delay(2000);
     Sail.write(sailMapBench(360)); //Sail to 360
     delay(2000);
-    Tail.write(tailMapBench(360, -120));
+    Tail.write(tailMapBench(270, -120));
     delay(2000);  
-    Tail.write(tailMapBench(360, -90));
+    Tail.write(tailMapBench(270, -90));
     delay(2000);
-    Tail.write(tailMapBench(360, -60));
+    Tail.write(tailMapBench(270, -60));
     delay(2000);
   }
   

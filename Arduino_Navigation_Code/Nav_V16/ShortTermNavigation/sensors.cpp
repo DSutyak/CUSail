@@ -134,16 +134,16 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 72, 77);
+    newSailAngle = map(sailAngle, 0, 90, 99.5, 106);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 77, 83);
+    newSailAngle = map(sailAngle, 90, 180, 106, 111);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 83, 88);
+    newSailAngle = map(sailAngle, 180, 270, 111, 116);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360, 88, 94);
+   newSailAngle = map(sailAngle, 270, 360, 116, 121);
   }
   return newSailAngle;
 }
@@ -164,10 +164,10 @@ double tailMapBench( double sailAngle, double tailAngle){
   }
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,85,45);
+    newTailAngle=map(newTailAngle,-30,0,70,45);
   }
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,45,5);
+    newTailAngle=map(newTailAngle,0,30,45,13);
   }
   return newTailAngle;
 }
