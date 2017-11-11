@@ -13,9 +13,9 @@ const int latToMeter = 111318; //Conversion factor from latitude/longitude to me
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
   Serial1.print("Origin set at ");
-//  Serial1.print(startpoint.latitude);
+  Serial1.print(startPoint.latitude);
   Serial1.print(" North : ");
-  //Serial1.print(startpoint.longitude);
+  Serial1.print(startPoint.longitude);
   Serial1.println(" west");
   origin = coord_xy({(double) 0, (double) 0});
   longOffset = startPoint.longitude; //used to generate X coordinate
@@ -37,6 +37,10 @@ double xyDist(coord_xy point1, coord_xy point2){
   double dy = point1.y - point2.y;
   return sqrt(dx * dx + dy * dy);
 }
+
+//for distance between current and next waypoint
+//return xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]); 
+
 
 /*Returns angle (with respect to North) between two global coordinates.*/
 float angleToTarget(coord_xy coord1, coord_xy coord2){

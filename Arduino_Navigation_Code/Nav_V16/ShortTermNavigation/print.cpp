@@ -3,15 +3,21 @@
 #include <Servo.h>
 #include "sensors.h"
 #include "navigation.h"
+#include "navigation_helper.h"
 
 void printData(){
 
   Serial1.print("Y position: "); Serial1.println(sensorData.y,10);
   Serial1.print("X position: "); Serial1.println(sensorData.x,10);
 
+  Serial1.print("latitude: ");  Serial1.println(sensorData.lat,  10);
+  Serial1.print("longitude: "); Serial1.println(sensorData.longi,10);
+
 
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
+  Serial1.print("Distance to Waypoint: ")    ;Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]));
+  Serial1.print("Angle to Waypoint: ");Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[wpNum]));
 }
 
 void printWaypointData(){

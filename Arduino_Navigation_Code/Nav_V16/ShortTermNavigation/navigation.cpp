@@ -225,7 +225,7 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 2;
+  numWP = 3;
   wpNum = 0;
 
   /**
@@ -233,9 +233,9 @@ void setWaypoints(void) {
    * origin goes in wayPoints[0]
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
-  setOrigin(engQuadX);
+  setOrigin(sundial);
   wayPoints[0] = xyPoint(engQuadX);
-  wayPoints[1] = xyPoint(sundial);
+  wayPoints[1] = xyPoint(engQuadRight);
   wayPoints[2] = xyPoint(engQuadX);
   
 
