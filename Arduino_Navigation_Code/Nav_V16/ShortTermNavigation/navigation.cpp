@@ -125,7 +125,7 @@ void finishTurn(){
   turning=false;
   turn_finished=true;
 }
-
+//nordic sucks, go real skiing
 void avoidObject(void) {
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
@@ -159,6 +159,14 @@ void avoidObject(void) {
   }
 
   // tailAngle = (float)(
+}
+
+/*Method to determine whether the boat is within the tacking bounds, for use in nShort to determine when to tack */
+bool withinBounds(float width, coord_xy point1, coord_xy point2){
+    float angle = angleToTarget(point1, point2);
+    float dy = width/tan(angle);
+    float slope = xySlope(point1, point2);
+    return (sensorData.x * slope + dy < sensorData.y && sensorData.x * slope - dy > sensorData.y);
 }
 
 /*----------Stored Coordinates----------*/
@@ -237,7 +245,7 @@ void setWaypoints(void) {
   wayPoints[0] = xyPoint(engQuadX);
   wayPoints[1] = xyPoint(engQuadRight);
   wayPoints[2] = xyPoint(engQuadX);
-  
+
 
 
 
@@ -357,27 +365,8 @@ void nShort(void) {
 
   normr = xyDist(wayPoints[wpNum], currentPosition);
 
-  //Dummy normal distance
-  float oldnormr=1000;
-  // if(sensorData.lati==0){
-  //   Serial1.println("Don't have GPS");
-  // }
   printData();
   printWaypointData();
-  // Serial1.print("WP:");
-  // Serial1.print(wpNum);
-  // Serial1.print(";");
-
-  // Serial1.print("D:");
-  // Serial1.print(normr);
-  // Serial1.print(";");
-
-  // Serial1.print("W:");
-  // Serial1.print(sensorData.windDir);
-  // Serial1.print(";");
-  // Serial1.print("BD:");
-  // Serial1.print(sensorData.boatDir);
-  // Serial1.print(";");
 
   float anglewaypoint=angleToTarget(coord_xy({sensorData.x, sensorData.y}), wayPoints[wpNum]);
 

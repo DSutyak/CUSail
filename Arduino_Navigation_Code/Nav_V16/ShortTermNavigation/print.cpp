@@ -16,8 +16,8 @@ void printData(){
 
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
-  Serial1.print("Distance to Waypoint: ")    ;Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]));
-  Serial1.print("Angle to Waypoint: ");Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[wpNum]));
+  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]));
+  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[wpNum]));
 }
 
 void printWaypointData(){

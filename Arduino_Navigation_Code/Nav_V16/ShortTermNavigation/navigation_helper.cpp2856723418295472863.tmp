@@ -2,7 +2,7 @@
 #include <math.h>
 #include "sensors.h"
 #include "navigation.h"
-#include <limits>
+#include <stdexcept>
 
 coord_xy origin;
 double latOffset;
@@ -59,9 +59,16 @@ float xySlope(coord_xy point1, coord_xy point2){
     double dy = point1.y - point2.y;
     if (dx == 0)
     {
-      return std::numeric_limits<float>::max();
+      throw std::domain_error("slope is vertical");
     }
-    return dy/dx;
+    return dy\dx;
+}
+
+
+/*Calculates shift in y-intercept from center line used in tacking boundaries */
+float tackingDY(float width, float angle){
+  return (width/tan(angle));
+
 }
 
 /*Returns great circle distance (in meters) between two global coordinates.*/
