@@ -125,7 +125,7 @@ void finishTurn(){
   turning=false;
   turn_finished=true;
 }
-//nordic sucks, go real skiing
+
 void avoidObject(void) {
    addObjects();
    if (objectVals[1] != 400.0 && objectVals[0] != 400.0) {
