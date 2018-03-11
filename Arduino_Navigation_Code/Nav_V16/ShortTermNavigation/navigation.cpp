@@ -32,8 +32,6 @@ float intended_angle;
 float intended_angle_of_attack;
 // latitude is y, longitude is x
 float max_distance=100;
-coord_t center_start={1,2};
-coord_t center_end={10,20};
 
 //set maximum allowable width for boat to sail within
 float upperWidth = 15;
@@ -41,9 +39,6 @@ float lowerWidth = 15;
 
 //set to 0 if we are not doing station keeping or 1 if we are
 bool stationKeeping = 0;
-
-float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
-float intercept= center_start.latitude - slope * center_start.longitude;
 
 // need to read these values from the arduino
 float time_inside=0;
@@ -80,13 +75,6 @@ int avoid_direction=0;
 
 
 // float left_bank=42
-
-/* takes a coordinate and returns the distance from the coordinate to the center line */
-float center_distance(coord_t position){
-  float top= fabs(slope*position.longitude+position.latitude+intercept);
-  float bot= sqrtf(slope*slope + 1);
-  return top/bot;
-}
 
 /*Servo setup
 * "Attaches" servos to defined pins*/
@@ -168,14 +156,14 @@ void avoidObject(void) {
 /*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
 bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2){
     float angle = angleToTarget(point1, point2);
-    float dy = width/tan(angle);
+    float dy = upperWidth/tan(angle);
     float slope = xySlope(point1, point2);
     return (sensorData.x * slope + dy < sensorData.y);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
 bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2){
     float angle = angleToTarget(point1, point2);
-    float dy = width/tan(angle);
+    float dy = lowerWidth/tan(angle);
     float slope = xySlope(point1, point2);
     return (sensorData.x * slope - dy > sensorData.y);
 }
@@ -517,12 +505,12 @@ void nShort(void) {
 */
 
   //Boat hits upper bound, tack right
-  if(wpNum != 0 && aboveBounds(upperWidth, waypoints[wpNum-1], wayPoints[wpNum])){
+  if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }
   //Boat hits lower bound, tack left
-  else if(wpNum != 0 && belowBounds(lowerWidth, waypoints[wpNum-1], wayPoints[wpNum])){
+  else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }

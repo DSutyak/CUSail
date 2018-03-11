@@ -57,7 +57,7 @@ float angleToTarget(coord_xy coord1, coord_xy coord2){
 float xySlope(coord_xy point1, coord_xy point2){
     double dx = point1.x - point2.x;
     double dy = point1.y - point2.y;
-    sign = 1;
+    int sign = 1;
     if (fabs(dx) < 0.0000001)
     {
       if(dx < 0){
