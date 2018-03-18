@@ -73,7 +73,7 @@ float turn_angle=1;
 //1 is right, -1 is left, 0 is not seen yet
 int avoid_direction=0;
 
-
+bool search=false; //set to true when doing search and navigate.
 // float left_bank=42
 
 /*Servo setup
