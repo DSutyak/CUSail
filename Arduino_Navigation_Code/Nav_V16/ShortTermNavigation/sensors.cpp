@@ -147,7 +147,7 @@ double sailMapBench( double sailAngle){
   newSailAngle = map(sailAngle, 270, 360, 115, 121);
  }
  return newSailAngle;
- 
+}
 
 double tailMapBench( double sailAngle, double tailAngle){
   if (sailAngle > 180){ //convert sail angle to -180.. 180

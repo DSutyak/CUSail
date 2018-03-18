@@ -34,8 +34,8 @@ float intended_angle_of_attack;
 float max_distance=100;
 
 //set maximum allowable width for boat to sail within
-float upperWidth = 15;
-float lowerWidth = 15;
+float upperWidth = 5;
+float lowerWidth = 5;
 
 //set to 0 if we are not doing station keeping or 1 if we are
 bool stationKeeping = 0;
@@ -233,7 +233,7 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 2;
   wpNum = 0;
 
   /**
@@ -242,8 +242,7 @@ void setWaypoints(void) {
    */
   setOrigin(sundial);
   wayPoints[0] = xyPoint(outsideThurston);
-  wayPoints[1] = xyPoint(engQuad);
-  wayPoints[2] = xyPoint(engQuadX);
+  wayPoints[1] = xyPoint(sundial);
 
 
 
@@ -350,7 +349,7 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 0;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
@@ -506,11 +505,13 @@ void nShort(void) {
 
   //Boat hits upper bound, tack right
   if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
+    Serial1.print("HIT UPPER BOUND, TACK RIGHT");
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }
   //Boat hits lower bound, tack left
   else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
+    Serial1.print("HIT lower BOUND, TACK LEFT");
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }
