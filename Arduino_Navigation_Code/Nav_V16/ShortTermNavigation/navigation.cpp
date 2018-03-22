@@ -14,7 +14,7 @@ Servo sailServo;
 unsigned long  milTime; //Miliseconds since program started
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = 15; //how far away the boat marks a waypoint "reached"
+float detectionradius = 10; //how far away the boat marks a waypoint "reached"
 float optpolartop = 60; //Optimal upwind angle for waypoints requiring a tack
 float optpolarbot = 60; //Optimal downwind angle for waypoints requiring a tack
 float angleofattack = 10;
@@ -62,7 +62,7 @@ bool continue_end_wp=false;
 float final_intended_angle;
 
 //set to true when doing , when we reach the last waypoint, reset wpNum to 0
-bool endurance=true;
+bool endurance=false;
 
 //set to true when doing obstacle avoidance
 bool avoid_test=false;
@@ -233,17 +233,17 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 2;
+  numWP = 3;
   wpNum = 0;
 
   /**
    * The origin is the point at which all xy coordinates are centered.
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
-  setOrigin(sundial);
+  setOrigin(outsideThurston);
   wayPoints[0] = xyPoint(outsideThurston);
   wayPoints[1] = xyPoint(sundial);
-
+  wayPoints[2] = xyPoint(engQuadX);
 
 
 
@@ -434,6 +434,7 @@ void nShort(void) {
   else{
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
+        Serial1.print("hit");
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
