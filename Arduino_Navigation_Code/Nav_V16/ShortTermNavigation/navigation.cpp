@@ -361,8 +361,8 @@ void nShort(void) {
   // if(sensorData.lati==0){
   //   Serial1.println("Don't have GPS");
   // }
- // printData();
-  //printWaypointData();
+  printData();
+  printWaypointData();
   // Serial1.print("WP:");
   // Serial1.print(wpNum);
   // Serial1.print(";");
@@ -658,17 +658,15 @@ void nShort(void) {
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
-
-// REAL BOAT SAIL AND TAIL MAPPING
-//   tailAngle = tailMap(sailAngle, tailAngle);
-//   sailAngle = sailMap(sailAngle);
-//calculate offsets
-Serial1.print("heel:  ");
-Serial1.println(sensorData.roll);
   if(sailAngle<=180){
     sailAngle=sailAngle+sailOffset();}
  else{
   sailAngle=sailAngle-sailOffset();}
+// REAL BOAT SAIL AND TAIL MAPPING
+//   tailAngle = tailMap(sailAngle, tailAngle);
+//   sailAngle = sailMap(sailAngle);
+//calculate offsets
+
     
 
    Serial1.println();

@@ -28,4 +28,10 @@ double havDist(coord_t  first, coord_t second);
 /*converts an angle to a 0-360 range*/
 float convertto360(float angle);
 
+<<<<<<< HEAD
 int sailOffset();
+=======
+/*Calculates slope between two xy coordinate points*/
+float xySlope(coord_xy point1, coord_xy point2);
+
+>>>>>>> f09409cd280a597af2f66520fa2e2d3f2d22bfe6

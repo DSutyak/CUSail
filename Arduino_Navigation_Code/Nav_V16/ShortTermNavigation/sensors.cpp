@@ -1,3 +1,4 @@
+
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
@@ -134,18 +135,18 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 99.5, 106);
-  }
-  else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 106, 111);
-  }
-  else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 111, 116);
-  }
-  else{
-   newSailAngle = map(sailAngle, 270, 360, 116, 121);
-  }
-  return newSailAngle;
+   newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
+ }
+ else if (sailAngle <= 180){
+   newSailAngle = map(sailAngle, 90, 180, 105, 110);
+ }
+ else if (sailAngle <= 270){
+   newSailAngle = map(sailAngle, 180, 270, 110, 115);
+ }
+ else{
+  newSailAngle = map(sailAngle, 270, 360, 115, 121);
+ }
+ return newSailAngle;
 }
 
 double tailMapBench( double sailAngle, double tailAngle){
@@ -157,19 +158,19 @@ double tailMapBench( double sailAngle, double tailAngle){
 
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
-    newTailAngle+=360;
-  }
-  else if(newTailAngle>180){
-    newTailAngle-=360;
-  }
-  //map to servo commands
-  if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,70,45);
-  }
-  else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,45,13);
-  }
-  return newTailAngle;
+   newTailAngle+=360;
+ }
+ else if(newTailAngle>180){
+   newTailAngle-=360;
+ }
+ //map to servo commands
+ if (newTailAngle <= 0 ){
+   newTailAngle=map(newTailAngle,-30,0,70,45);
+ }
+ else if (newTailAngle > 0 ){
+   newTailAngle=map(newTailAngle,0,30,45,13);
+ }
+ return newTailAngle;
 }
 
 /*Sensor setup*/

@@ -8,9 +8,9 @@ Servo Tail;
 int sailPin = 9; //Sail Servo SERVO 1
 int tailPin = 8; //Tail Servo SERVO 2
 
-int zeroSail = 0; //Set to 1 to run zeroing code;
+int zeroSail = 1; //Set to 1 to run zeroing code;
 int sailTailBoatTest = 0; //Set to 1 to run Sail and Tail mapping test on the BOAT
-int sailTailBenchTest = 1; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
+int sailTailBenchTest = 0; //Set to 1 to run Sail and Tail mapping test on the TEST BENCH 
 
 void setup() {
  Sail.attach(sailPin);
@@ -170,43 +170,43 @@ double tailMap(double sailAngle, double tailAngle){
 }
 
 double sailMapBench( double sailAngle){
-  double newSailAngle;
-  if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 99.5, 106);
-  }
-  else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 106, 111);
-  }
-  else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 111, 116);
-  }
-  else{
-   newSailAngle = map(sailAngle, 270, 360, 116, 121);
-  }
-  return newSailAngle;
+ double newSailAngle;
+ if (sailAngle <= 90){
+   newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
+ }
+ else if (sailAngle <= 180){
+   newSailAngle = map(sailAngle, 90, 180, 105, 110);
+ }
+ else if (sailAngle <= 270){
+   newSailAngle = map(sailAngle, 180, 270, 110, 115);
+ }
+ else{
+  newSailAngle = map(sailAngle, 270, 360, 115, 121);
+ }
+ return newSailAngle;
 }
 
 double tailMapBench( double sailAngle, double tailAngle){
-  if (sailAngle > 180){ //convert sail angle to -180.. 180
-    sailAngle -= 360;
-  }
+ if (sailAngle > 180){ //convert sail angle to -180.. 180
+   sailAngle -= 360;
+ }
 
-  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+ double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
 
-  //make sure tail angle is in range -180.. 180
-  if(newTailAngle<-180){
-    newTailAngle+=360;
-  }
-  else if(newTailAngle>180){
-    newTailAngle-=360;
-  }
-  //map to servo commands
-  if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,70,45);
-  }
-  else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,45,13);
-  }
-  return newTailAngle;
+ //make sure tail angle is in range -180.. 180
+ if(newTailAngle<-180){
+   newTailAngle+=360;
+ }
+ else if(newTailAngle>180){
+   newTailAngle-=360;
+ }
+ //map to servo commands
+ if (newTailAngle <= 0 ){
+   newTailAngle=map(newTailAngle,-30,0,70,45);
+ }
+ else if (newTailAngle > 0 ){
+   newTailAngle=map(newTailAngle,0,30,45,13);
+ }
+ return newTailAngle;
 }
 

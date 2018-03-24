@@ -2,7 +2,7 @@
 #include <math.h>
 #include "sensors.h"
 #include "navigation.h"
-
+#include <limits>
 
 coord_xy origin;
 double latOffset;
@@ -40,7 +40,7 @@ double xyDist(coord_xy point1, coord_xy point2){
 }
 
 //for distance between current and next waypoint
-//return xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]); 
+//return xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]);
 
 
 /*Returns angle (with respect to North) between two global coordinates.*/
@@ -54,11 +54,26 @@ float angleToTarget(coord_xy coord1, coord_xy coord2){
   return angle;
 }
 
+/*Calculates slope between point1 and point2, designed for use with tacking boundaries */
+float xySlope(coord_xy point1, coord_xy point2){
+    double dx = point1.x - point2.x;
+    double dy = point1.y - point2.y;
+    int sign = 1;
+    if (fabs(dx) < 0.0000001)
+    {
+      if(dx < 0){
+        sign = -1;
+      }
+      return sign * 10000000;
+    }
+    return dy/dx;
+}
+
 /*Returns great circle distance (in meters) between two global coordinates.*/
 // double havDist(coord_t  first, coord_t second) {
 //   double x = first.longitude;
 //   double y = first.latitude;
-// 
+//
 //   double x1 = second.longitude;
 //   double y1 = second.latitude;
 //
@@ -80,7 +95,29 @@ float angleToTarget(coord_xy coord1, coord_xy coord2){
 //
 //   return distance;
 // }
+//Object search and navigate-to algorithm waypoint setup
+/*void searchSetup(coord_xy center){
+  //take a wind direction here. Set to angle searchWindDir in degrees
+  setOrigin(center);
+  //setup coordinates. performs a spiral from the inside out.
+  coord_xy upwindOutside.y= sin(searchWindDir)*75;
+  coord_xy upwindOutside.x= cos(searchWindDir)*75;
+  coord_xy portOutside.y= sin(searchWindDir+90)*75;
+  coord_xy portOutside.x= cos(searchWindDir+90)*75;
+  coord_xy starboardOutside.y= sin(searchWindDir-90)*75;
+  coord_xy starboardOutside.x= cos(searchWindDir-90)*75;
+  coord_xy downwindtOutside.y= sin(searchWindDir+180)*75;
+  coord_xy downwindOutside.x= cos(searchWindDir+180)*75;
 
+  coord_xy upwindOutside.y= sin(searchWindDir)*25;
+  coord_xy upwindOutside.x= cos(searchWindDir)*25;
+  coord_xy portOutside.y= sin(searchWindDir+90)*25;
+  coord_xy portOutside.x= cos(searchWindDir+90)*25;
+  coord_xy starboardOutside.y= sin(searchWindDir-90)*25;
+  coord_xy starboardOutside.x= cos(searchWindDir-90)*25;
+  coord_xy downwindtOutside.y= sin(searchWindDir+180)*25;
+  coord_xy downwindOutside.x= cos(searchWindDir+180)*25;
+}*/
 // converts an angle to a 0-360 range
 float convertto360(float angle){
   angle=(float)((int)angle%360);
