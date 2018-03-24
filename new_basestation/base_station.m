@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 24-Mar-2018 13:35:31
+% Last Modified by GUIDE v2.5 24-Mar-2018 13:53:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -53,9 +53,7 @@ end
 % VARIABLES AND CONSTANTS
 %==========================================================================
 
-
 % MATLAB sucks.
-% MATLAB is not a real programming language.
 function initVarsAndConstants(handles1)
     global handles;
     global boatMode;
@@ -86,11 +84,9 @@ function initVarsAndConstants(handles1)
     WIND_VEC_SCALE = 2;
 end
 
-
 %==========================================================================
 % FUNCTIONS
 %==========================================================================
-
 
 function drawTextureAt(path, transform)
     [im, map, alpha] = imread(path);
@@ -116,6 +112,97 @@ function drawVector(origin, vec, flags)
     x1 = origin(1);
     y1 = origin(2);
     plot([x1 x1+vec(1)], [y1 y1+vec(2)], flags);
+end
+
+%==========================================================================
+% PUBLIC FUNCTIONS
+%==========================================================================
+
+function rotate = createRotZ(angle)
+    rotate = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
+end
+
+function translate = createTranslation(pos)
+    translate = [1 0 0; 0 1 0; pos(1) pos(2) 1];
+end
+
+function updateFromData(data)
+    rotation = createRotZ(data.boat_heading);
+    translate = createTranslation(data.position);
+    boatTransform = rotation * translate;
+end
+
+function updateCanvas()
+    global boatMode;
+    global boatPos;
+    global boatTransform;
+    global windVec;
+    global sailDir;
+    global tailDir;
+    
+    global wayPoints;
+    global buoyPoints;
+    
+    global DIR_LINE_LENGTH;
+    global WIND_VEC_SCALE;
+    
+    cla();
+    
+    drawTextureAt('Boat.png', boatTransform);
+    drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
+    drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
+    drawVector(boatPos, tailDir * DIR_LINE_LENGTH, '--b');
+    
+    for row = 1:size(wayPoints, 1)
+        point = wayPoints(row, :);
+        drawTextureAt('Waypoint.png', createTranslation(point));
+    end
+    
+    for row = 1:size(buoyPoints, 1)
+        point = buoyPoints(row, :);
+        drawTextureAt('Buoy.png', createTranslation(point));
+    end
+    
+    %xlim([-300 400]);
+    %ylim([-300 400]);
+end
+
+function str = formatPoint(pt)
+    str = string(sprintf('(%.0f, %.0f)', pt(1), pt(2)));
+end
+
+function updateWaypointList()
+    global handles;
+    global wayPoints;
+    
+    numPoints = size(wayPoints, 1);
+    stringVec = [];
+
+    for row = 1:numPoints
+        stringVec = [stringVec; formatPoint(wayPoints(row, :))];
+    end
+    
+    handles.WaypointList.String = stringVec;
+end
+
+function updateBuoyList()
+    global handles;
+    global buoyPoints;
+    
+    numPoints = size(buoyPoints, 1);
+    stringVec = [];
+
+    for row = 1:numPoints
+        stringVec = [stringVec; formatPoint(buoyPoints(row, :))];
+    end
+    
+    handles.BuoyList.String = stringVec;
+end
+
+function updateAll()
+    updateCanvas();
+    updateWaypointList();
+    updateBuoyList();
 end
 
 
@@ -360,95 +447,9 @@ function DeleteButton_Callback(hObject, eventdata, handles)
     updateBuoyList();
 end
 
-
-%==========================================================================
-% PUBLIC FUNCTIONS
-%==========================================================================
-
-
-function rotate = createRotZ(angle)
-    rotate = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
-end
-
-function translate = createTranslation(pos)
-    translate = [1 0 0; 0 1 0; pos(1) pos(2) 1];
-end
-
-function updateFromData(data)
-    rotation = createRotZ(data.boat_heading);
-    translate = createTranslation(data.position);
-    boatTransform = rotation * translate;
-end
-
-function updateCanvas()
-    global boatMode;
-    global boatPos;
-    global boatTransform;
-    global windVec;
-    global sailDir;
-    global tailDir;
-    
-    global wayPoints;
-    global buoyPoints;
-    
-    global DIR_LINE_LENGTH;
-    global WIND_VEC_SCALE;
-    
-    cla();
-    
-    drawTextureAt('Boat.png', boatTransform);
-    drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
-    drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
-    drawVector(boatPos, tailDir * DIR_LINE_LENGTH, '--b');
-    
-    for row = 1:size(wayPoints, 1)
-        point = wayPoints(row, :);
-        drawTextureAt('Waypoint.png', createTranslation(point));
-    end
-    
-    for row = 1:size(buoyPoints, 1)
-        point = buoyPoints(row, :);
-        drawTextureAt('Buoy.png', createTranslation(point));
-    end
-    
-    %xlim([-300 400]);
-    %ylim([-300 400]);
-end
-
-function str = formatPoint(pt)
-    str = string(sprintf('(%.0f, %.0f)', pt(1), pt(2)));
-end
-
-function updateWaypointList()
-    global handles;
-    global wayPoints;
-    
-    numPoints = size(wayPoints, 1);
-    stringVec = [];
-
-    for row = 1:numPoints
-        stringVec = [stringVec; formatPoint(wayPoints(row, :))];
-    end
-    
-    handles.WaypointList.String = stringVec;
-end
-
-function updateBuoyList()
-    global handles;
-    global buoyPoints;
-    
-    numPoints = size(buoyPoints, 1);
-    stringVec = [];
-
-    for row = 1:numPoints
-        stringVec = [stringVec; formatPoint(buoyPoints(row, :))];
-    end
-    
-    handles.BuoyList.String = stringVec;
-end
-
-function updateAll()
-    updateCanvas();
-    updateWaypointList();
-    updateBuoyList();
+% --- Executes on button press in SendButton.
+function SendButton_Callback(hObject, eventdata, handles)
+% hObject    handle to SendButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 end
