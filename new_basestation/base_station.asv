@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 04-Mar-2018 12:55:46
+% Last Modified by GUIDE v2.5 24-Mar-2018 13:35:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -141,7 +141,7 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
     % uiwait(handles.figure1);
     
     initVarsAndConstants(handles);
-
+    updateAll();
 end
 
 
@@ -237,6 +237,18 @@ function WaypointAdd_Callback(hObject, eventdata, handles)
 % hObject    handle to WaypointAdd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global wayPoints;
+    
+    inString = char(handles.WaypointIn.String);
+    inString = erase(inString, '(');
+    inString = erase(inString, ')');
+    disp(inString);
+    disp(str2num(inString));
+    
+    wayPoints = [wayPoints; str2num(inString)];
+    updateWaypointList();
+    updateCanvas();
 end
 
 
@@ -277,6 +289,18 @@ function BuoyAdd_Callback(hObject, eventdata, handles)
 % hObject    handle to BuoyAdd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global buoyPoints;
+    
+    inString = char(handles.WaypointIn.String);
+    inString = erase(inString, '(');
+    inString = erase(inString, ')');
+    disp(inString);
+    disp(str2num(inString));
+    
+    buoyPoints = [buoyPoints; str2num(inString)];
+    updateBuoyList();
+    updateCanvas();
 end
 
 
@@ -374,6 +398,8 @@ function updateCanvas()
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
+    cla();
+    
     drawTextureAt('Boat.png', boatTransform);
     drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
     drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
@@ -388,10 +414,13 @@ function updateCanvas()
         point = buoyPoints(row, :);
         drawTextureAt('Buoy.png', createTranslation(point));
     end
+    
+    %xlim([-300 400]);
+    %ylim([-300 400]);
 end
 
 function str = formatPoint(pt)
-    str = sprintf('(%.0f, %.0f)', pt(1), pt(2));
+    str = string(sprintf('(%.0f, %.0f)', pt(1), pt(2)));
 end
 
 function updateWaypointList()
@@ -416,9 +445,14 @@ function updateBuoyList()
     stringVec = [];
 
     for row = 1:numPoints
-        disp(buoyPoints(row, :)
         stringVec = [stringVec; formatPoint(buoyPoints(row, :))];
     end
     
     handles.BuoyList.String = stringVec;
+end
+
+function updateAll()
+    updateCanvas();
+    updateWaypointList();
+    updateBuoyList();
 end
