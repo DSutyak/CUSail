@@ -28,3 +28,4 @@ double havDist(coord_t  first, coord_t second);
 /*converts an angle to a 0-360 range*/
 float convertto360(float angle);
 
+int sailOffset();

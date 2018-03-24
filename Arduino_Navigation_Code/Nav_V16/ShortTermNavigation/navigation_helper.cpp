@@ -8,7 +8,8 @@ coord_xy origin;
 double latOffset;
 double longOffset;
 double longScale;
-const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
+const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters;
+const double maxHeel = 15; 
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
@@ -87,3 +88,19 @@ float convertto360(float angle){
   angle=(float)((int)angle%360);
   return angle;
 }
+
+int offset=0;
+double oldHeel=0;
+int sailOffset(){
+  
+  if(abs(sensorData.roll)<maxHeel){
+    offset= 0; 
+    }
+   else if(abs(sensorData.roll)<oldHeel){
+    offset--;}
+   else if(abs(sensorData.roll)>oldHeel){
+    offset++;}
+    oldHeel=abs(sensorData.roll);
+    
+    return offset;
+  }

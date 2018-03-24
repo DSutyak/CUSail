@@ -63,7 +63,7 @@ bool continue_end_wp=false;
 float final_intended_angle;
 
 //set to true when doing , when we reach the last waypoint, reset wpNum to 0
-bool endurance=true;
+bool endurance=false;
 
 //set to true when doing obstacle avoidance
 bool avoid_test=false;
@@ -83,7 +83,6 @@ float center_distance(coord_t position){
   float bot= sqrtf(slope*slope + 1);
   return top/bot;
 }
-
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {
@@ -236,7 +235,7 @@ void setWaypoints(void) {
   setOrigin(sundial);
   wayPoints[0] = xyPoint(engQuadX);
   wayPoints[1] = xyPoint(engQuadRight);
-  wayPoints[2] = xyPoint(engQuadX);
+  wayPoints[2] = xyPoint(outsideThurston);
   
 
 
@@ -362,8 +361,8 @@ void nShort(void) {
   // if(sensorData.lati==0){
   //   Serial1.println("Don't have GPS");
   // }
-  printData();
-  printWaypointData();
+ // printData();
+  //printWaypointData();
   // Serial1.print("WP:");
   // Serial1.print(wpNum);
   // Serial1.print(";");
@@ -663,6 +662,14 @@ void nShort(void) {
 // REAL BOAT SAIL AND TAIL MAPPING
 //   tailAngle = tailMap(sailAngle, tailAngle);
 //   sailAngle = sailMap(sailAngle);
+//calculate offsets
+Serial1.print("heel:  ");
+Serial1.println(sensorData.roll);
+  if(sailAngle<=180){
+    sailAngle=sailAngle+sailOffset();}
+ else{
+  sailAngle=sailAngle-sailOffset();}
+    
 
    Serial1.println();
 
