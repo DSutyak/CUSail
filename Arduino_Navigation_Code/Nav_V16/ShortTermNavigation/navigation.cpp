@@ -512,7 +512,7 @@ void nShort(void) {
   }
   //Boat hits lower bound, tack left
   else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
-    Serial1.print("HIT lower BOUND, TACK LEFT");
+    Serial1.print("HIT LOWER BOUND, TACK LEFT");
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }
