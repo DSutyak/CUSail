@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 24-Mar-2018 13:53:12
+% Last Modified by GUIDE v2.5 24-Mar-2018 14:52:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -302,6 +302,9 @@ function WaypointList_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns WaypointList contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from WaypointList
+    lastValue = getappdata(hObject, 'lastValue');
+    disp(lastValue);
+    %disp(hObject.Value);
 end
 
 
@@ -331,7 +334,13 @@ function WaypointAdd_Callback(hObject, eventdata, handles)
     inString = erase(inString, '(');
     inString = erase(inString, ')');
     
-    wayPoints = [wayPoints; str2num(inString)];
+    [pt, success] = str2num(inString);
+    if (success == 0)
+        return;
+    end
+    
+    wayPoints = [wayPoints; pt];
+    
     updateWaypointList();
     updateCanvas();
 end
@@ -342,6 +351,22 @@ function WaypointUp_Callback(hObject, eventdata, handles)
 % hObject    handle to WaypointUp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global wayPoints;
+    
+    selIndex = handles.WaypointList.Value;
+    if (selIndex <= 1)
+        return;
+    end
+    
+    temp = wayPoints(selIndex, :);
+    wayPoints(selIndex, :) = wayPoints(selIndex-1, :);
+    wayPoints(selIndex-1, :) = temp;
+    
+    handles.WaypointList.Value = selIndex-1;
+    
+    updateWaypointList();
+    updateCanvas();
 end
 
 
@@ -350,6 +375,22 @@ function WaypointDown_Callback(hObject, eventdata, handles)
 % hObject    handle to WaypointDown (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global wayPoints;
+    
+    selIndex = handles.WaypointList.Value;
+    if (selIndex >= size(wayPoints, 1))
+        return;
+    end
+    
+    temp = wayPoints(selIndex, :);
+    wayPoints(selIndex, :) = wayPoints(selIndex+1, :);
+    wayPoints(selIndex+1, :) = temp;
+    
+    handles.WaypointList.Value = selIndex+1;
+    
+    updateWaypointList();
+    updateCanvas();
 end
 
 
@@ -358,6 +399,22 @@ function BuoyDown_Callback(hObject, eventdata, handles)
 % hObject    handle to BuoyDown (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global buoyPoints;
+    
+    selIndex = handles.BuoyList.Value;
+    if (selIndex >= size(buoyPoints, 1))
+        return;
+    end
+    
+    temp = buoyPoints(selIndex, :);
+    buoyPoints(selIndex, :) = buoyPoints(selIndex+1, :);
+    buoyPoints(selIndex+1, :) = temp;
+    
+    handles.BuoyList.Value = selIndex+1;
+    
+    updateBuoyList();
+    updateCanvas();
 end
 
 
@@ -366,6 +423,22 @@ function BuoyUp_Callback(hObject, eventdata, handles)
 % hObject    handle to BuoyUp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    global buoyPoints;
+    
+    selIndex = handles.BuoyList.Value;
+    if (selIndex <= 1)
+        return;
+    end
+    
+    temp = buoyPoints(selIndex, :);
+    buoyPoints(selIndex, :) = buoyPoints(selIndex-1, :);
+    buoyPoints(selIndex-1, :) = temp;
+    
+    handles.BuoyList.Value = selIndex-1;
+    
+    updateBuoyList();
+    updateCanvas();
 end
 
 
@@ -381,7 +454,12 @@ function BuoyAdd_Callback(hObject, eventdata, handles)
     inString = erase(inString, '(');
     inString = erase(inString, ')');
     
-    buoyPoints = [buoyPoints; str2num(inString)];
+    [pt, success] = str2num(inString);
+    if (success == 0)
+        return;
+    end
+    
+    buoyPoints = [buoyPoints; pt];
     updateBuoyList();
     updateCanvas();
 end
@@ -442,9 +520,6 @@ function DeleteButton_Callback(hObject, eventdata, handles)
 % hObject    handle to DeleteButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    updateCanvas();
-    updateWaypointList();
-    updateBuoyList();
 end
 
 % --- Executes on button press in SendButton.
@@ -452,4 +527,44 @@ function SendButton_Callback(hObject, eventdata, handles)
 % hObject    handle to SendButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+end
+
+
+% --- Executes on button press in WaypointRemove.
+function WaypointRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to WaypointRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    global wayPoints;
+    
+    selIndex = handles.WaypointList.Value;
+    wayPoints(selIndex, :) = [];
+    
+    if (selIndex > 1)
+        handles.WaypointList.Value = selIndex - 1;
+    end
+    
+    updateWaypointList();
+    updateCanvas();
+end
+
+
+% --- Executes on button press in BuoyRemove.
+function BuoyRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to BuoyRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    global buoyPoints;
+    
+    selIndex = handles.BuoyList.Value;
+    buoyPoints(selIndex, :) = [];
+    
+    if (selIndex > 1)
+        handles.BuoyList.Value = selIndex - 1;
+    end
+    
+    updateBuoyList();
+    updateCanvas();
 end
