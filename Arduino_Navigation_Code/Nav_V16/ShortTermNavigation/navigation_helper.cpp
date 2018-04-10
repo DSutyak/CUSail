@@ -46,7 +46,7 @@ double xyDist(coord_xy point1, coord_xy point2){
 float angleToTarget(coord_xy coord1, coord_xy coord2){
   double dx = fabs(coord1.x-coord2.x);
   double dy = fabs(coord1.y-coord2.y);
-  double angle = atan(dx/dy) * 180/M_PI;
+  double angle = atan(dy/dx) * 180/M_PI;
   if (angle<0){
     angle+=360;
   }
