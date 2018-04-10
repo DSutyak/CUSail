@@ -14,7 +14,7 @@ Servo sailServo;
 unsigned long  milTime; //Miliseconds since program started
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = 10; //how far away the boat marks a waypoint "reached"
+float detectionradius = 5; //how far away the boat marks a waypoint "reached"
 float optpolartop = 60; //Optimal upwind angle for waypoints requiring a tack
 float optpolarbot = 60; //Optimal downwind angle for waypoints requiring a tack
 float angleofattack = 10;
@@ -154,17 +154,21 @@ void avoidObject(void) {
 }
 
 /*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
-bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2){
-    float angle = angleToTarget(point1, point2);
-    float dy = upperWidth/tan(angle);
-    float slope = xySlope(point1, point2);
+bool aboveBounds(float upperWidth, coord_xy prevWp, coord_xy nextWp){
+    float angle = angleToTarget(prevWp, nextWp);
+    float dy = fabs(upperWidth/tan(angle));
+    float slope = xySlope(prevWp, nextWp);
+    Serial1.print("Vertical offset:");
+    Serial1.print(dy);
     return (sensorData.x * slope + dy < sensorData.y);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2){
-    float angle = angleToTarget(point1, point2);
-    float dy = lowerWidth/tan(angle);
-    float slope = xySlope(point1, point2);
+bool belowBounds(float lowerWidth, coord_xy prevWp, coord_xy nextWp){
+    float angle = angleToTarget(prevWp, nextWp);
+    float dy = fabs(lowerWidth/tan(angle));
+    float slope = xySlope(prevWp, nextWp);
+    Serial1.print("Vertical offset:");
+    Serial1.print(dy);
     return (sensorData.x * slope - dy > sensorData.y);
 }
 
@@ -233,7 +237,7 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 2;
   wpNum = 0;
 
   /**
@@ -242,8 +246,7 @@ void setWaypoints(void) {
    */
   setOrigin(outsideThurston);
   wayPoints[0] = xyPoint(outsideThurston);
-  wayPoints[1] = xyPoint(sundial);
-  wayPoints[2] = xyPoint(engQuadX);
+  wayPoints[1] = xyPoint(engQuadX);
 
 
 
@@ -512,7 +515,7 @@ void nShort(void) {
   }
   //Boat hits lower bound, tack left
   else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
-    Serial1.print("HIT lower BOUND, TACK LEFT");
+    Serial1.print("HIT LOWER BOUND, TACK LEFT");
     intended_angle = optpolartop;
     intended_angle_of_attack = -intended_angle_of_attack;
   }
