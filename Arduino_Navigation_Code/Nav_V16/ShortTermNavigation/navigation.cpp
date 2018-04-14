@@ -156,14 +156,14 @@ void avoidObject(void) {
 /*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
 bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2){
     float angle = angleToTarget(point1, point2);
-    float dy = upperWidth/tan(angle);
+    float dy = fabs(upperWidth/tan(angle));
     float slope = xySlope(point1, point2);
     return (sensorData.x * slope + dy < sensorData.y);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
 bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2){
     float angle = angleToTarget(point1, point2);
-    float dy = lowerWidth/tan(angle);
+    float dy = fabs(lowerWidth/tan(angle));
     float slope = xySlope(point1, point2);
     return (sensorData.x * slope - dy > sensorData.y);
 }
