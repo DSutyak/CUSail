@@ -25,9 +25,9 @@ void printWaypointData(){
   Serial1.print("Next Waypoint #");
   Serial1.print(wpNum);
   Serial1.print(": ");
-  Serial1.print(wayPoints[wpNum].y,10);
+  Serial1.print(wayPoints[wpNum].x,10);
   Serial1.print(", ");
-  Serial1.println(wayPoints[wpNum].x,10);
+  Serial1.println(wayPoints[wpNum].y,10);
 }
 
 void printHitWaypointData(){

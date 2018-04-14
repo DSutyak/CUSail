@@ -241,9 +241,9 @@ void setWaypoints(void) {
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
   setOrigin(outsideThurston);
-  wayPoints[0] = xyPoint(outsideThurston);
-  wayPoints[1] = xyPoint(sundial);
-  wayPoints[2] = xyPoint(engQuadX);
+  wayPoints[0] = xyPoint(outsideDuffield);
+  wayPoints[1] = xyPoint(outsideThurston);
+  wayPoints[2] = xyPoint(sundial);
 
 
 
