@@ -359,7 +359,7 @@ void nShort(void) {
   r[1] = wayPoints[wpNum].y - sensorData.y;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_xy currentPosition = {sensorData.y, sensorData.x};
+  coord_xy currentPosition = {sensorData.x, sensorData.y};
 
   normr = xyDist(wayPoints[wpNum], currentPosition);
 
@@ -408,7 +408,7 @@ void nShort(void) {
         r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.y, sensorData.x};
+        currentPosition = {sensorData.x, sensorData.y};
 
         normr = xyDist(wayPoints[wpNum], currentPosition);
         start_box_time=milTime;
@@ -425,13 +425,17 @@ void nShort(void) {
       r[1] = wayPoints[wpNum].y - sensorData.y;
       w[0] = cos((sensorData.windDir)*(PI/180.0));
       w[1] = sin((sensorData.windDir)*(PI/180.0));
-      currentPosition = {sensorData.y, sensorData.x};
+      currentPosition = {sensorData.x, sensorData.y};
       normr = xyDist(wayPoints[wpNum], currentPosition);
       stationKeeping=0;
     }
 
   }
   else{
+    Serial1.println(detectionradius);
+    Serial1.println(normr);
+    Serial1.print("Bool val of normr and detection radius: ");
+    Serial1.print(normr<detectionradius);
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
         Serial1.print("hit");
@@ -442,7 +446,7 @@ void nShort(void) {
         r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.y, sensorData.x};
+        currentPosition = {sensorData.x, sensorData.y};
         normr = xyDist(wayPoints[wpNum], currentPosition);
       }
       else{
@@ -456,7 +460,7 @@ void nShort(void) {
           w[0] = cos((sensorData.windDir)*(PI/180.0));
           w[1] = sin((sensorData.windDir)*(PI/180.0));
 
-          currentPosition = {sensorData.y, sensorData.x};
+          currentPosition = {sensorData.x, sensorData.y};
           normr = xyDist(wayPoints[wpNum], currentPosition);
 
           wpNum=0;
