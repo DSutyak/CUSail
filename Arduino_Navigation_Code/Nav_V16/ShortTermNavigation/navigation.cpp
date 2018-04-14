@@ -26,19 +26,20 @@ float w[2]; //w[0]: Cosine of the wind direction w.r.t North,
             //w[1]: Sine of the wind direction w.r.t North
 float sailAngle;
 float tailAngle;
-
 // the angle that we intend to sail at WRT North
+
 float intended_angle;
 float intended_angle_of_attack;
 // latitude is y, longitude is x
 float max_distance=100;
-
-//set maximum allowable width for boat to sail within
-float upperWidth = 5;
-float lowerWidth = 5;
+coord_t center_start={1,2};
+coord_t center_end={10,20};
 
 //set to 0 if we are not doing station keeping or 1 if we are
 bool stationKeeping = 0;
+
+float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
+float intercept= center_start.latitude - slope * center_start.longitude;
 
 // need to read these values from the arduino
 float time_inside=0;
@@ -73,9 +74,15 @@ float turn_angle=1;
 //1 is right, -1 is left, 0 is not seen yet
 int avoid_direction=0;
 
-bool search=false; //set to true when doing search and navigate.
+
 // float left_bank=42
 
+/* takes a coordinate and returns the distance from the coordinate to the center line */
+float center_distance(coord_t position){
+  float top= fabs(slope*position.longitude+position.latitude+intercept);
+  float bot= sqrtf(slope*slope + 1);
+  return top/bot;
+}
 /*Servo setup
 * "Attaches" servos to defined pins*/
 void initServos(void) {
@@ -241,12 +248,15 @@ void setWaypoints(void) {
   wpNum = 0;
 
   /**
-   * The origin is the point at which all xy coordinates are centered.
+   * waypoint 0 is the origin.  the name of your origin should go in the setOrigin function
+   * origin goes in wayPoints[0]
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
+
   setOrigin(outsideThurston);
   wayPoints[0] = xyPoint(outsideThurston);
   wayPoints[1] = xyPoint(engQuadX);
+
 
 
 
@@ -352,7 +362,7 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 0;
+  sensorData.windDir = 270;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
@@ -366,8 +376,27 @@ void nShort(void) {
 
   normr = xyDist(wayPoints[wpNum], currentPosition);
 
+  //Dummy normal distance
+  float oldnormr=1000;
+  // if(sensorData.lati==0){
+  //   Serial1.println("Don't have GPS");
+  // }
   printData();
   printWaypointData();
+  // Serial1.print("WP:");
+  // Serial1.print(wpNum);
+  // Serial1.print(";");
+
+  // Serial1.print("D:");
+  // Serial1.print(normr);
+  // Serial1.print(";");
+
+  // Serial1.print("W:");
+  // Serial1.print(sensorData.windDir);
+  // Serial1.print(";");
+  // Serial1.print("BD:");
+  // Serial1.print(sensorData.boatDir);
+  // Serial1.print(";");
 
   float anglewaypoint=angleToTarget(coord_xy({sensorData.x, sensorData.y}), wayPoints[wpNum]);
 
@@ -437,7 +466,6 @@ void nShort(void) {
   else{
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
-        Serial1.print("hit");
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
@@ -507,6 +535,7 @@ void nShort(void) {
     w-(|w+180+optbot-boatdir|)
 */
 
+
   //Boat hits upper bound, tack right
   if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum])){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
@@ -521,6 +550,9 @@ void nShort(void) {
   }
   //  boat initially facing right
   else if (boat_wrt_wind<180) {
+//  boat initially facing right
+  if (boat_wrt_wind<180) {
+    //Up right
     if (dirangle<optpolartop && dirangle>0){
       Serial1.print("RIGHT UP RIGHT->UP RIGHT");
       intended_angle= windDir + optpolartop;
@@ -662,10 +694,16 @@ void nShort(void) {
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
-
+  if(sailAngle<=180){
+    sailAngle=sailAngle+sailOffset();}
+ else{
+  sailAngle=sailAngle-sailOffset();}
 // REAL BOAT SAIL AND TAIL MAPPING
 //   tailAngle = tailMap(sailAngle, tailAngle);
 //   sailAngle = sailMap(sailAngle);
+//calculate offsets
+
+
 
    Serial1.println();
 
