@@ -66,6 +66,8 @@ function initVarsAndConstants(handles1)
     global wayPoints;
     global buoyPoints;
     
+    global pastTransforms;
+    
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
@@ -79,6 +81,11 @@ function initVarsAndConstants(handles1)
     tailDir = [-.6 1];
     wayPoints = [325 58; 56 233];
     buoyPoints = [78 97; 253 75];
+    
+    pastTransforms = [1 0 0; 0 1 0; 0 0 1];
+    for i = 1:5
+        pastTransforms(:, :, i) = [1 0 0; 0 1 0; 0 0 1];
+    end
     
     DIR_LINE_LENGTH = 40;
     WIND_VEC_SCALE = 2;
@@ -127,8 +134,17 @@ function translate = createTranslation(pos)
 end
 
 function updateFromData(data)
-    rotation = createRotZ(data.boat_heading);
+    global boatTransform;
+    global pastTransforms;
+
+    rotation = createRotZ(-data.boat_heading + pi/2);
     translate = createTranslation(data.position);
+    
+    for page = 1:size(pastTransforms, 3)-1
+        pastTransforms(:, :, page+1) = pastTransforms(:, :, page);
+    end
+    pastTransforms(:, :, 1) = boatTransform;
+    
     boatTransform = rotation * translate;
 end
 
@@ -142,6 +158,8 @@ function updateCanvas()
     
     global wayPoints;
     global buoyPoints;
+    
+    global pastTransforms;
     
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
@@ -161,6 +179,11 @@ function updateCanvas()
     for row = 1:size(buoyPoints, 1)
         point = buoyPoints(row, :);
         drawTextureAt('Buoy.png', createTranslation(point));
+    end
+    
+    for page = 1:size(pastTransforms, 3)
+        transform = pastTransforms(:, :, page);
+        drawTextureAt('PastPoint.png', transform);
     end
     
     %xlim([-300 400]);
