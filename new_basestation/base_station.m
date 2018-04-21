@@ -67,6 +67,7 @@ function initVarsAndConstants(handles1)
     global buoyPoints;
     
     global pastTransforms;
+    global drawScale;
     
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
@@ -81,6 +82,8 @@ function initVarsAndConstants(handles1)
     tailDir = [-.6 1];
     wayPoints = [325 58; 56 233];
     buoyPoints = [78 97; 253 75];
+    
+    drawScale = 1;
     
     pastTransforms = [1 0 0; 0 1 0; 0 0 1];
     for i = 1:5
@@ -97,6 +100,7 @@ end
 
 function drawTextureAt(path, transform)
     global handles;
+    global drawScale;
 
     [im, map, alpha] = imread(path);
     %imshow(A, 'Parent', handles.CanvasAxes);
@@ -113,7 +117,7 @@ function drawTextureAt(path, transform)
     disp(sx);
         
     firstTranslate = [1 0 0; 0 1 0; ty tx 1];  % ty and tx are flipped in matrix dims
-    scaling = [sx 0 0; 0 sy 0; 0 0 1];
+    scaling = [drawScale 0 0; 0 drawScale 0; 0 0 1];
     %rotate = [1 0 0; 0 1 0; 0 0 1];
     %lastTranslate = [1 0 0; 0 1 0; 30 30 1];
     tform = affine2d(firstTranslate * scaling * transform);
@@ -173,20 +177,60 @@ function updateCanvas()
     global buoyPoints;
     
     global pastTransforms;
+    global drawScale;
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
     axes(handles.CanvasAxes);
     cla();
     
-    xlim([42.444 42.445]);
-    ylim([0 100]);
+    minX = realmax('single');
+    maxX = -realmax('single');
+    minY = realmax('single');
+    maxY = -realmax('single');
+    points = cat(1, wayPoints, buoyPoints, boatPos);
+    for row = 1:size(points, 1)
+        point = points(row, :);
+        x = point(1);
+        y = point(2);
+        if (x < minX)
+            minX = x;
+        end
+        if (x > maxX)
+            maxX = x;
+        end
+        if (y < minY)
+            minY = y;
+        end
+        if (y > maxY)
+            maxY = y;
+        end
+    end
     
-    disp(boatTransform)
+    %paddingX = (maxX - minX) * 1.1;
+    %paddingY = (maxY - minY) * 1.1;
+    %paddingX = 0;
+    %paddingY = 0;
+    %xlim([minX-paddingX maxX+paddingX]);
+    %ylim([minY-paddingY maxY+paddingY]);
+    
+    distX = maxX - minX;
+    distY = maxY - minY;
+    midX = distX/2 + minX;
+    midY = distY/2 + minY;
+    maxDist = max(distX, distY);
+    padding = maxDist * 1.14;
+    
+    xlim([midX-padding/2 midX+padding/2]);
+    ylim([midY-padding/2 midY+padding/2]);
+    
+    drawScale = padding/494;
+    
+    %disp(boatTransform)
     drawTextureAt('Boat.png', boatTransform);
-    drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
-    drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
-    drawVector(boatPos, tailDir * DIR_LINE_LENGTH, '--b');
+    drawVector(boatPos, windVec * WIND_VEC_SCALE * drawScale, 'k');
+    drawVector(boatPos, sailDir * DIR_LINE_LENGTH * drawScale, '--r');
+    drawVector(boatPos, tailDir * DIR_LINE_LENGTH * drawScale, '--b');
     
     for row = 1:size(wayPoints, 1)
         point = wayPoints(row, :);

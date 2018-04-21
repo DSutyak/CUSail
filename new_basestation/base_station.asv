@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 21-Apr-2018 12:23:16
+% Last Modified by GUIDE v2.5 21-Apr-2018 11:50:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,6 +67,7 @@ function initVarsAndConstants(handles1)
     global buoyPoints;
     
     global pastTransforms;
+    global drawScale;
     
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
@@ -82,6 +83,8 @@ function initVarsAndConstants(handles1)
     wayPoints = [325 58; 56 233];
     buoyPoints = [78 97; 253 75];
     
+    drawScale = 1;
+    
     pastTransforms = [1 0 0; 0 1 0; 0 0 1];
     for i = 1:5
         pastTransforms(:, :, i) = [1 0 0; 0 1 0; 0 0 1];
@@ -96,6 +99,9 @@ end
 %==========================================================================
 
 function drawTextureAt(path, transform)
+    global handles;
+    global drawScale;
+
     [im, map, alpha] = imread(path);
     %imshow(A, 'Parent', handles.CanvasAxes);
     
@@ -103,14 +109,22 @@ function drawTextureAt(path, transform)
     
     tx = -sizeX/2 - .5;
     ty = -sizeY/2 - .5;
+    
+    xl = xlim;
+    yl = ylim;
+    sx = (xl(2) - xl(1))/494;
+    sy = (yl(2) - yl(1))/494;
+    disp(sx);
         
     firstTranslate = [1 0 0; 0 1 0; ty tx 1];  % ty and tx are flipped in matrix dims
+    scaling = [sx 0 0; 0 sy 0; 0 0 1];
     %rotate = [1 0 0; 0 1 0; 0 0 1];
     %lastTranslate = [1 0 0; 0 1 0; 30 30 1];
-    tform = affine2d(firstTranslate * transform);
+    tform = affine2d(firstTranslate * scaling * transform);
     [im, imRef] = imwarp(im, tform);
     alpha = imwarp(alpha, tform);
-        
+    
+    axes(handles.CanvasAxes);
     image = imshow(im, imRef);
     image.AlphaData = alpha;
 end
@@ -150,6 +164,7 @@ end
 
 function updateCanvas()
     global serialPort;
+    global handles;
 
     global boatMode;
     global boatPos;
@@ -162,12 +177,56 @@ function updateCanvas()
     global buoyPoints;
     
     global pastTransforms;
-    
+    global drawScale;
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
+    axes(handles.CanvasAxes);
     cla();
     
+    minX = realmax('single');
+    maxX = -realmax('single');
+    minY = realmax('single');
+    maxY = -realmax('single');
+    points = cat(1, wayPoints, buoyPoints, boatPos);
+    for row = 1:size(points, 1)
+        point = points(row, :);
+        x = point(1);
+        y = point(2);
+        if (x < minX)
+            minX = x;
+        end
+        if (x > maxX)
+            maxX = x;
+        end
+        if (y < minY)
+            minY = y;
+        end
+        if (y > maxY)
+            maxY = y;
+        end
+    end
+    
+    %paddingX = (maxX - minX) * 1.1;
+    %paddingY = (maxY - minY) * 1.1;
+    %paddingX = 0;
+    %paddingY = 0;
+    %xlim([minX-paddingX maxX+paddingX]);
+    %ylim([minY-paddingY maxY+paddingY]);
+    
+    distX = maxX - minX;
+    distY = maxY - minY;
+    midX = distX/2 + minX;
+    midY = distY/2 + minY;
+    maxDist = max(distX, distY);
+    padding = maxDist * 1.1;
+    
+    xlim([midX-padding/2 midX+padding/2]);
+    ylim([midY-padding/2 midY+padding/2]);
+    
+    drawScale = padding/494;
+    
+    disp(boatTransform)
     drawTextureAt('Boat.png', boatTransform);
     drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
     drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
@@ -187,9 +246,6 @@ function updateCanvas()
         transform = pastTransforms(:, :, page);
         drawTextureAt('PastPoint.png', transform);
     end
-    
-    %xlim([-300 400]);
-    %ylim([-300 400]);
 end
 
 function str = formatPoint(pt)
@@ -260,7 +316,7 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
     
     initVarsAndConstants(handles);
     updateAll();
-    start (handles.timer);
+    %start(handles.timer);
 end
 
 
@@ -607,7 +663,7 @@ function update_display(hObject,eventdata,hfigure)
 global serialPort;
 global boatTransform;
 
-serialPort = serial('Serial-COM8', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
 fopen(serialPort);
 lon = 0; %current longitude
 lat = 0; %current latitudets
@@ -642,7 +698,7 @@ while(1)
         %set(handles.map,'XData',X,'YData',Y);
       
         disp('derp');
-        boatTransform = [1 0 0; 0 1 0; 4 4 1];
+        boatTransform = [1 0 0; 0 1 0; lat 40 1];
         updateCanvas();
         check = 0;
         disp('Z')
