@@ -10,13 +10,13 @@ function varargout = base_station(varargin)
 %
 %      H = BASE_STATION returns the handle to a new BASE_STATION or the handle to
 %      the existing singleton*.
-%
+%v
 %      BASE_STATION('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in BASE_STATION.M with the given input arguments.
 %
 %      BASE_STATION('Property','Value',...) creates a new BASE_STATION or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before base_station_OpeningFcn gets called.  An
+%      applied to the GU]I before base_station_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
 %      stop.  All inputs are passed to base_station_OpeningFcn via varargin.
 %
@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 24-Mar-2018 14:52:41
+% Last Modified by GUIDE v2.5 21-Apr-2018 11:50:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,13 +252,13 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
 
     % Update handles structure
     guidata(hObject, handles);
-    start (handles.timer);
 
     % UIWAIT makes base_station wait for user response (see UIRESUME)
     % uiwait(handles.figure1);
     
     initVarsAndConstants(handles);
     updateAll();
+    start (handles.timer);
 end
 
 
@@ -615,6 +615,7 @@ while(1)
         disp('Wait')
     end
      x = fscanf(s);%Store the line in a variable
+     disp(x)
     
      if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
         lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
@@ -649,3 +650,15 @@ while(1)
 end
 end
 
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);
+fclose(s);
+end
