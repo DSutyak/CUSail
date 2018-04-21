@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 21-Apr-2018 11:50:47
+% Last Modified by GUIDE v2.5 21-Apr-2018 12:23:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -96,8 +96,6 @@ end
 %==========================================================================
 
 function drawTextureAt(path, transform)
-    global handles;
-
     [im, map, alpha] = imread(path);
     %imshow(A, 'Parent', handles.CanvasAxes);
     
@@ -105,22 +103,14 @@ function drawTextureAt(path, transform)
     
     tx = -sizeX/2 - .5;
     ty = -sizeY/2 - .5;
-    
-    xl = xlim;
-    yl = ylim;
-    sx = (xl(2) - xl(1))/494;
-    sy = (yl(2) - yl(1))/494;
-    disp(sx);
         
     firstTranslate = [1 0 0; 0 1 0; ty tx 1];  % ty and tx are flipped in matrix dims
-    scaling = [sx 0 0; 0 sy 0; 0 0 1];
     %rotate = [1 0 0; 0 1 0; 0 0 1];
     %lastTranslate = [1 0 0; 0 1 0; 30 30 1];
-    tform = affine2d(firstTranslate * scaling * transform);
+    tform = affine2d(firstTranslate * transform);
     [im, imRef] = imwarp(im, tform);
     alpha = imwarp(alpha, tform);
-    
-    axes(handles.CanvasAxes);
+        
     image = imshow(im, imRef);
     image.AlphaData = alpha;
 end
@@ -160,7 +150,6 @@ end
 
 function updateCanvas()
     global serialPort;
-    global handles;
 
     global boatMode;
     global boatPos;
@@ -173,16 +162,12 @@ function updateCanvas()
     global buoyPoints;
     
     global pastTransforms;
+    
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
-    axes(handles.CanvasAxes);
     cla();
     
-    xlim([42.444 42.445]);
-    ylim([0 100]);
-    
-    disp(boatTransform)
     drawTextureAt('Boat.png', boatTransform);
     drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
     drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
@@ -202,6 +187,9 @@ function updateCanvas()
         transform = pastTransforms(:, :, page);
         drawTextureAt('PastPoint.png', transform);
     end
+    
+    %xlim([-300 400]);
+    %ylim([-300 400]);
 end
 
 function str = formatPoint(pt)
@@ -272,7 +260,7 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
     
     initVarsAndConstants(handles);
     updateAll();
-    %start(handles.timer);
+    start (handles.timer);
 end
 
 
@@ -619,7 +607,7 @@ function update_display(hObject,eventdata,hfigure)
 global serialPort;
 global boatTransform;
 
-serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+serialPort = serial('Serial-COM8', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
 fopen(serialPort);
 lon = 0; %current longitude
 lat = 0; %current latitudets
@@ -654,7 +642,7 @@ while(1)
         %set(handles.map,'XData',X,'YData',Y);
       
         disp('derp');
-        boatTransform = [1 0 0; 0 1 0; lat 40 1];
+        boatTransform = [1 0 0; 0 1 0; 4 4 1];
         updateCanvas();
         check = 0;
         disp('Z')
