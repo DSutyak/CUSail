@@ -243,9 +243,16 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
 
     % Choose default command line output for base_station
     handles.output = hObject;
+    
+    handles.timer = timer(...
+    'ExecutionMode', 'fixedRate', ...       % Run timer repeatedly
+    'Period', 3, ...                        % Initial period is 1 sec.
+    'TimerFcn', {@update_display,hObject}); % Specify callback function
+
 
     % Update handles structure
     guidata(hObject, handles);
+    start (handles.timer);
 
     % UIWAIT makes base_station wait for user response (see UIRESUME)
     % uiwait(handles.figure1);
@@ -591,3 +598,54 @@ function BuoyRemove_Callback(hObject, eventdata, handles)
     updateBuoyList();
     updateCanvas();
 end
+
+function update_display(hObject,eventdata,hfigure)
+% Timer timer1 callback, called each time timer iterates.
+% Gets surface Z data, adds noise, and writes it back to surface object.
+s = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+fopen(s);
+lon = 0; %current longitude
+lat = 0; %current latitudets
+check = 0;
+x = 0;
+global boatTransform;
+
+while(1)
+    while(s.BytesAvailable==0)
+        disp('Wait')
+    end
+     x = fscanf(s);%Store the line in a variable
+    
+     if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
+        lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
+        check = 1;
+        disp('X')
+     end
+    
+     if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
+        lon = str2double(x(13:end));
+        check = 2;
+        disp('Y')
+     end
+    
+     if(check == 2)
+        %handles = guidata(hfigure);
+        %X = get(handles.map,'XData');
+        %X = [X lat];
+        %Y = get(handles.map,'YData');
+        %Y = [Y lon];0
+        %set(handles.map,'XData',X,'YData',Y);
+      
+        disp('derp');
+        boatTransform = [1 0 0; 0 1 0; 4 4 1];
+        updateCanvas();
+        check = 0;
+        disp('Z')
+        %pause(2);%Allow the graph to be draw
+        fclose(s);
+        break
+     end
+
+end
+end
+
