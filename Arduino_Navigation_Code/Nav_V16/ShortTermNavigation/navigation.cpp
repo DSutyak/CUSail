@@ -178,26 +178,30 @@ void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
    if(quadrant > 2){
       Serial1.print("Invalid argument sent to nav");
    }
-   if(quadrant==0){
+   else if(quadrant==0){
       if(rightLeft){
         //Up Left
+        Serial1.print("UP LEFT");
         intended_angle = windDir - optpolartop;
         intended_angle_of_attack = -15;
       }
       else{
         //Up Right
+        Serial1.print("UP RIGHT");
         intended_angle= windDir + optpolartop;
         intended_angle_of_attack = 15;
       }
    }
-   if(quadrant==1){
+   else if(quadrant==1){
       if(rightLeft){
         //Direct Left
+        Serial1.print("DIRECT LEFT");
         intended_angle = anglewaypoint;
         intended_angle_of_attack = -15;
       }
       else{
         //Direct Right
+        Serial1.print("DIRECT RIGHT");
         intended_angle = anglewaypoint;
         intended_angle_of_attack = 15;
       }
@@ -205,11 +209,13 @@ void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
    else{
       if(rightLeft){
         //Bottom Left
+        Serial1.print("BOTTOM LEFT");
         intended_angle = windDir + 180 + optpolarbot;
         intended_angle_of_attack = -15;
       }
       else{
         //Bottom Right
+        Serial1.print("BOTTOM RIGHT");
         intended_angle = windDir + 180 - optpolarbot;
         intended_angle_of_attack = 15;
       }
@@ -576,21 +582,21 @@ void nShort(void) {
   //  boat initially facing right
   else if (boat_wrt_wind<180) {
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.print("RIGHT UP RIGHT->UP RIGHT");
+      Serial1.print("RIGHT UP RIGHT->");
       quadrant = 0;
       rightLeft = false;
       isTacking = false;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.print("RIGHT DIRECT RIGHT->DIRECT RIGHT");
+      Serial1.print("RIGHT DIRECT RIGHT->");
       quadrant = 1;
       rightLeft = false;
       isTacking = false;
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.print("RIGHT DIRECT LEFT->TURN LEFT");
+      Serial1.print("RIGHT DIRECT LEFT->");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
 //      start_box_time+=3000;
@@ -601,21 +607,21 @@ void nShort(void) {
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.print("RIGHT UP LEFT->UP RIGHT");
+      Serial1.print("RIGHT UP LEFT->");
       quadrant = 0;
       rightLeft = false;
       isTacking = false;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.print("RIGHT BOTTOM LEFT->BOTTOM RIGHT");
+      Serial1.print("RIGHT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = false;
       isTacking = false;
     }
     //bottom right
     else {
-      Serial1.print("RIGHT BOTTOM RIGHT->BOTTOM RIGHT");
+      Serial1.print("RIGHT BOTTOM RIGHT->");
       quadrant = 2;
       rightLeft = false;
       isTacking = false;
@@ -625,14 +631,14 @@ void nShort(void) {
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.print("LEFT UP RIGHT->UP LEFT");
+      Serial1.print("LEFT UP RIGHT->");
       quadrant = 0;
       rightLeft = true;
       isTacking = false;
     }
     //Head directly to target to the right
     else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.print("LEFT DIRECT RIGHT->TURN RIGHT");
+      Serial1.print("LEFT DIRECT RIGHT->");
       //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
 //      start_box_time+=3000;
 //      delay(3000);
@@ -642,35 +648,35 @@ void nShort(void) {
     }
     //Head directly to target to the left
     else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.print("LEFT DIRECT LEFT->DIRECT LEFT");
+      Serial1.print("LEFT DIRECT LEFT->");
       quadrant = 1;
       rightLeft = true;
       isTacking = false;
     }
     //Up left
     else if (dirangle>360-optpolartop){
-      Serial1.print("LEFT UP LEFT->UP LEFT");
+      Serial1.print("LEFT UP LEFT->");
       quadrant = 0;
       rightLeft = true;
       isTacking = false;
     }
     //bottom left
     else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.print("LEFT BOTTOM LEFT->BOTTOM LEFT");
+      Serial1.print("LEFT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = true;
       isTacking = false;
     }
     //bottom right
     else {
-      Serial1.print("LEFT BOTTOM RIGHT->BOTTOM LEFT");
+      Serial1.print("LEFT BOTTOM RIGHT->");
       quadrant = 2;
       rightLeft = true;
       isTacking = false;
     }
-    //Call nav function to set sail and tail angle
-    nav(quadrant, rightLeft, windDir, anglewaypoint);
   }
+  //Call to nav function to set sail and tail angles
+  nav(quadrant, rightLeft, windDir, anglewaypoint);
   //obstacle avoidance code
   if (avoid_test){
     avoidObject();
