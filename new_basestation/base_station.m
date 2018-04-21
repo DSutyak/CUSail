@@ -96,6 +96,8 @@ end
 %==========================================================================
 
 function drawTextureAt(path, transform)
+    global handles;
+
     [im, map, alpha] = imread(path);
     %imshow(A, 'Parent', handles.CanvasAxes);
     
@@ -110,7 +112,8 @@ function drawTextureAt(path, transform)
     tform = affine2d(firstTranslate * transform);
     [im, imRef] = imwarp(im, tform);
     alpha = imwarp(alpha, tform);
-        
+    
+    axes(handles.CanvasAxes);
     image = imshow(im, imRef);
     image.AlphaData = alpha;
 end
@@ -150,6 +153,7 @@ end
 
 function updateCanvas()
     global serialPort;
+    global handles;
 
     global boatMode;
     global boatPos;
@@ -162,12 +166,13 @@ function updateCanvas()
     global buoyPoints;
     
     global pastTransforms;
-    
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
+    axes(handles.CanvasAxes);
     cla();
     
+    disp(boatTransform)
     drawTextureAt('Boat.png', boatTransform);
     drawVector(boatPos, windVec * WIND_VEC_SCALE, 'k');
     drawVector(boatPos, sailDir * DIR_LINE_LENGTH, '--r');
@@ -185,7 +190,7 @@ function updateCanvas()
     
     for page = 1:size(pastTransforms, 3)
         transform = pastTransforms(:, :, page);
-        drawTextureAt('PastPoint.png', transform);
+        %drawTextureAt('PastPoint.png', transform);
     end
     
     %xlim([-300 400]);
@@ -607,7 +612,7 @@ function update_display(hObject,eventdata,hfigure)
 global serialPort;
 global boatTransform;
 
-serialPort = serial('Serial-COM8', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
 fopen(serialPort);
 lon = 0; %current longitude
 lat = 0; %current latitudets
@@ -642,7 +647,7 @@ while(1)
         %set(handles.map,'XData',X,'YData',Y);
       
         disp('derp');
-        boatTransform = [1 0 0; 0 1 0; 4 4 1];
+        boatTransform = [1 0 0; 0 1 0; lat 40 1];
         updateCanvas();
         check = 0;
         disp('Z')
