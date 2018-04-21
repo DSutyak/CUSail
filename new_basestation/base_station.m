@@ -149,6 +149,8 @@ function updateFromData(data)
 end
 
 function updateCanvas()
+    global serialPort;
+
     global boatMode;
     global boatPos;
     global boatTransform;
@@ -602,19 +604,21 @@ end
 function update_display(hObject,eventdata,hfigure)
 % Timer timer1 callback, called each time timer iterates.
 % Gets surface Z data, adds noise, and writes it back to surface object.
-s = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
-fopen(s);
+global serialPort;
+global boatTransform;
+
+serialPort = serial('Serial-COM8', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+fopen(serialPort);
 lon = 0; %current longitude
 lat = 0; %current latitudets
 check = 0;
 x = 0;
-global boatTransform;
 
 while(1)
-    while(s.BytesAvailable==0)
+    while(serialPort.BytesAvailable==0)
         disp('Wait')
     end
-     x = fscanf(s);%Store the line in a variable
+     x = fscanf(serialPort);%Store the line in a variable
      disp(x)
     
      if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
@@ -643,7 +647,7 @@ while(1)
         check = 0;
         disp('Z')
         %pause(2);%Allow the graph to be draw
-        fclose(s);
+        fclose(serialPort);
         break
      end
 
@@ -659,6 +663,8 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
+global serialPort;
+
+fclose(serialPort);
 delete(hObject);
-fclose(s);
 end
