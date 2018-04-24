@@ -232,7 +232,7 @@ void setWaypoints(void) {
 //  wayPoints[1] = {42.47065, -76.503448};
 
   wayPoints[0] = sundial;
-  wayPoints[1] = hollister;
+  wayPoints[1] = outsideThurston;
 
 
 
@@ -319,7 +319,7 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 90;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 

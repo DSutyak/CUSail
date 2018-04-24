@@ -128,46 +128,45 @@ double tailMap(double sailAngle, double tailAngle){
 }
 
 
-
 double sailMapBench( double sailAngle){
-  double newSailAngle;
-  if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 72, 77);
-  }
-  else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 77, 83);
-  }
-  else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 83, 88);
-  }
-  else{
-   newSailAngle = map(sailAngle, 270, 360, 88, 94);
-  }
-  return newSailAngle;
+ double newSailAngle;
+ if (sailAngle <= 90){
+   newSailAngle = map(sailAngle, 0, 90, 97, 102.3);
+ }
+ else if (sailAngle <= 180){
+   newSailAngle = map(sailAngle, 90, 180, 102.3, 108);
+ }
+ else if (sailAngle <= 270){
+   newSailAngle = map(sailAngle, 180, 270, 108, 113);
+ }
+ else{
+  newSailAngle = map(sailAngle, 270, 360, 113, 118);
+ }
+ return newSailAngle;
 }
 
 double tailMapBench( double sailAngle, double tailAngle){
-  if (sailAngle > 180){ //convert sail angle to -180.. 180
-    sailAngle -= 360;
-  }
+ if (sailAngle > 180){ //convert sail angle to -180.. 180
+   sailAngle -= 360;
+ }
 
-  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+ double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
 
-  //make sure tail angle is in range -180.. 180
-  if(newTailAngle<-180){
-    newTailAngle+=360;
-  }
-  else if(newTailAngle>180){
-    newTailAngle-=360;
-  }
-  //map to servo commands
-  if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,85,45);
-  }
-  else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,45,5);
-  }
-  return newTailAngle;
+ //make sure tail angle is in range -180.. 180
+ if(newTailAngle<-180){
+   newTailAngle+=360;
+ }
+ else if(newTailAngle>180){
+   newTailAngle-=360;
+ }
+ //map to servo commands
+ if (newTailAngle <= 0 ){
+   newTailAngle=map(newTailAngle,-30,0,70,45);
+ }
+ else if (newTailAngle > 0 ){
+   newTailAngle=map(newTailAngle,0,30,45,13);
+ }
+ return newTailAngle;
 }
 
 /*Sensor setup*/

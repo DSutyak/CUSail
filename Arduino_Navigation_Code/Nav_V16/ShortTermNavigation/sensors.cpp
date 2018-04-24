@@ -133,31 +133,31 @@ double tailMap(double sailAngle, double tailAngle){
 
 
 double sailMapBench( double sailAngle){
-  double newSailAngle;
-  if (sailAngle <= 90){
-   newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
+ double newSailAngle;
+ if (sailAngle <= 90){
+   newSailAngle = map(sailAngle, 0, 90, 97, 102.3);
  }
  else if (sailAngle <= 180){
-   newSailAngle = map(sailAngle, 90, 180, 105, 110);
+   newSailAngle = map(sailAngle, 90, 180, 100, 108);
  }
  else if (sailAngle <= 270){
-   newSailAngle = map(sailAngle, 180, 270, 110, 115);
+   newSailAngle = map(sailAngle, 180, 270, 105, 113);
  }
  else{
-  newSailAngle = map(sailAngle, 270, 360, 115, 121);
+  newSailAngle = map(sailAngle, 270, 360, 113, 118);
  }
  return newSailAngle;
 }
 
 double tailMapBench( double sailAngle, double tailAngle){
-  if (sailAngle > 180){ //convert sail angle to -180.. 180
-    sailAngle -= 360;
-  }
+ if (sailAngle > 180){ //convert sail angle to -180.. 180
+   sailAngle -= 360;
+ }
 
-  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+ double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
 
-  //make sure tail angle is in range -180.. 180
-  if(newTailAngle<-180){
+ //make sure tail angle is in range -180.. 180
+ if(newTailAngle<-180){
    newTailAngle+=360;
  }
  else if(newTailAngle>180){
