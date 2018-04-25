@@ -135,16 +135,16 @@ double tailMap(double sailAngle, double tailAngle){
 double sailMapBench( double sailAngle){
   double newSailAngle;
   if (sailAngle <= 90){
-   newSailAngle = map(sailAngle, 0, 90, 99.5, 105);
+   newSailAngle = map(sailAngle, 0, 90, 97, 102);
  }
  else if (sailAngle <= 180){
-   newSailAngle = map(sailAngle, 90, 180, 105, 110);
+   newSailAngle = map(sailAngle, 90, 180, 102, 108);
  }
  else if (sailAngle <= 270){
-   newSailAngle = map(sailAngle, 180, 270, 110, 115);
+   newSailAngle = map(sailAngle, 180, 270, 108, 113);
  }
  else{
-  newSailAngle = map(sailAngle, 270, 360, 115, 121);
+  newSailAngle = map(sailAngle, 270, 360, 113, 118);
  }
  return newSailAngle;
 }
