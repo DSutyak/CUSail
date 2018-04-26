@@ -71,43 +71,43 @@ void loop() {
   else if (sailTailBenchTest){
     Sail.write(sailMapBench(0)); //Sail to 0 
     delay(2000);
-    Tail.write(tailMapBench(270, -120));
+    Tail.write(tailMapBench(0, 30));
     delay(2000);  
-    Tail.write(tailMapBench(270, -90));
+    Tail.write(tailMapBench(0, 0));
     delay(2000);
-    Tail.write(tailMapBench(270, -60));
+    Tail.write(tailMapBench(0, -30));
     delay(2000);
     Sail.write(sailMapBench(90)); //Sail to 90
     delay(2000);
-    Tail.write(tailMapBench(270, -120));
+    Tail.write(tailMapBench(90, 120));
     delay(2000);  
-    Tail.write(tailMapBench(270, -90));
+    Tail.write(tailMapBench(90, 90));
     delay(2000);
-    Tail.write(tailMapBench(270, -60));
+    Tail.write(tailMapBench(90, 60));
     delay(2000);
     Sail.write(sailMapBench(180)); //Sail to 180
     delay(2000);
-    Tail.write(tailMapBench(270, -120));
+    Tail.write(tailMapBench(180, -150));
     delay(2000);  
-    Tail.write(tailMapBench(270, -90));
+    Tail.write(tailMapBench(180, 180));
     delay(2000);
-    Tail.write(tailMapBench(270, -60));
+    Tail.write(tailMapBench(180, 150));
     delay(2000);
     Sail.write(sailMapBench(270)); //Sail to 270
     delay(2000);
-    Tail.write(tailMapBench(270, -120));
+    Tail.write(tailMapBench(270, -60));
     delay(2000);  
     Tail.write(tailMapBench(270, -90));
     delay(2000);
-    Tail.write(tailMapBench(270, -60));
+    Tail.write(tailMapBench(270, -120));
     delay(2000);
     Sail.write(sailMapBench(360)); //Sail to 360
     delay(2000);
-    Tail.write(tailMapBench(270, -120));
+    Tail.write(tailMapBench(360, 30));
     delay(2000);  
-    Tail.write(tailMapBench(270, -90));
+    Tail.write(tailMapBench(360, 0));
     delay(2000);
-    Tail.write(tailMapBench(270, -60));
+    Tail.write(tailMapBench(360, -30));
 //    delay(2000);
 //    delay(2000);
 //    Sail.write(sailMapBench(285));

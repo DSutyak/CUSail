@@ -401,7 +401,7 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 270;
+  sensorData.windDir = 0;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
