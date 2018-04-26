@@ -165,10 +165,10 @@ double tailMapBench( double sailAngle, double tailAngle){
  }
  //map to servo commands
  if (newTailAngle <= 0 ){
-   newTailAngle=map(newTailAngle,-30,0,13,45);
+   newTailAngle=map(newTailAngle,-30,0,70,45);
  }
  else if (newTailAngle > 0 ){
-   newTailAngle=map(newTailAngle,0,30,45,70);
+   newTailAngle=map(newTailAngle,0,30,45,13);
  }
  return newTailAngle;
 }
