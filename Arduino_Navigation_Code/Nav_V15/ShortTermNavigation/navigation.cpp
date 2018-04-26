@@ -602,14 +602,14 @@ void nShort(void) {
   // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
 
-  //Serial1.print("S:");
-  //Serial1.print(sailAngle);
+  Serial1.print("S:");
+  Serial1.print(sailAngle);
 
   //obstacle avoidance; still needs tuning
 //  avoidObject();
 //
 //  Serial1.println("Angles w.r.t Boat after pixy correction:");
-//printSailTailSet();
+//  printSailTailSet();
 
   // convert tail to -180-180
   tailAngle = int(tailAngle+360)%360;
@@ -620,7 +620,7 @@ void nShort(void) {
     sailAngle += 360;
   }
 
-  printSailTailSet();
+  // printSailTailSet();
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;

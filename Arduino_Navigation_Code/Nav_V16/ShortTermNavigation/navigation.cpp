@@ -286,7 +286,7 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 2;
   wpNum = 0;
 
   /**
@@ -294,9 +294,8 @@ void setWaypoints(void) {
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
   setOrigin(outsideThurston);
-  wayPoints[0] = xyPoint(hollister);
+  wayPoints[0] = xyPoint(sundial);
   wayPoints[1] = xyPoint(outsideThurston);
-  wayPoints[2] = xyPoint(sundial);
 
 
 
@@ -728,7 +727,7 @@ void nShort(void) {
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
-  printSailTailSet();
+
 // REAL BOAT SAIL AND TAIL MAPPING
 //   tailAngle = tailMap(sailAngle, tailAngle);
 //   sailAngle = sailMap(sailAngle);
