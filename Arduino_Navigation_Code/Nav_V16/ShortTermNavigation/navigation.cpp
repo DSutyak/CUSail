@@ -484,11 +484,6 @@ void nShort(void) {
     }
 
   }
-  else{
-    Serial1.println(detectionradius);
-    Serial1.println(normr);
-    Serial1.print("Bool val of normr and detection radius: ");
-    Serial1.print(normr<detectionradius);
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
         Serial1.print("hit");
@@ -647,7 +642,7 @@ void nShort(void) {
       isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+    else if (dirangle < 180 + optpolarbot && dirangle > 180){
       Serial1.print("LEFT DIRECT LEFT->");
       quadrant = 1;
       rightLeft = true;
@@ -661,7 +656,7 @@ void nShort(void) {
       isTacking = false;
     }
     //bottom left
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
       Serial1.print("LEFT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = true;
@@ -713,9 +708,6 @@ void nShort(void) {
 
   // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
-
-  Serial1.print("S:");
-  Serial1.print(sailAngle);
 
   //obstacle avoidance; still needs tuning
 //  avoidObject();
