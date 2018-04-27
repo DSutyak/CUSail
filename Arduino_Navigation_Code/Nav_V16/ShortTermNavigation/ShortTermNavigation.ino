@@ -35,5 +35,5 @@ void loop() {
   nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
   nServos(); //Send acquired servo commands
   updateTime(); //Update @milTime with miliseconds since program started
-  
+    
 }

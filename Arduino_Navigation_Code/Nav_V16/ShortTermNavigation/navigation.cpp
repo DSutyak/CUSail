@@ -159,18 +159,28 @@ void avoidObject(void) {
 }
 
 /*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
-bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2){
+bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant){
     float angle = angleToTarget(point1, point2);
     float dy = fabs(upperWidth/tan(angle));
     float slope = xySlope(point1, point2);
-    return (sensorData.x * slope + dy < sensorData.y);
+    if (quadrant == 0){
+      return (sensorData.x * slope + dy > sensorData.y);
+    }
+    else {
+      return (sensorData.x * slope - dy > sensorData.y);
+    }
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2){
+bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant){
     float angle = angleToTarget(point1, point2);
     float dy = fabs(lowerWidth/tan(angle));
     float slope = xySlope(point1, point2);
-    return (sensorData.x * slope - dy > sensorData.y);
+    if (quadrant == 0){
+      return (sensorData.x * slope - dy > sensorData.y);
+    }
+    else {
+      return (sensorData.x * slope + dy > sensorData.y);
+    }
 }
 
 /*Method to determine sail and tail angle. The quadrant field expects values between 0 and 3, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
@@ -286,7 +296,7 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 3;
+  numWP = 4;
   wpNum = 0;
 
   /**
@@ -297,7 +307,7 @@ void setWaypoints(void) {
   wayPoints[0] = xyPoint(hollister);
   wayPoints[1] = xyPoint(outsideThurston);
   wayPoints[2] = xyPoint(sundial);
-
+  wayPoints[3] = xyPoint(outsideThurston);
 
   /*
   // nav test with wind from 340
@@ -557,7 +567,7 @@ void nShort(void) {
 */
 
   //Boat hits upper bound, tack right
-  if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum]) && quadrant!=1){
+  if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) && quadrant!=1){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
     if(!isTacking){
       quadrant = quadrant;
@@ -566,7 +576,7 @@ void nShort(void) {
     isTacking = true;
   }
   //Boat hits lower bound, tack left
-  else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum]) && quadrant!=1){
+  else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) && quadrant!=1){
     Serial1.print("HIT LOWER BOUND, TACK LEFT");
     if(!isTacking){
       quadrant = quadrant;
@@ -583,14 +593,14 @@ void nShort(void) {
       isTacking = false;
     }
     //Head directly to target to the right
-    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
       Serial1.print("RIGHT DIRECT RIGHT->");
       quadrant = 1;
       rightLeft = false;
       isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+    else if (dirangle>optpolarbot + 180 && dirangle<(360-optpolartop)){
       Serial1.print("RIGHT DIRECT LEFT->");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
@@ -601,14 +611,14 @@ void nShort(void) {
       isTacking = false;
     }
     //Up left
-    else if (dirangle>360-optpolartop){
-      Serial1.print("RIGHT UP LEFT->");
-      quadrant = 0;
-      rightLeft = false;
       isTacking = false;
     }
     //bottom left
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+    else if (dirangle>(360-optpolartop)){
+      Serial1.print("RIGHT UP LEFT->");
+      quadrant = 0;
+      rightLeft = false;
+    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
       Serial1.print("RIGHT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = false;
@@ -632,31 +642,28 @@ void nShort(void) {
       isTacking = false;
     }
     //Head directly to target to the right
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
+    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
       Serial1.print("LEFT DIRECT RIGHT->");
-      //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-//      start_box_time+=3000;
-//      delay(3000);
       quadrant = 1;
       rightLeft = false;
       isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
+    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
       Serial1.print("LEFT DIRECT LEFT->");
       quadrant = 1;
       rightLeft = true;
       isTacking = false;
     }
     //Up left
-    else if (dirangle>360-optpolartop){
+    else if (dirangle>(360-optpolartop)){
       Serial1.print("LEFT UP LEFT->");
       quadrant = 0;
       rightLeft = true;
       isTacking = false;
     }
     //bottom left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
+    else if (dirangle>optpolarbot + 180 && dirangle<360 - optpolartop){
       Serial1.print("LEFT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = true;
