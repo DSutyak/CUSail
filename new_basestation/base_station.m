@@ -118,7 +118,6 @@ function drawTextureAt(path, transform)
     yl = ylim;
     sx = (xl(2) - xl(1))/494;
     sy = (yl(2) - yl(1))/494;
-    disp(sx);
         
     firstTranslate = [1 0 0; 0 1 0; ty tx 1];  % ty and tx are flipped in matrix dims
     scaling = [drawScale 0 0; 0 drawScale 0; 0 0 1];
@@ -129,7 +128,7 @@ function drawTextureAt(path, transform)
     alpha = imwarp(alpha, tform);
     
     axes(handles.CanvasAxes);
-    image = imshow(im, imRef);
+    image = imshow(im, imRef, 'Parent', handles.CanvasAxes);
     image.AlphaData = alpha;
 end
 
@@ -185,8 +184,10 @@ function updateCanvas()
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
-    axes(handles.CanvasAxes);
-    cla();
+    %axes(handles.CanvasAxes);
+    cla(handles.CanvasAxes);
+    
+    disp(handles.CanvasAxes);
     
     minX = realmax('single');
     maxX = -realmax('single');
@@ -668,54 +669,55 @@ global serialPort;
 global boatTransform;
 global lat;
 
-serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
-%fopen(serialPort);
-lon = 0; %current longitude
-%lat = 0; %current latitudets
-check = 0;
-x = 0;
+% %serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+% %fopen(serialPort);
+% lon = 0; %current longitude
+% %lat = 0; %current latitudets
+% check = 0;
+% x = 0;
+% 
+% while(lat < 42.90)
+% %while(1)
+%     %while(serialPort.BytesAvailable==0)
+%     %    disp('Wait')
+%     %end
+%      %x = fscanf(serialPort);%Store the line in a variable
+%     
+%      %if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
+%      %   lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
+%      %   check = 1;
+%      %   disp('X')
+%      %end
+%     
+%      %if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
+%      %   lon = str2double(x(13:end));
+%      %   check = 2;
+%      %   disp('Y')
+%      %end
+%     
+%      %if(check == 2)
+%         %handles = guidata(hfigure);
+%         %X = get(handles.map,'XData');
+%         %X = [X lat];
+%         %Y = get(handles.map,'YData');
+%         %Y = [Y lon];0
+%         %set(handles.map,'XData',X,'YData',Y);
+%       
+%         boatTransform = [1 0 0; 0 1 0; lat 40 1];
+%         updateCanvas();
+%         check = 0;
+%         
+%         lat = lat + 0.005;
+%         %pause(2);%Allow the graph to be draw
+%         %fclose(serialPort);
+%         break
+%      %end
+% 
+% end
 
-while(lat < 42.90)
-%while(1)
-    %while(serialPort.BytesAvailable==0)
-    %    disp('Wait')
-    %end
-     %x = fscanf(serialPort);%Store the line in a variable
-     disp(lat)
-    
-     %if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
-     %   lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
-     %   check = 1;
-     %   disp('X')
-     %end
-    
-     %if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
-     %   lon = str2double(x(13:end));
-     %   check = 2;
-     %   disp('Y')
-     %end
-    
-     %if(check == 2)
-        %handles = guidata(hfigure);
-        %X = get(handles.map,'XData');
-        %X = [X lat];
-        %Y = get(handles.map,'YData');
-        %Y = [Y lon];0
-        %set(handles.map,'XData',X,'YData',Y);
-      
-        disp('derp');
-        boatTransform = [1 0 0; 0 1 0; lat 40 1];
-        updateCanvas();
-        check = 0;
-        disp('Z')
-        
-        lat = lat + 0.005;
-        %pause(2);%Allow the graph to be draw
-        %fclose(serialPort);
-        break
-     %end
-
-end
+boatTransform = [1 0 0; 0 1 0; lat 40 1];
+updateCanvas();
+lat = lat + 10;
 end
 
 
@@ -729,6 +731,6 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 global serialPort;
 
-fclose(serialPort);
+%fclose(serialPort);
 delete(hObject);
 end
