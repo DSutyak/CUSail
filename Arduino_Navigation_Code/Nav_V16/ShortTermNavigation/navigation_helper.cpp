@@ -49,7 +49,7 @@ float angleToTarget(coord_xy coord1, coord_xy coord2){
   double dot = newC1.x * newC2.x + newC1.y * newC2.y;
   double det = newC1.y * newC2.x - newC2.y * newC1.x;
   double angle = atan2(det, dot) * 180/M_PI;
-  if (angle<0){
+if (angle<0){
     angle+=360;
   }
   return angle;
