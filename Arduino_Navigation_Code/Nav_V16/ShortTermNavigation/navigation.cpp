@@ -34,8 +34,8 @@ float intended_angle_of_attack;
 float max_distance=100;
 
 //set maximum allowable width for boat to sail within
-float upperWidth = 5;
-float lowerWidth = 5;
+float upperWidth = 10;
+float lowerWidth = 10;
 bool isTacking = false;
 
 //Stores information about current heading and tack. quadrant expects 0 for up, 1 for direct or turn, and 2 for bottom. rightLeft expects true for left and false for right
@@ -166,7 +166,7 @@ bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadran
     if (quadrant == 0){
       return (sensorData.x * slope + dy > sensorData.y);
     }
-    else {
+    else if (quadrant == 2) {
       return (sensorData.x * slope - dy > sensorData.y);
     }
 }
@@ -178,7 +178,7 @@ bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadran
     if (quadrant == 0){
       return (sensorData.x * slope - dy > sensorData.y);
     }
-    else {
+    else if (quadrant == 2) {
       return (sensorData.x * slope + dy > sensorData.y);
     }
 }
@@ -304,9 +304,9 @@ void setWaypoints(void) {
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
   setOrigin(outsideThurston);
-  wayPoints[0] = xyPoint(hollister);
-  wayPoints[1] = xyPoint(outsideThurston);
-  wayPoints[2] = xyPoint(sundial);
+  wayPoints[0] = xyPoint(outsideThurston);
+  wayPoints[1] = xyPoint(sundial);
+  wayPoints[2] = xyPoint(hollister);
   wayPoints[3] = xyPoint(outsideThurston);
 
   /*
@@ -411,7 +411,7 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 0;
+  sensorData.windDir = 270;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
@@ -611,13 +611,13 @@ void nShort(void) {
       isTacking = false;
     }
     //Up left
-      isTacking = false;
-    }
-    //bottom left
     else if (dirangle>(360-optpolartop)){
       Serial1.print("RIGHT UP LEFT->");
       quadrant = 0;
       rightLeft = false;
+      isTacking = false;
+    }
+    //bottom left
     else if (dirangle < (180 + optpolarbot) && dirangle > 180){
       Serial1.print("RIGHT BOTTOM LEFT->");
       quadrant = 2;
@@ -731,7 +731,9 @@ void nShort(void) {
     sailAngle += 360;
   }
 
-  // printSailTailSet();
+  Serial1.println();
+
+  printSailTailSet();
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
