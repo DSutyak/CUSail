@@ -44,9 +44,11 @@ double xyDist(coord_xy point1, coord_xy point2){
 
 /*Returns angle (with respect to North) between two global coordinates.*/
 float angleToTarget(coord_xy coord1, coord_xy coord2){
-  double dx = (coord1.x-coord2.x);
-  double dy = (coord1.y-coord2.y);
-  double angle = atan(dx/dy) * 180/M_PI;
+  coord_xy newC1 = (0,10);
+  coord_xy newC2 = (coord2.x - coord1.x, coord2.y - coord1.y);
+  double dot = newC1.x * newC2.x + newC1.y * newC2.y;
+  double det = newC1.y * newC2.x - newC2.y * newC1.x;
+  double angle = atan2(det, dot) * 180/M_PI;
   if (angle<0){
     angle+=360;
   }
