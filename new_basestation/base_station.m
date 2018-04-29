@@ -72,6 +72,8 @@ function initVarsAndConstants(handles1)
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
     
+    global lat;
+    
     handles = handles1;
     
     boatMode = 0;
@@ -84,6 +86,8 @@ function initVarsAndConstants(handles1)
     buoyPoints = [78 97; 253 75];
     
     drawScale = 1;
+    
+    lat = 42.4441;
     
     pastTransforms = [1 0 0; 0 1 0; 0 0 1];
     for i = 1:5
@@ -316,7 +320,7 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
     
     initVarsAndConstants(handles);
     updateAll();
-    %start(handles.timer);
+    start(handles.timer);
 end
 
 
@@ -662,34 +666,36 @@ function update_display(hObject,eventdata,hfigure)
 % Gets surface Z data, adds noise, and writes it back to surface object.
 global serialPort;
 global boatTransform;
+global lat;
 
 serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
-fopen(serialPort);
+%fopen(serialPort);
 lon = 0; %current longitude
-lat = 0; %current latitudets
+%lat = 0; %current latitudets
 check = 0;
 x = 0;
 
-while(1)
-    while(serialPort.BytesAvailable==0)
-        disp('Wait')
-    end
-     x = fscanf(serialPort);%Store the line in a variable
-     disp(x)
+while(lat < 42.90)
+%while(1)
+    %while(serialPort.BytesAvailable==0)
+    %    disp('Wait')
+    %end
+     %x = fscanf(serialPort);%Store the line in a variable
+     disp(lat)
     
-     if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
-        lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
-        check = 1;
-        disp('X')
-     end
+     %if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
+     %   lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
+     %   check = 1;
+     %   disp('X')
+     %end
     
-     if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
-        lon = str2double(x(13:end));
-        check = 2;
-        disp('Y')
-     end
+     %if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
+     %   lon = str2double(x(13:end));
+     %   check = 2;
+     %   disp('Y')
+     %end
     
-     if(check == 2)
+     %if(check == 2)
         %handles = guidata(hfigure);
         %X = get(handles.map,'XData');
         %X = [X lat];
@@ -702,10 +708,12 @@ while(1)
         updateCanvas();
         check = 0;
         disp('Z')
+        
+        lat = lat + 0.005;
         %pause(2);%Allow the graph to be draw
-        fclose(serialPort);
+        %fclose(serialPort);
         break
-     end
+     %end
 
 end
 end
