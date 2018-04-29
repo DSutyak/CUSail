@@ -567,7 +567,7 @@ void nShort(void) {
 */
 
   //Boat hits upper bound, tack right
-  if(wpNum != 0 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) && quadrant!=1){
+  if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
     if(!isTacking){
       quadrant = quadrant;
@@ -576,7 +576,7 @@ void nShort(void) {
     isTacking = true;
   }
   //Boat hits lower bound, tack left
-  else if(wpNum != 0 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) && quadrant!=1){
+  else if(wpNum != 0 && quadrant!=1 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) ){
     Serial1.print("HIT LOWER BOUND, TACK LEFT");
     if(!isTacking){
       quadrant = quadrant;
@@ -642,14 +642,16 @@ void nShort(void) {
       isTacking = false;
     }
     //Head directly to target to the right
-    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
+    //WRONG?
+    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
       Serial1.print("LEFT DIRECT RIGHT->");
       quadrant = 1;
       rightLeft = false;
       isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
+    //WRONG?
+    else if (dirangle>optpolarbot + 180 && dirangle<360 - optpolartop){
       Serial1.print("LEFT DIRECT LEFT->");
       quadrant = 1;
       rightLeft = true;
@@ -663,7 +665,7 @@ void nShort(void) {
       isTacking = false;
     }
     //bottom left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 - optpolartop){
+    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
       Serial1.print("LEFT BOTTOM LEFT->");
       quadrant = 2;
       rightLeft = true;
