@@ -170,7 +170,7 @@ bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadran
     float angle = angleToTarget(point1, point2);
     float dy = fabs(lowerWidth/tan(angle));
     float slope = xySlope(point1, point2);
-    return (sensorData.x * slope - dy > sensorData.y);
+    return (sensorData.x * slope - dy < sensorData.y);
 }
 
 /*Method to determine sail and tail angle. The quadrant field expects values between 0 and 3, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
@@ -181,13 +181,13 @@ void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
    else if(quadrant==0){
       if(rightLeft){
         //Up Left
-        Serial1.print("UP LEFT");
+        Serial1.print("UPWIND LEFT");
         intended_angle = windDir - optpolartop;
         intended_angle_of_attack = -15;
       }
       else{
         //Up Right
-        Serial1.print("UP RIGHT");
+        Serial1.print("UPWIND RIGHT");
         intended_angle= windDir + optpolartop;
         intended_angle_of_attack = 15;
       }
@@ -209,13 +209,13 @@ void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
    else{
       if(rightLeft){
         //Bottom Left
-        Serial1.print("BOTTOM LEFT");
+        Serial1.print("DOWNWIND LEFT");
         intended_angle = windDir + 180 + optpolarbot;
         intended_angle_of_attack = -15;
       }
       else{
         //Bottom Right
-        Serial1.print("BOTTOM RIGHT");
+        Serial1.print("DOWNWIND RIGHT");
         intended_angle = windDir + 180 - optpolarbot;
         intended_angle_of_attack = 15;
       }
@@ -294,8 +294,8 @@ void setWaypoints(void) {
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
   setOrigin(engQuadX);
-  wayPoints[0] = xyPoint(outsideThurston);
-  wayPoints[1] = xyPoint(sundial);
+  wayPoints[0] = xyPoint(sundial);
+  wayPoints[1] = xyPoint(outsideThurston);
   wayPoints[2] = xyPoint(hollister);
   wayPoints[3] = xyPoint(outsideThurston);
 
