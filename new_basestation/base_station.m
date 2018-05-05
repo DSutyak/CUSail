@@ -71,12 +71,7 @@ function initVarsAndConstants(handles1)
     
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
-    
-    global lat;
-    global lon;
-    global dir;
-    global data;
-    
+        
     global sendingData;
     global lastSendTime;
     
@@ -186,9 +181,9 @@ function updateFromData(data)
     
     boatPos = data.position;
     boatTransform = rotation * translate;
-    windVec = angleToVec(data.wind(1)) * data.wind(2);
-    sailDir = angleToVec(data.sail_angle);
-    tailDir = angleToVec(data.tail_angle);
+    %windVec = angleToVec(data.wind(1)) * data.wind(2);
+    %sailDir = angleToVec(data.sail_angle);
+    %tailDir = angleToVec(data.tail_angle);
 end
 
 function updateCanvas()
@@ -749,133 +744,79 @@ function get = scale(x,xprev)
     get = (abs(x - xprev))*10000;
 end
 
-function update_display(hObject,eventdata,hfigure)
 % Timer timer1 callback, called each time timer iterates.
-global serialPort;
-global pastTransforms
-global boatTransform;
-global boatPos;
-global lat;
-global lon;
-global dir;
-global data;
+function update_display(hObject,eventdata,hfigure)
+    global serialPort;
 
-serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
-%fopen(serialPort);
-check = 0;
-x = 0;
+    global sendingData;
+    global lastSendTime;
 
-%mult 
+    serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+    %fopen(serialPort);
 
-while(1)
-    while(serialPort.BytesAvailable==0)
-        disp('Wait')
+    % Read everything available in serialPort
+    %recvData = "";
+    recvData = [];
+    while (serialPort.BytesAvailable > 0)
+        recvData = [recvData, fscanf(serialPort)];
     end
-     x = fscanf(serialPort);%Store the line in a variable
-    
-     if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))
-        latprev = lat;
-        lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
-        check = 1;
-        disp('X')
-     end
-    
-     if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
-        lon = str2double(x(13:end));
-        check = 2;
-        disp('Y')
-     end
-     if((length(x)) > 10 && (strcmp(x(2:5), 'Boat')) && (check == 2))  
-        dir = str2double(x(18:end));
-        check = 3;
-        disp('C')
-     end
-     
-     if(check == 2)
-      
-        %lat = lat + ((lat - latprev) * 50000);
-        
-        %boatTransform = [1 0 0; 0 1 0; lat lon 1];
-        data.boat_heading = dir;
-        updateCanvas();
-        check = 0;
-        
-        %pause(2);%Allow the graph to be draw
-        fclose(serialPort);
-        break
-     end
 
-end
-
-global sendingData;
-global lastSendTime;
-
-% %serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
-% %fopen(serialPort);
-% lon = 0; %current longitude
-% %lat = 0; %current latitudets
-% check = 0;
-% x = 0;
-% 
-% while(lat < 42.90)
-% %while(1)
-%     %while(serialPort.BytesAvailable==0)
-%     %    disp('Wait')
-%     %end
-%      %x = fscanf(serialPort);%Store the line in a variable
-        
-        if (sendingData)
-            pattern = "ACK";
-            y = "";
-            if (contains(y, pattern) == 1)
+    % Check for boat ACK if sending data
+    if (sendingData)
+        pattern = "ACK";
+        allRecvData = strcat(recvData);
+        if (contains(allRecvData, pattern) == 1)
+            disp('Boat successfully received data.');
+            sendingData = false;
+            enableSendButton();
+        else
+            if (cputime - lastSendTime > 1)
+                warning('Failed to recieve ACK from boat.');
                 sendingData = false;
                 enableSendButton();
-            else
-                if (cputime - lastSendTime > 1)
-                    warning('Failed to recieve ACK from boat.');
-                    sendingData = false;
-                    enableSendButton();
-                end
             end
         end
-%     
-%      %if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
-%      %   lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
-%      %   check = 1;
-%      %   disp('X')
-%      %end
-%     
-%      %if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
-%      %   lon = str2double(x(13:end));
-%      %   check = 2;
-%      %   disp('Y')
-%      %end
-%     
-%      %if(check == 2)
-%         %handles = guidata(hfigure);
-%         %X = get(handles.map,'XData');
-%         %X = [X lat];
-%         %Y = get(handles.map,'YData');
-%         %Y = [Y lon];0
-%         %set(handles.map,'XData',X,'YData',Y);
-%       
-%         boatTransform = [1 0 0; 0 1 0; lat 40 1];
-%         updateCanvas();
-%         check = 0;
-%         
-%         lat = lat + 0.005;
-%         %pause(2);%Allow the graph to be draw
-%         %fclose(serialPort);
-%         break
-%      %end
-% 
-% end
+    end
 
-pastTransforms(:, :, 1) = [1 0 0; 0 1 0; 0 0 1];
-boatPos = [lat 40];
-boatTransform = [1 0 0; 0 1 0; lat 40 1];
-updateCanvas();
-lat = lat - 0;
+    lat = 0;
+    lon = 0;
+    dir = 0;
+    
+    line = recvData(1);
+    if (length(line) < 10 && strcmp(line(2:9), 'Latitude'))
+        lat = str2double(line(12:end)); %convert latitude from string to double and saves it in a variable
+        disp('X')
+    else
+        return;
+    end
+    
+    line = recvData(2);
+    if (length(line) < 10 && strcmp(line(2:10), 'Longitude'))  
+        lon = str2double(line(13:end));
+        disp('Y')
+    else
+        return;
+    end
+    
+    line = recvData(3);
+    if (length(line) < 10 && strcmp(line(2:5), 'Boat'))
+        dir = str2double(line(18:end));
+        disp('C')
+    else
+        return;
+    end
+
+    drawData = containers.Map({
+        'position', 'boat_heading'
+    }, {
+        [lat lon], dir
+    });
+    updateFromData(drawData);
+
+    %pause(2);%Allow the graph to be draw
+    fclose(serialPort);
+
+    updateCanvas();
 end
 
 
