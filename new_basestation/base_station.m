@@ -73,6 +73,9 @@ function initVarsAndConstants(handles1)
     global WIND_VEC_SCALE;
     
     global lat;
+    global lon;
+    global dir;
+    global data;
     
     global sendingData;
     global lastSendTime;
@@ -87,8 +90,6 @@ function initVarsAndConstants(handles1)
     tailDir = [-.6 1];
     wayPoints = [325 58; -56 233];
     buoyPoints = [78 97; 253 75];
-    %wayPoints = [];
-    %buoyPoints = [];
     
     drawScale = 1;
     
@@ -261,24 +262,24 @@ function updateCanvas()
     
     %disp(boatTransform)
     drawTextureAt('Boat.png', boatTransform);
-    drawVector(boatPos, windVec * WIND_VEC_SCALE * drawScale, 'k');
-    drawVector(boatPos, sailDir * DIR_LINE_LENGTH * drawScale, '--r');
-    drawVector(boatPos, tailDir * DIR_LINE_LENGTH * drawScale, '--b');
-    
-    for row = 1:size(wayPoints, 1)
-        point = wayPoints(row, :);
-        drawTextureAt('Waypoint.png', createTranslation(point));
-    end
-    
-    for row = 1:size(buoyPoints, 1)
-        point = buoyPoints(row, :);
-        drawTextureAt('Buoy.png', createTranslation(point));
-    end
-    
-    for page = 1:size(pastTransforms, 3)
-        transform = pastTransforms(:, :, page);
-        drawTextureAt('PastPoint.png', transform);
-    end
+%     drawVector(boatPos, windVec * WIND_VEC_SCALE * drawScale, 'k');
+%     drawVector(boatPos, sailDir * DIR_LINE_LENGTH * drawScale, '--r');
+%     drawVector(boatPos, tailDir * DIR_LINE_LENGTH * drawScale, '--b');
+%     
+%     for row = 1:size(wayPoints, 1)
+%         point = wayPoints(row, :);
+%         drawTextureAt('Waypoint.png', createTranslation(point));
+%     end
+%     
+%     for row = 1:size(buoyPoints, 1)
+%         point = buoyPoints(row, :);
+%         drawTextureAt('Buoy.png', createTranslation(point));
+%     end
+%     
+%     for page = 1:size(pastTransforms, 3)
+%         transform = pastTransforms(:, :, page);
+%         drawTextureAt('PastPoint.png', transform);
+%     end
 end
 
 function str = formatPoint(pt)
@@ -744,14 +745,67 @@ function send_data(data)
     lastSendTime = cputime;
 end
 
+function get = scale(x,xprev)
+    get = (abs(x - xprev))*10000;
+end
+
 function update_display(hObject,eventdata,hfigure)
 % Timer timer1 callback, called each time timer iterates.
-% Gets surface Z data, adds noise, and writes it back to surface object.
 global serialPort;
 global pastTransforms
 global boatTransform;
 global boatPos;
 global lat;
+global lon;
+global dir;
+global data;
+
+serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
+%fopen(serialPort);
+check = 0;
+x = 0;
+
+%mult 
+
+while(1)
+    while(serialPort.BytesAvailable==0)
+        disp('Wait')
+    end
+     x = fscanf(serialPort);%Store the line in a variable
+    
+     if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))
+        latprev = lat;
+        lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
+        check = 1;
+        disp('X')
+     end
+    
+     if((length(x)) > 10 && (strcmp(x(2:10), 'Longitude')) && (check == 1))  
+        lon = str2double(x(13:end));
+        check = 2;
+        disp('Y')
+     end
+     if((length(x)) > 10 && (strcmp(x(2:5), 'Boat')) && (check == 2))  
+        dir = str2double(x(18:end));
+        check = 3;
+        disp('C')
+     end
+     
+     if(check == 2)
+      
+        %lat = lat + ((lat - latprev) * 50000);
+        
+        %boatTransform = [1 0 0; 0 1 0; lat lon 1];
+        data.boat_heading = dir;
+        updateCanvas();
+        check = 0;
+        
+        %pause(2);%Allow the graph to be draw
+        fclose(serialPort);
+        break
+     end
+
+end
 
 global sendingData;
 global lastSendTime;
