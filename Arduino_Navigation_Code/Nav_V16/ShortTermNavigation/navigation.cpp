@@ -293,7 +293,7 @@ void setWaypoints(void) {
    * The origin is the point at which all xy coordinates are centered.
    * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
    */
-  setOrigin(outsideThurston);
+  setOrigin(engQuadX);
   wayPoints[0] = xyPoint(outsideThurston);
   wayPoints[1] = xyPoint(sundial);
   wayPoints[2] = xyPoint(hollister);
@@ -555,7 +555,7 @@ void nShort(void) {
   facing right, angle is below in the sector: w-offset
     w-(|w+180+optbot-boatdir|)
 */
-
+  Serial1.print(quadrant);
   //Boat hits upper bound, tack right
   if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");

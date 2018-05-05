@@ -29,44 +29,44 @@ void loop() {
   else if (sailTailBoatTest){
     Sail.write(sailMap(0)); //Sail to 0 
     delay(5000);
-//    Tail.write(tailMap(0, -30));
-//    delay(2500);  
-//    Tail.write(tailMap(0, 0));
-//    delay(2500);
-//    Tail.write(tailMap(0, 30));
-//    delay(2500);
+    Tail.write(tailMap(0, -30));
+    delay(2500);  
+    Tail.write(tailMap(0, 0));
+    delay(2500);
+    Tail.write(tailMap(0, 30));
+    delay(2500);
     Sail.write(sailMap(90)); //Sail to 90
     delay(5000);
-//    Tail.write(tailMap(90, 60));
-//    delay(2500);  
-//    Tail.write(tailMap(90, 90));
-//    delay(2500);
-//    Tail.write(tailMap(90, 120));
-//    delay(2500);
+    Tail.write(tailMap(90, 60));
+    delay(2500);  
+    Tail.write(tailMap(90, 90));
+    delay(2500);
+    Tail.write(tailMap(90, 120));
+    delay(2500);
     Sail.write(sailMap(180)); //Sail to 180
     delay(5000);
-//    Tail.write(tailMap(180, 150));
-//    delay(2500);  
-//    Tail.write(tailMap(180, 180));
-//    delay(2500);
-//    Tail.write(tailMap(180, -150));
-//    delay(2500);
+    Tail.write(tailMap(180, 150));
+    delay(2500);  
+    Tail.write(tailMap(180, 180));
+    delay(2500);
+    Tail.write(tailMap(180, -150));
+    delay(2500);
     Sail.write(sailMap(270)); //Sail to 270
     delay(5000);
-//    Tail.write(tailMap(270, -120));
-//    delay(2500);  
-//    Tail.write(tailMap(270, -90));
-//    delay(2500);
-//    Tail.write(tailMap(270, -60));
-//    delay(2500);
+    Tail.write(tailMap(270, -120));
+    delay(2500);  
+    Tail.write(tailMap(270, -90));
+    delay(2500);
+    Tail.write(tailMap(270, -60));
+    delay(2500);
     Sail.write(sailMap(360)); //Sail to 270
     delay(5000);
-//    Tail.write(tailMap(360, -120));
-//    delay(2500);  
-//    Tail.write(tailMap(360, -90));
-//    delay(2500);
-//    Tail.write(tailMap(360, -60));
-//    delay(2500);
+    Tail.write(tailMap(360, -120));
+    delay(2500);  
+    Tail.write(tailMap(360, -90));
+    delay(2500);
+    Tail.write(tailMap(360, -60));
+    delay(2500);
   }
   else if (sailTailBenchTest){
     Sail.write(sailMapBench(0)); //Sail to 0 
