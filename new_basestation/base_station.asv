@@ -27,7 +27,7 @@ function varargout = base_station(varargin)
 
 % Edit the above text to modify the response to help base_station
 
-% Last Modified by GUIDE v2.5 21-Apr-2018 11:50:47
+% Last Modified by GUIDE v2.5 05-May-2018 11:56:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -74,16 +74,21 @@ function initVarsAndConstants(handles1)
     
     global lat;
     
+    global sendingData;
+    global lastSendTime;
+    
     handles = handles1;
     
-    boatMode = 0;
+    boatMode = 1;
     boatPos = [30 30];
     boatTransform = [1 0 0; 0 1 0; 30 30 1];
     windVec = [10 30];
     sailDir = [1 -.4];
     tailDir = [-.6 1];
-    wayPoints = [325 58; 56 233];
+    wayPoints = [325 58; -56 233];
     buoyPoints = [78 97; 253 75];
+    %wayPoints = [];
+    %buoyPoints = [];
     
     drawScale = 1;
     
@@ -96,6 +101,9 @@ function initVarsAndConstants(handles1)
     
     DIR_LINE_LENGTH = 40;
     WIND_VEC_SCALE = 2;
+    
+    sendingData = false;
+    lastSendTime = 0;
 end
 
 %==========================================================================
@@ -127,15 +135,16 @@ function drawTextureAt(path, transform)
     [im, imRef] = imwarp(im, tform);
     alpha = imwarp(alpha, tform);
     
-    axes(handles.CanvasAxes);
+    %axes(handles.CanvasAxes);
     image = imshow(im, imRef, 'Parent', handles.CanvasAxes);
     image.AlphaData = alpha;
 end
 
 function drawVector(origin, vec, flags)
+    global handles;
     x1 = origin(1);
     y1 = origin(2);
-    plot([x1 x1+vec(1)], [y1 y1+vec(2)], flags);
+    plot(handles.CanvasAxes, [x1 x1+vec(1)], [y1 y1+vec(2)], flags);
 end
 
 %==========================================================================
@@ -150,10 +159,22 @@ function translate = createTranslation(pos)
     translate = [1 0 0; 0 1 0; pos(1) pos(2) 1];
 end
 
-function updateFromData(data)
-    global boatTransform;
-    global pastTransforms;
+function vec = angleToVec(angle)
+    vec = [cos(angle) sin(angle)];
+end
 
+function updateFromData(data)
+    global boatPos;
+    global boatTransform;
+    global windVec;
+    global sailDir;
+    global tailDir;
+    
+    global wayPoints;
+    global buoyPoints;
+    
+    global pastTransforms;
+    
     rotation = createRotZ(-data.boat_heading + pi/2);
     translate = createTranslation(data.position);
     
@@ -162,7 +183,11 @@ function updateFromData(data)
     end
     pastTransforms(:, :, 1) = boatTransform;
     
+    boatPos = data.position;
     boatTransform = rotation * translate;
+    windVec = angleToVec(data.wind(1)) * data.wind(2);
+    sailDir = angleToVec(data.sail_angle);
+    tailDir = angleToVec(data.tail_angle);
 end
 
 function updateCanvas()
@@ -183,11 +208,11 @@ function updateCanvas()
     global drawScale;
     global DIR_LINE_LENGTH;
     global WIND_VEC_SCALE;
-    
+        
     %axes(handles.CanvasAxes);
     cla(handles.CanvasAxes);
     
-    disp(handles.CanvasAxes);
+    %disp(handles.CanvasAxes);
     
     minX = realmax('single');
     maxX = -realmax('single');
@@ -225,9 +250,12 @@ function updateCanvas()
     midY = distY/2 + minY;
     maxDist = max(distX, distY);
     padding = maxDist * 1.14;
+    if (padding == 0)
+        padding = 1000;
+    end
     
-    xlim([midX-padding/2 midX+padding/2]);
-    ylim([midY-padding/2 midY+padding/2]);
+    xlim(handles.CanvasAxes, [midX-padding/2 midX+padding/2]);
+    ylim(handles.CanvasAxes, [midY-padding/2 midY+padding/2]);
     
     drawScale = padding/494;
     
@@ -309,7 +337,7 @@ function base_station_OpeningFcn(hObject, eventdata, handles, varargin)
     
     handles.timer = timer(...
     'ExecutionMode', 'fixedRate', ...       % Run timer repeatedly
-    'Period', 3, ...                        % Initial period is 1 sec.
+    'Period', .5, ...                        % Initial period is 1 sec.
     'TimerFcn', {@update_display,hObject}); % Specify callback function
 
 
@@ -345,6 +373,18 @@ function ModeSelect_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns ModeSelect contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from ModeSelect
+% handles    structure with handles and user data (see GUIDATA)
+    global boatMode;
+    
+    boatMode = hObject.Value;
+
+    data = containers.Map({
+        'command', 'mission_number'
+    }, {
+        0, boatMode
+    });
+
+    send_data(data);
 end
 
 
@@ -620,6 +660,15 @@ function SendButton_Callback(hObject, eventdata, handles)
 % hObject    handle to SendButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    global wayPoints;
+    
+    data = containers.Map({
+        'command', 'waypoints'
+    }, {
+        1, wayPoints
+    });
+
+    send_data(data);
 end
 
 
@@ -662,12 +711,50 @@ function BuoyRemove_Callback(hObject, eventdata, handles)
     updateCanvas();
 end
 
+function disableSendButton()
+    global handles;
+    handles.SendButton.String = "Sending...";
+    handles.SendButton.Enable = 'off';
+    handles.ModeSelect.Enable = 'off';
+end
+
+function enableSendButton()
+    global handles;
+    handles.SendButton.String = "Send to Boat";
+    handles.SendButton.Enable = 'on';
+    handles.ModeSelect.Enable = 'on';
+end
+
+function send_data(data)
+    global serialPort;
+    global sendingData;
+    global lastSendTime;
+    
+    serialized = jsonencode(data);
+    serialized = serialized(2:end-1);
+    %fwrite(serialPort, serialized);
+    disp(serialized);
+    
+    flushinput(serialPort);
+    flushoutput(serialPort);
+    
+    disableSendButton();
+    
+    sendingData = true;
+    lastSendTime = cputime;
+end
+
 function update_display(hObject,eventdata,hfigure)
 % Timer timer1 callback, called each time timer iterates.
 % Gets surface Z data, adds noise, and writes it back to surface object.
 global serialPort;
+global pastTransforms
 global boatTransform;
+global boatPos;
 global lat;
+
+global sendingData;
+global lastSendTime;
 
 % %serialPort = serial('COM5', 'BaudRate', 9600, 'Terminator', 'CR', 'StopBit', 1, 'Parity', 'None');
 % %fopen(serialPort);
@@ -682,6 +769,20 @@ global lat;
 %     %    disp('Wait')
 %     %end
 %      %x = fscanf(serialPort);%Store the line in a variable
+        
+        if (sendingData)
+            pattern = "ACK";
+            if (contains(y, pattern) == 1)
+                sendingData = false;
+                enableSendButton();
+            else
+                if (cputime - lastSendTime > 1)
+                    disp('Failed to recieve ACK from boat.');
+                    sendingData = false;
+                    enableSendButton();
+                end
+            end
+        end
 %     
 %      %if((length(x)) > 10 && (strcmp(x(2:9), 'Latitude')))   
 %      %   lat = str2double(x(12:end)); %convert latitude from string to double and saves it in a variable
@@ -715,11 +816,12 @@ global lat;
 % 
 % end
 
+pastTransforms(:, :, 1) = [1 0 0; 0 1 0; 0 0 1];
+boatPos = [lat 40];
 boatTransform = [1 0 0; 0 1 0; lat 40 1];
 updateCanvas();
-lat = lat + 10;
+lat = lat - 0;
 end
-
 
 
 % --- Executes when user attempts to close figure1.
