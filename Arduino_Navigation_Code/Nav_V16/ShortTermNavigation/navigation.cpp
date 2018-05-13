@@ -160,17 +160,17 @@ void avoidObject(void) {
 
 /*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
 bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant){
-    float angle = angleToTarget(point1, point2);
-    float dy = fabs(upperWidth/tan(angle));
     float slope = xySlope(point1, point2);
-    return (sensorData.x * slope + dy > sensorData.y);
+    float intercept = point1.y - slope * point1.x;
+    float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    return (distance > upperWidth);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
 bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant){
-    float angle = angleToTarget(point1, point2);
-    float dy = fabs(lowerWidth/tan(angle));
     float slope = xySlope(point1, point2);
-    return (sensorData.x * slope - dy < sensorData.y);
+    float intercept = point1.y - slope * point1.x;
+    float distance = (slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    return (distance > lowerWidth);
 }
 
 /*Method to determine sail and tail angle. The quadrant field expects values between 0 and 3, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
