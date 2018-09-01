@@ -173,7 +173,7 @@ bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadran
     return (distance > lowerWidth);
 }
 
-/*Method to determine sail and tail angle. The quadrant field expects values between 0 and 3, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
+/*Method to determine sail and tail angle. The quadrant field expects values between 0 and 2, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
 void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
    if(quadrant > 2){
       Serial1.print("Invalid argument sent to nav");
