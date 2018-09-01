@@ -554,8 +554,8 @@ void nShort(void) {
     w+(|w-opttop-boatdir|)
   facing right, angle is below in the sector: w-offset
     w-(|w+180+optbot-boatdir|)
-*/
-  Serial1.print(quadrant);
+*/Serial1.print("Quadrant: ");
+  Serial1.println(quadrant);
   //Boat hits upper bound, tack right
   if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
