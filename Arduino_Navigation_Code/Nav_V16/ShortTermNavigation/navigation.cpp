@@ -14,7 +14,7 @@ Servo sailServo;
 unsigned long  milTime; //Miliseconds since program started
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = 5; //how far away the boat marks a waypoint "reached"
+float detectionradius = 5; //how far away the boat marks a waypoint "reached" in meters
 float optpolartop = 60; //Optimal upwind angle for waypoints requiring a tack
 float optpolarbot = 60; //Optimal downwind angle for waypoints requiring a tack
 float angleofattack = 10;
@@ -437,6 +437,26 @@ void nShort(void) {
   // float milInt=milTime/1000;
   // Serial1.print(milInt);
   // Serial1.print("; ");
+  
+  
+  /* METHODOLOGY:
+    Endurance: main algorithm
+    Station Keeping: see below
+    Precision Navigation: Set wayPoints that are outside the buoys to ensure boat passes outside buoys
+      To get boat between buoys, set detection radius to 1, line up three wayPoints, 1. in front of finish line
+      2. on finish line directly between the two buoys, 3. behind finish line. All three wayPoints should be in
+      a straight line to encourage the boat to sail straight between the lines
+    Payload: remote control? With AC: five waypoints structured so the boat goes around the buoy
+    Collision Avoidance: Based on distance from object, obstacle travel speed, and our travel speed, calculate if
+      collision will happen, if so, turn toward the object until collision is no longer imminent
+    Search: assuming we have radar: go to reference point, radar searches for object, when it finds it, add waypoint,
+      sail there.
+    
+    WE NEED TO:
+    -create function to add wayPoint
+    
+    
+   
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
        if we are going to the first waypoint, set radius to 20.
@@ -447,6 +467,12 @@ void nShort(void) {
        once 5 minutes are up, increase the waypoint number to 2 and set station keeping to false
        in this way we will sail out the box to wp2 which is outisde the box
     */
+    /*
+     Alternative plan: 9/29/2018: tl;dr: sail in square of side length 20m (always 10m away from the side)
+     when time is up, find closest (alternatively most efficient) point outside the square and sail to that.
+     Method:
+     
+     */
     if (wpNum==0){
       detectionradius=25;
       if(normr < detectionradius){
