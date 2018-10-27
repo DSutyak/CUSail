@@ -5,13 +5,9 @@
 #include "sensors.h"
 #include "navigation.h"
 #include "navigation_helper.h"
-#include "coordinates.cpp"
-#include <stack>
 
 use namespace std
 
-Navigation_Controller nc;
-Boat_Controller bc;
 /*
 An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
@@ -50,6 +46,7 @@ public class Boat_Controller {
     sailServo.attach(sailServoPin);
     detection_radius = d;
     initSensors();
+    isTacking = false;
   }
 
   //Sets the angle of the main sail
@@ -100,7 +97,7 @@ navigate a body of water.
       how far (in meters) to port and starboard the boat is allowed to
       go before tacking.
     */
-    Navigation_Controller(float max, int num, array<coord_xy> waypoints,
+    Navigation_Controller(float max, int num, coord_xy array waypoints,
     float port, float starboard){
       waypoint_array = waypoints;
       angleToWaypoint = 0.0;
@@ -110,77 +107,55 @@ navigate a body of water.
       portOrStarboard = ""
       maxDistance = max;
       numWP = num;
-      currentWp = 0;
       dirAngle = 0.0;
       offset = 0.0;
       wind_direction = 0.0;
       port_boundary = port;
       starboard_boundary = starboard;
     }
-
-
   }
 
-    void initializer(void){
-      
-      coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
-      set_origin(coordinates[0]);
-      for(int i =0; i < sizeof(coordinates); i++){
-        coordinates[i] = xyPoint(coordinates[i]);
-      }
-      maxDistance = 10000.0; 
-      numWp = 3;
-      waypoint_array = coordinates; 
-      port_boundary = 10.0; 
-      starboard_boundary = 10.0;
-      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary)
-  }
-
-  // nav must be called after the initializer
-  void nav(void) {
-    
+  void main(float windDir, float boatDir) {
     windDir = sensorData.windDir;
     boatDir = sensorData.boatDir;
-
     calcIntendedAngle(PointofSail, portOrStarboard, windDir, angleToWaypoint);
     if (detection_radius >= normalDistance) {
-      (if nc.currentWP != nc.numWP) {
+      (if currentWP != numWP) {
         //to-do: update location
-        nc.currentWP++; //to-do: syntax for next el in list
+        currentWP++;
         if ((boatDir - windDir) % 360 < 180) {
-          nc.portOrStarboard = "Port";
+            portOrStarboard = "Port";
         }
         else {
-          nc.portOrStarboard = "Starboard";
-        }
-      }
-
-    }
-    if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
-      Serial1.print("HIT UPPER BOUND, TACK RIGHT");
-      if(!isTacking){
-        if (portOrStarboard == "Port") {
           portOrStarboard = "Starboard";
         }
-        else {
-          portOrStarboard = "Port";
-        }
       }
-      isTacking = true;
     }
-    //Boat hits lower bound, tack left
-    else if(wpNum != 0 && quadrant!=1 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) ){
-      Serial1.print("HIT LOWER BOUND, TACK LEFT");
-      if(!isTacking){
-        if (portOrStarboard == "Port") {
-          portOrStarboard = "Starboard";
-        }
-        else {
-          portOrStarboard = "Port";
-        }
-      }
-      isTacking = true;
-    }
+    // if(wpNum != 0 && pointOfSail!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
+    //   Serial1.print("HIT UPPER BOUND, TACK RIGHT");
+    //   if(!isTacking){
+    //     if (portOrStarboard == "Port") {
+    //       portOrStarboard = "Starboard";
+    //     }
+    //     else {
+    //       portOrStarboard = "Port";
+    //     }
+    //   }
+    //   isTacking = true;
+    // }
+    // //Boat hits lower bound, tack left
+    // else if(wpNum != 0 && pointOfSail!=1 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) ){
+    //   Serial1.print("HIT LOWER BOUND, TACK LEFT");
+    //   if(!isTacking){
+    //     if (portOrStarboard == "Port") {
+    //       portOrStarboard = "Starboard";
+    //     }
+    //     else {
+    //       portOrStarboard = "Port";
+    //     }
+    //   }
+    //   isTacking = true;
+    // }
     //to-do: pass into navigation_helper
     //to-do: update sail and tail angle
   }
@@ -244,36 +219,17 @@ navigate a body of water.
 
     point1 and point2 are coordinates in the xy plane
   */
-  bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant){
+  bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, string pointOfSail){
       float slope = xySlope(point1, point2);
-      float intercept = point1.y - slope * point1.x;
+      float intercept = point1.y - slope * point1.x;  
       float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
       return (distance > upperWidth);
   }
   /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-  bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant){
+  bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int pointOfSail){
       float slope = xySlope(point1, point2);
       float intercept = point1.y - slope * point1.x;
       float distance = (slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
       return (distance > lowerWidth);
   }
   }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-/*
-TODO: Create an initializer function (serparate file maybe?) that creates the
-two controller objects.
-
-TODO: Create a set of functions that take in the two controllers and perform
-updates to the fields within those if needed (things like over bounds, etc)
-
-TODO: Create a main function nav (or whatever you want to call it) that
-executes the initialization function and then goes into the while loop we
-planned on the whiteboard.
-*/
->>>>>>> e5f060249fc788408a9f1bba48c69b533660e709
-=======
->>>>>>> 711deff7951602f2dba87a2bbc7928aa3ac92239
->>>>>>> 63b151e8c74c547e05c3ba6c8bb52257f7415f0a
