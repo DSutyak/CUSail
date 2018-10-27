@@ -23,6 +23,7 @@ public class Boat_Controller {
   float detection_radius;
   float port_boundary;
   float starboard_boundary;
+  bool isTacking;
 
   float angle_of_attack = 10;
   float static optimal_angle = 60;
@@ -112,7 +113,6 @@ navigate a body of water.
       starboard_boundary = starboard;
     }
   }
-<<<<<<< HEAD
 
   void main(float windDir, float boatDir) {
     windDir = sensorData.windDir;
@@ -130,7 +130,31 @@ navigate a body of water.
         }
       }
     }
-    //to-do: bounds
+    if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
+      Serial1.print("HIT UPPER BOUND, TACK RIGHT");
+      if(!isTacking){
+        if (portOrStarboard == "Port") {
+          portOrStarboard = "Starboard";
+        }
+        else {
+          portOrStarboard = "Port";
+        }
+      }
+      isTacking = true;
+    }
+    //Boat hits lower bound, tack left
+    else if(wpNum != 0 && quadrant!=1 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) ){
+      Serial1.print("HIT LOWER BOUND, TACK LEFT");
+      if(!isTacking){
+        if (portOrStarboard == "Port") {
+          portOrStarboard = "Starboard";
+        }
+        else {
+          portOrStarboard = "Port";
+        }
+      }
+      isTacking = true;
+    }
     //to-do: pass into navigation_helper
     //to-do: update sail and tail angle
   }
@@ -194,27 +218,17 @@ navigate a body of water.
 
     point1 and point2 are coordinates in the xy plane
   */
-  string calcBounds(float width=10, coord_xy point1, coord_xy point2, string pointOfSail) {
-    float slope = xySlope(point1, point2);
-    float intercept = point1.y - slope * point1.x;
-    float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
-    if (distance > width) {
-      return "portBounds";
-    }
-    else {
-      return "starboardBounds";
-    }
+  bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant){
+      float slope = xySlope(point1, point2);
+      float intercept = point1.y - slope * point1.x;
+      float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+      return (distance > upperWidth);
   }
-=======
-/*
-TODO: Create an initializer function (serparate file maybe?) that creates the
-two controller objects.
-
-TODO: Create a set of functions that take in the two controllers and perform
-updates to the fields within those if needed (things like over bounds, etc)
-
-TODO: Create a main function nav (or whatever you want to call it) that
-executes the initialization function and then goes into the while loop we
-planned on the whiteboard.
-*/
->>>>>>> e52ae38f3c53385bf8bb9cd41e34e5c62eb34a51
+  /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
+  bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant){
+      float slope = xySlope(point1, point2);
+      float intercept = point1.y - slope * point1.x;
+      float distance = (slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+      return (distance > lowerWidth);
+  }
+  }
