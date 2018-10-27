@@ -1,0 +1,225 @@
+cmake_minimum_required(VERSION 3.12)
+project(CUSail)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(Arduino_Individual_Sensor_Code/GPS)
+include_directories(Arduino_Navigation_Code/Nav_V10/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V11/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V12/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V13/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy)
+include_directories(Arduino_Navigation_Code/Nav_V14/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V15/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V16/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V17/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V6/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V7/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V8/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation)
+include_directories(Arduino_Navigation_Code/required_libraries)
+include_directories(Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7)
+include_directories(Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy)
+include_directories(Arduino_Navigation_Code/required_libraries/Pixy)
+include_directories(Simulators/2DSailSim)
+
+add_executable(CUSail
+        Arduino_Individual_Sensor_Code/GPS/TinyGPS++.cpp
+        Arduino_Individual_Sensor_Code/GPS/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/nagivation_helper.h
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation_modularized.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/nav_station.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/Pixy.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixyI2C.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixySPI_SS.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixyUART.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/TPixy.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation_helper.cpp
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation_helper.h
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/print.cpp
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/print.h
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/navigation.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/navigation.h
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors.h
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_BACKUP_6987.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_BASE_6987.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_LOCAL_6987.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_REMOTE_6987.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/TinyGPS++.cpp
+        Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/TinyGPS++.h
+        Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/Pixy.h
+        Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixyI2C.h
+        Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixySPI_SS.h
+        Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixyUART.h
+        Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/TPixy.h
+        Arduino_Navigation_Code/required_libraries/Pixy/Pixy.h
+        Arduino_Navigation_Code/required_libraries/Pixy/PixyI2C.h
+        Arduino_Navigation_Code/required_libraries/Pixy/PixySPI_SS.h
+        Arduino_Navigation_Code/required_libraries/Pixy/PixyUART.h
+        Arduino_Navigation_Code/required_libraries/Pixy/TPixy.h
+        Individual_Functions_for_Arduino_Code/directionalError.cpp
+        Individual_Functions_for_Arduino_Code/distanceError.cpp
+        Individual_Functions_for_Arduino_Code/haversineDistanceCalculator.cpp
+        Individual_Functions_for_Arduino_Code/pixy.cpp
+        new_basestation/base_station.m
+        new_basestation/comm_test.m
+        new_basestation/write.m
+        Short_Term_Navigation_Algorithm/nShort5.2.c
+        Short_Term_Navigation_Algorithm/nShort5.c
+        Simulators/2DSailSim/all_alphas3.m
+        Simulators/2DSailSim/arrow.m
+        Simulators/2DSailSim/compute_alpha3.m
+        Simulators/2DSailSim/inputsIndivid.m
+        Simulators/2DSailSim/nav_v2_primitive.c
+        Simulators/2DSailSim/nav_v2_primitive.h
+        Simulators/2DSailSim/navigation.cpp
+        Simulators/2DSailSim/navigation.h
+        Simulators/2DSailSim/nShort5.c
+        Simulators/2DSailSim/sail3.m
+        Simulators/2DSailSim/sailn5.m
+        Simulators/2DSailSim/sensors.cpp
+        Simulators/2DSailSim/sensors.h
+        Simulators/2DSailSim/TinyGPS++.cpp
+        Simulators/2DSailSim/TinyGPS++.h
+        Simulators/3DsailSim/airfoil_forces2.m
+        Simulators/3DsailSim/animate.m
+        Simulators/3DsailSim/animateRT.m
+        Simulators/3DsailSim/bladeElement2.m
+        Simulators/3DsailSim/boatGeometry.m
+        Simulators/3DsailSim/C_LD.m
+        Simulators/3DsailSim/euler2Hom.m
+        Simulators/3DsailSim/euler2Rot.m
+        Simulators/3DsailSim/hullForce_xy.m
+        Simulators/3DsailSim/hullForce_yz.m
+        Simulators/3DsailSim/main.m
+        Simulators/3DsailSim/nShort5.c
+        Simulators/3DsailSim/odeEuler.m
+        Simulators/3DsailSim/odeEuler2.m
+        Simulators/3DsailSim/rhs.m
+        Simulators/3DsailSim/setBoatParam.m
+        Simulators/3DsailSim/velocity_pnt.m
+        Simulators/3DsailSim/wrapTo2Pi.m
+        Simulators/main1.m)

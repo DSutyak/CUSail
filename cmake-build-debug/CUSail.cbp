@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CUSail"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CUSail">
+				<Option output="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/CUSail" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Individual_Sensor_Code/GPS"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 CUSail"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CUSail/fast">
+				<Option output="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/CUSail" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/jwinnicki/CUSail/CUSail/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Individual_Sensor_Code/GPS"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy"/>
+					<Add directory="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 CUSail/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/jwinnicki/CUSail/CUSail/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Individual_Sensor_Code/GPS/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Individual_Sensor_Code/GPS/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V10/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/nagivation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/navigation_modularized.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V11/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/nav_station.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12.5/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V12/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/Pixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixyI2C.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixySPI_SS.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/PixyUART.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/Pixy/TPixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13.2/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V13/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V14/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V15/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V16/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation_helper.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/navigation_helper.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/print.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/print.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V17/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V5.2/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V6/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V7/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V8/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_BACKUP_6987.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_BASE_6987.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_LOCAL_6987.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/Nav_V9_1-30/ShortTermNavigation/sensors_REMOTE_6987.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy/Pixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy/PixyI2C.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy/PixySPI_SS.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy/PixyUART.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/Pixy/TPixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/Pixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixyI2C.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixySPI_SS.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/PixyUART.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Arduino_Navigation_Code/required_libraries/arduino_pixy-0.1.7/Pixy/TPixy.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Individual_Functions_for_Arduino_Code/directionalError.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Individual_Functions_for_Arduino_Code/distanceError.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Individual_Functions_for_Arduino_Code/haversineDistanceCalculator.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Individual_Functions_for_Arduino_Code/pixy.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Short_Term_Navigation_Algorithm/nShort5.2.c">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Short_Term_Navigation_Algorithm/nShort5.c">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/TinyGPS++.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/TinyGPS++.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/all_alphas3.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/arrow.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/compute_alpha3.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/inputsIndivid.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/nShort5.c">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/nav_v2_primitive.c">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/nav_v2_primitive.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/navigation.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/navigation.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/sail3.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/sailn5.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/sensors.cpp">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/2DSailSim/sensors.h">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/C_LD.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/airfoil_forces2.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/animate.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/animateRT.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/bladeElement2.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/boatGeometry.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/euler2Hom.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/euler2Rot.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/hullForce_xy.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/hullForce_yz.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/main.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/nShort5.c">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/odeEuler.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/odeEuler2.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/rhs.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/setBoatParam.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/velocity_pnt.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/3DsailSim/wrapTo2Pi.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/Simulators/main1.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/new_basestation/base_station.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/new_basestation/comm_test.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/new_basestation/write.m">
+			<Option target="CUSail"/>
+		</Unit>
+		<Unit filename="/Users/jwinnicki/CUSail/CUSail/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
