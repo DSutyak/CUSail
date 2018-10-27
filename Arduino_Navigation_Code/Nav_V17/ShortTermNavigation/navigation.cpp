@@ -63,10 +63,6 @@ public class Boat_Controller {
 An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
 navigate a body of water.
-
-port and starboard are floats that represent
-how far (in meters) to port and starboard the boat is allowed to
-go before tacking.
 */
   public class Navigation_Controller{
     coord_xy waypoint_array[];
@@ -94,6 +90,10 @@ go before tacking.
 
       num is an int that represents the number of coord_xy waypoints in the
       array waypoints argument.
+
+      port and starboard are floats that represent
+      how far (in meters) to port and starboard the boat is allowed to
+      go before tacking.
     */
     Navigation_Controller(float max, int num, coord_xy array waypoints,
     float port, float starboard){
@@ -112,6 +112,7 @@ go before tacking.
       starboard_boundary = starboard;
     }
   }
+<<<<<<< HEAD
 
   void main(float windDir, float boatDir) {
     windDir = sensorData.windDir;
@@ -204,3 +205,16 @@ go before tacking.
       return "starboardBounds";
     }
   }
+=======
+/*
+TODO: Create an initializer function (serparate file maybe?) that creates the
+two controller objects.
+
+TODO: Create a set of functions that take in the two controllers and perform
+updates to the fields within those if needed (things like over bounds, etc)
+
+TODO: Create a main function nav (or whatever you want to call it) that
+executes the initialization function and then goes into the while loop we
+planned on the whiteboard.
+*/
+>>>>>>> e52ae38f3c53385bf8bb9cd41e34e5c62eb34a51
