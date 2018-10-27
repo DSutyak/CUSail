@@ -112,3 +112,95 @@ go before tacking.
       starboard_boundary = starboard;
     }
   }
+
+  void main(float windDir, float boatDir) {
+    windDir = sensorData.windDir;
+    boatDir = sensorData.boatDir;
+    calcIntendedAngle(PointofSail, portOrStarboard, windDir, angleToWaypoint);
+    if (detection_radius >= normalDistance) {
+      (if currentWP != numWP) {
+        //to-do: update location
+        currentWP++; //to-do: syntax for next el in list
+        if ((boatDir - windDir) % 360 < 180) {
+            portOrStarboard = "Port";
+        }
+        else {
+          portOrStarboard = "Starboard";
+        }
+      }
+    }
+    //to-do: bounds
+    //to-do: pass into navigation_helper
+    //to-do: update sail and tail angle
+  }
+
+  /*
+  Helper function used to calculate intendedAngle.
+  Determines if the boat is upwind, downwind, or reach, and if
+  port or starboard, then determines intendedAngle and
+  angle_of_attack.
+  Arguments:
+    pointOfSail is a string that represents upwind, downwind, or reach (direct)
+
+    portOrStarboard is a string that represents port (left) or starboard (right)
+  */
+  void calcIntendedAngle(string PointofSail, string portOrStarboard, float windDir, float angleToWaypoint) {
+    if (PointofSail != "Upwind" && PointofSail != "Reach" && PointofSail != "Downwind" ) {
+      Serial1.print("Invalid argument sent to nav");
+    }
+    else if (PointofSail == "Upwind") {
+      if (portOrStarboard == "Port") {
+        Serial1.print("UPWIND PORT");
+        intendedAngle = windDir - optimal_angle;
+        angle_of_attack = -15;
+      }
+      else {
+        Serial1.print("UPWIND STARBOARD");
+        intended_angle= windDir + optimal_angle;
+        angle_of_attack = 15;
+      }
+    }
+    else if (PointofSail == "Reach") {
+      if (portOrStarboard == "Port") {
+        Serial1.print("REACH PORT");
+        intended_angle = angleToWaypoint;
+        angle_of_attack = -15;
+      }
+      else {
+        Serial1.print("REACH STARBOARD");
+        intended_angle = angleToWaypoint;
+        angle_of_attack = 15;
+      }
+    }
+    else{
+       if(portOrStarboard == "Port") {
+         Serial1.print("DOWNWIND PORT");
+         intended_angle = windDir + 180 + optimal_angle;
+         intended_angle_of_attack = -15;
+       }
+       else{
+         Serial1.print("DOWNWIND STARBOARD");
+         intended_angle = windDir + 180 - optimal_angle;
+         intended_angle_of_attack = 15;
+       }
+  }
+
+  /*
+  Helper function used to determine whether the boat is aboveBounds or belowBounds.
+
+  Arguments:
+    width is a float that sets the maximum allowable width for boat to sail within
+
+    point1 and point2 are coordinates in the xy plane
+  */
+  string calcBounds(float width=10, coord_xy point1, coord_xy point2, string pointOfSail) {
+    float slope = xySlope(point1, point2);
+    float intercept = point1.y - slope * point1.x;
+    float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    if (distance > width) {
+      return "portBounds";
+    }
+    else {
+      return "starboardBounds";
+    }
+  }
