@@ -128,9 +128,9 @@ navigate a body of water.
       maxDistance = 10000.0; 
       numWp = 3;
       waypoint_array = coordinates; 
-      port_boundrary 10.0; 
-      starboard_boundrary = 10.0;
-      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundrary, starboard_boundary)
+      port_boundary = 10.0; 
+      starboard_boundary = 10.0;
+      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary)
   }
 
   // nav must be called after the initializer
