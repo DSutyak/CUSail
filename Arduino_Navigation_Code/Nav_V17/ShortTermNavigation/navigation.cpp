@@ -5,9 +5,13 @@
 #include "sensors.h"
 #include "navigation.h"
 #include "navigation_helper.h"
+#include "coordinates.cpp"
+#include <stack>
 
 use namespace std
 
+Navigation_Controller nc;
+Boat_Controller bc;
 /*
 An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
@@ -95,7 +99,7 @@ navigate a body of water.
       how far (in meters) to port and starboard the boat is allowed to
       go before tacking.
     */
-    Navigation_Controller(float max, int num, coord_xy array waypoints,
+    Navigation_Controller(float max, int num, array<coord_xy> waypoints,
     float port, float starboard){
       waypoint_array = waypoints;
       angleToWaypoint = 0.0;
@@ -105,6 +109,7 @@ navigate a body of water.
       portOrStarboard = ""
       maxDistance = max;
       numWP = num;
+      currentWp = 0;
       dirAngle = 0.0;
       offset = 0.0;
       wind_direction = 0.0;
@@ -114,23 +119,41 @@ navigate a body of water.
 
 
   }
-<<<<<<< HEAD
 
-  void main(float windDir, float boatDir) {
+    void initializer(void){
+      
+      coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
+      set_origin(coordinates[0]);
+      for(int i =0; i < sizeof(coordinates); i++){
+        coordinates[i] = xyPoint(coordinates[i]);
+      }
+      maxDistance = 10000.0; 
+      numWp = 3;
+      waypoint_array = coordinates; 
+      port_boundary = 10.0; 
+      starboard_boundary = 10.0;
+      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary)
+  }
+
+  // nav must be called after the initializer
+  void nav(void) {
+    
     windDir = sensorData.windDir;
     boatDir = sensorData.boatDir;
+
     calcIntendedAngle(PointofSail, portOrStarboard, windDir, angleToWaypoint);
     if (detection_radius >= normalDistance) {
-      (if currentWP != numWP) {
+      (if nc.currentWP != nc.numWP) {
         //to-do: update location
-        currentWP++; //to-do: syntax for next el in list
+        nc.currentWP++; //to-do: syntax for next el in list
         if ((boatDir - windDir) % 360 < 180) {
-            portOrStarboard = "Port";
+          nc.portOrStarboard = "Port";
         }
         else {
-          portOrStarboard = "Starboard";
+          nc.portOrStarboard = "Starboard";
         }
       }
+
     }
     //to-do: bounds
     //to-do: pass into navigation_helper
@@ -207,6 +230,7 @@ navigate a body of water.
       return "starboardBounds";
     }
   }
+<<<<<<< HEAD
 =======
 /*
 TODO: Create an initializer function (serparate file maybe?) that creates the
@@ -220,3 +244,5 @@ executes the initialization function and then goes into the while loop we
 planned on the whiteboard.
 */
 >>>>>>> e5f060249fc788408a9f1bba48c69b533660e709
+=======
+>>>>>>> 711deff7951602f2dba87a2bbc7928aa3ac92239
