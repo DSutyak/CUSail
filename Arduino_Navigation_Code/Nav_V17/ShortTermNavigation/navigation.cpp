@@ -157,7 +157,6 @@ navigate a body of water.
     //to-do: pass into navigation_helper
     //to-do: update sail and tail angle
   }
-
   /*
   Helper function used to calculate intendedAngle.
   Determines if the boat is upwind, downwind, or reach, and if
@@ -217,10 +216,16 @@ navigate a body of water.
 
     point1 and point2 are coordinates in the xy plane
   */
-  string calcBounds(float width=10, coord_xy point1, coord_xy point2, string pointOfSail) {
+  bool calcPortBounds(Boat_Controller boatC, Navigation_Controller navC){
+    coord_xy point1 = navC.waypoint_array[boatC.location]
+    coord_xy point2 = navC.waypoint_array[navC.currentWP]
     float slope = xySlope(point1, point2);
     float intercept = point1.y - slope * point1.x;
     float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    return (distance > boatC.port_boundary)
+  }
+  string calcBounds() {
+    
     if (distance > width) {
       return "portBounds";
     }
