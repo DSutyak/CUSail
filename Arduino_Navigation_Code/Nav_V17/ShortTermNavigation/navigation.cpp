@@ -6,7 +6,6 @@
 #include "navigation.h"
 #include "navigation_helper.h"
 #include "coordinates.cpp"
-#include <stack>
 
 use namespace std
 
@@ -174,7 +173,7 @@ public class Navigation_Controller{
         if (nc.portOrStarboard == "Port") {
           nc.portOrStarboard = "Starboard";
         }
-        else {]
+        else {
           nc.portOrStarboard = "Port";
         }
       }
@@ -235,7 +234,7 @@ public class Navigation_Controller{
 
     portOrStarboard is a string that represents port (left) or starboard (right)
   */
-  void calcIntendedAngle(bc, nc) {
+  void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
     if (bc.PointofSail != "Upwind" && nc.PointofSail != "Reach" && nc.PointofSail != "Downwind" ) {
       Serial1.print("Invalid argument sent to nav");
     }
@@ -285,21 +284,21 @@ public class Navigation_Controller{
     point1 and point2 are coordinates in the xy plane
   */
 
-  bool aboveBounds(float upperWidth, coord_xy location, coord_xy waypoint_array[currentWP+1], string pointOfSail){
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-  bool belowBounds(float lowerWidth, coord_xy location, coord_xy waypoint_array[currentWP+1], string ){
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = (slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > lowerWidth);
 }
 
-void endurance(coord_xy buoyLocations[]){
+/*void endurance(coord_xy buoyLocations[]){
   if(nc.currentWP = buoyLocations.length){
     nc.currentWP = 0;
   }
@@ -375,3 +374,4 @@ void nShort(void){
     case search:
   }
 }
+*/

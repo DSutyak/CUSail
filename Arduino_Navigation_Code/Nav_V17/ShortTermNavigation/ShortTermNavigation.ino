@@ -21,8 +21,7 @@
 
 // Code within setup() runs once on receiving power
 void setup() {
-  initNavigation(); // Set the number of waypoints and the current waypoint # to 0
-  setWaypoints(); // create the course by means of a waypoint array
+  initializer()
 }
 
 // Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
@@ -30,8 +29,6 @@ void loop() {
   sRSensor(); //Gather wind directio w.r.t North
   sGPS(); //Gather global coordinates
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
-  nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
-  nServos(); //Send acquired servo commands
-  updateTime(); //Update @milTime with miliseconds since program started
+  nav(); //Run Short Term Navigation Algorithm to obtain servo commands
 
 }
