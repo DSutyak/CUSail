@@ -16,7 +16,8 @@ An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
 */
 
-public class Boat_Controller {
+class Boat_Controller {
+public:
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -44,7 +45,7 @@ public class Boat_Controller {
     sail_angle = set_sail_angle(0.00);
     tail_angle = set_tail_angle(0.00);
     boat_direction = sensorData.boatDir;
-    location = currentPosition = {sensorData.x, sensorData.y};
+    location = void;
     tailServo.attach(tailServoPin);
     sailServo.attach(sailServoPin);
     detection_radius = d;
@@ -70,7 +71,8 @@ An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
 navigate a body of water.
 */
-public class Navigation_Controller{
+class Navigation_Controller {
+public:
   coord_xy waypoint_array[];
   float angleToWaypoint;
   float normalDistance;
@@ -152,7 +154,8 @@ public class Navigation_Controller{
     r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_xy currentPosition = {sensorData.x, sensorData.y};
+    coord_t coord_lat_lon = {sensorData.x, sensorData.y}
+    coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
     bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition)
     calcIntendedAngle(bc, nc);

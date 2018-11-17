@@ -21,7 +21,7 @@
 
 // Code within setup() runs once on receiving power
 void setup() {
-  initializer()
+  initializer();
 }
 
 // Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
