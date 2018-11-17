@@ -5,7 +5,7 @@
  Navigation_helper
  Provides helper functions for Navigation
 --------------------------------------------------------------------*/
-
+#include "navigation.h"
 
 extern coord_xy origin;
 /*Sets the origin of the XY plane to a starting point*/
@@ -24,7 +24,7 @@ void avoidObject(void);
 float angleToTarget(coord_xy coord1, coord_xy coord2);
 
 /*Returns great circle distance (in meters) between two global coordinates.*/
-double havDist(coord_t  first, coord_t second);
+double havDist(coord_t first, coord_t second);
 
 /*converts an angle to a 0-360 range*/
 float convertto360(float angle);

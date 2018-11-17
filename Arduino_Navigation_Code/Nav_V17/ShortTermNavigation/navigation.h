@@ -21,9 +21,6 @@ typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
-
-/*----------Class Definitions-------------*/
-class Boat_Controller {
 public:
   float sail_angle;
   float tail_angle;
