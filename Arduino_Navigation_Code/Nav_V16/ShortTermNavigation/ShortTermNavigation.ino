@@ -1,3 +1,6 @@
+#include <Printers.h>
+#include <XBee.h>
+
 #include "sensors.h"
 #include "navigation.h"
 

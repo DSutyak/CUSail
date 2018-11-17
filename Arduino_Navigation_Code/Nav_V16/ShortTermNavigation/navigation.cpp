@@ -507,8 +507,6 @@ void nShort(void) {
       normr = xyDist(wayPoints[wpNum], currentPosition);
       stationKeeping=0;
     }
-
-  }
   else{
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){

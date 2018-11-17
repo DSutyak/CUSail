@@ -1,14 +1,18 @@
+#include <Printers.h>
+#include <XBee.h>
+
 
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
 #include <PixyI2C.h>
 #include "navigation.h"
-#include "navigation_helper.h"
+#include "navigation_helper.h"  
 
 //Begin Pixy
 PixyI2C pixy;
 
+XBee xbee;
 TinyGPSPlus gps;
 data_t sensorData;
 
@@ -175,10 +179,14 @@ double tailMapBench( double sailAngle, double tailAngle){
 
 /*Sensor setup*/
 void initSensors(void) {
+  xbee = XBee();
+
   Serial.begin(9600);
-  Serial2.begin(9600);
   Serial1.begin(9600);
+  Serial2.begin(9600);
   Serial3.begin(9600);
+
+  xbee.setSerial(Serial1);
 
   //Initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
