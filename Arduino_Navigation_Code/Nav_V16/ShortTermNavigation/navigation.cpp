@@ -14,11 +14,11 @@ Servo sailServo;
 unsigned long  milTime; //Miliseconds since program started
 int wpNum; //the current waypoint's number in the wayPoints array
 int numWP; //total number of waypoints on current course
-float detectionradius = detectionRadius; //how far away the boat marks a waypoint "reached"
-float optpolartop = optPolarTop;
-float optpolarbot = optPolarBot;
-float angleofattack = angleOfAttack;
-coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
+float detectionradius = 5; //how far away the boat marks a waypoint "reached" in meters
+float optpolartop = 60; //Optimal upwind angle for waypoints requiring a tack
+float optpolarbot = 60; //Optimal downwind angle for waypoints requiring a tack
+float angleofattack = 10;
+coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints
 float normr; //normal distance to the waypoint
 float r[2]; //r[0]: Longitude difference b/w current position and waypoint,
             //r[1]: Lattitude difference b/w current position and waypoint
@@ -26,20 +26,24 @@ float w[2]; //w[0]: Cosine of the wind direction w.r.t North,
             //w[1]: Sine of the wind direction w.r.t North
 float sailAngle;
 float tailAngle;
-// the angle that we intend to sail at WRT North
 
+// the angle that we intend to sail at WRT North
 float intended_angle;
 float intended_angle_of_attack;
 // latitude is y, longitude is x
 float max_distance=100;
-coord_t center_start={1,2};
-coord_t center_end={10,20};
+
+//set maximum allowable width for boat to sail within
+float upperWidth = 10;
+float lowerWidth = 10;
+bool isTacking = false;
+
+//Stores information about current heading and tack. quadrant expects 0 for up, 1 for direct or turn, and 2 for bottom. rightLeft expects true for left and false for right
+int quadrant;
+bool rightLeft;
 
 //set to 0 if we are not doing station keeping or 1 if we are
 bool stationKeeping = 0;
-
-float slope=(center_end.latitude - center_start.latitude)/(center_end.longitude - center_start.longitude);
-float intercept= center_start.latitude - slope * center_start.longitude;
 
 // need to read these values from the arduino
 float time_inside=0;
@@ -63,7 +67,7 @@ bool continue_end_wp=false;
 float final_intended_angle;
 
 //set to true when doing , when we reach the last waypoint, reset wpNum to 0
-bool endurance=true;
+bool endurance=false;
 
 //set to true when doing obstacle avoidance
 bool avoid_test=false;
@@ -74,15 +78,8 @@ float turn_angle=1;
 //1 is right, -1 is left, 0 is not seen yet
 int avoid_direction=0;
 
-
+bool search=false; //set to true when doing search and navigate.
 // float left_bank=42
-
-/* takes a coordinate and returns the distance from the coordinate to the center line */
-float center_distance(coord_t position){
-  float top= fabs(slope*position.longitude+position.latitude+intercept);
-  float bot= sqrtf(slope*slope + 1);
-  return top/bot;
-}
 
 /*Servo setup
 * "Attaches" servos to defined pins*/
@@ -161,6 +158,70 @@ void avoidObject(void) {
   // tailAngle = (float)(
 }
 
+/*Method to determine whether the boat is above the greater tacking bound, for use in nShort to determine when to tack */
+bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant){
+    float slope = xySlope(point1, point2);
+    float intercept = point1.y - slope * point1.x;
+    float distance = -1*(slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    return (distance > upperWidth);
+}
+/*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
+bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant){
+    float slope = xySlope(point1, point2);
+    float intercept = point1.y - slope * point1.x;
+    float distance = (slope * point1.x - point1.y + intercept)/sqrtf(intercept*intercept+1);
+    return (distance > lowerWidth);
+}
+
+/*Method to determine sail and tail angle. The quadrant field expects values between 0 and 2, with 0=up, 1=direct or turn, and 2=bottom. rightLeft expects false for right and true for left*/
+void nav(int quadrant, bool rightLeft, float windDir, float anglewaypoint){
+   if(quadrant > 2){
+      Serial1.print("Invalid argument sent to nav");
+   }
+   else if(quadrant==0){
+      if(rightLeft){
+        //Up Left
+        Serial1.print("UPWIND LEFT");
+        intended_angle = windDir - optpolartop;
+        intended_angle_of_attack = -15;
+      }
+      else{
+        //Up Right
+        Serial1.print("UPWIND RIGHT");
+        intended_angle= windDir + optpolartop;
+        intended_angle_of_attack = 15;
+      }
+   }
+   else if(quadrant==1){
+      if(rightLeft){
+        //Direct Left
+        Serial1.print("DIRECT LEFT");
+        intended_angle = anglewaypoint;
+        intended_angle_of_attack = -15;
+      }
+      else{
+        //Direct Right
+        Serial1.print("DIRECT RIGHT");
+        intended_angle = anglewaypoint;
+        intended_angle_of_attack = 15;
+      }
+   }
+   else{
+      if(rightLeft){
+        //Bottom Left
+        Serial1.print("DOWNWIND LEFT");
+        intended_angle = windDir + 180 + optpolarbot;
+        intended_angle_of_attack = -15;
+      }
+      else{
+        //Bottom Right
+        Serial1.print("DOWNWIND RIGHT");
+        intended_angle = windDir + 180 - optpolarbot;
+        intended_angle_of_attack = 15;
+      }
+   }
+}
+
 /*----------Stored Coordinates----------*/
 //Coordinates in and around the Engineering Quad, Cornell university
 coord_t olin = {42.445457, -76.484322}; //Olin Hall
@@ -173,6 +234,8 @@ coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, l
 coord_t sundial = {42.4448630, -76.4835293}; //Sundial on the engineering quad
 coord_t bottomRightIntersection= {42.444242, -76.483247}; //path intersection bottom right of quad
 coord_t thurstonWestEntrance={42.444245, -76.484068}; //west entrance to thurston on the path
+coord_t ctb{42.442539, -76.485019};
+coord_t stairsToCTown{42.444057, -76.484228}; //top of stairs between bard and hollister
 
 //Coordinates in and around the Cornell Sailing Center
 coord_t lakeOut = {42.469386,-76.504690}; //Out in the lake, to the left of the Cornell Sailing Center
@@ -223,25 +286,27 @@ void setWaypoints(void) {
 
 
   //Make the waypoint array
-  numWP = 2;
+  numWP = 4;
   wpNum = 0;
 
-  //Set way points to desired coordinates.
-  //Assignmment must be of the type coord_t.
-//  wayPoints[0] = {42.470718, -76.503181};
-//  wayPoints[1] = {42.47065, -76.503448};
-
-  wayPoints[0] = sundial;
-  wayPoints[1] = outsideThurston;
-
-
+  /**
+   * The origin is the point at which all xy coordinates are centered.
+   * all points must be inserted using xyPoint(yourWaypoint) to convert to xy coordinates
+   */
+  setOrigin(engQuadX);
+  wayPoints[0] = xyPoint(sundial);
+  wayPoints[1] = xyPoint(outsideThurston);
+  wayPoints[2] = xyPoint(hollister);
+  wayPoints[3] = xyPoint(outsideThurston);
 
   /*
   // nav test with wind from 340
 
+//Points for lake test on Cayuga
 //  numWP = 9;
   numWP=8;
   wpNum = 0;
+
   wayPoints[0]= {42.470432, -76.505028}; //nav_0
   wayPoints[1]={42.470318, -76.504906}; //nav_1
   wayPoints[2]={42.470348, -76.504654}; //nav_2
@@ -251,21 +316,24 @@ void setWaypoints(void) {
   wayPoints[6]={42.470943, -76.504326};//nav_6
   wayPoints[7]={42.47094, -76.504745};  //nav_7
   //wayPoints[8]={42.471104, -76.504883}; //nav_8
+
   */
 
 
 
-  //STATION KEEPING TEST
+  //STATION KEEPING TEST on Cayuga
   /*
   numWP=3;
   wpNum=0;
   wayPoints[0]={42.470737, -76.504707}; //nav_0
   wayPoints[1]={42.470737, -76.504707}; //nav_1
   wayPoints[2]={42.470863, -76.503975}; //nav_2
+
   */
   /*
-   //station keeping lakehouse test
+   //station keeping lakehouse test (on land)
   //going to lakehouse then back to picnic
+
   numWP=3;
   wpNum=0;
   wayPoints[0]={42.47049, -76.503212}; //nav_0
@@ -273,8 +341,9 @@ void setWaypoints(void) {
   wayPoints[2]={42.470783, -76.503357}; //nav_2
   */
 
-  //endurance race
+  //endurance race on Cayuga
   /*
+
   numWP=16;
   wpNum=0;
   wayPoints[0]={42.474224, -76.507195};
@@ -296,12 +365,25 @@ void setWaypoints(void) {
   /*
   Navigation challenge: set waypoints, assuming wind from above, in numerical order
   around the buoys represented by x's
+
+
                               8
+
+
                         x     7     x
                                                     6
+
+
+
+
+
+
+
         0    x                                  x      5
+
             1                                      4
                   2                           3
+
   */
 }
 
@@ -319,45 +401,32 @@ void nShort(void) {
  // sensorData.lati=outsideThurston.latitude;
   // sensorData.longi=outsideThurston.longitude;
 //    sensorData.longi = -76.4834140241;
-  sensorData.windDir = 90;
+  sensorData.windDir = 270;
    // sensorData.boatDir = 0;
     //sensorData.sailAngleNorth = 90;
 
   //find the normal distance to the waypoint
-  r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-  r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+
+  r[0] = wayPoints[wpNum].x - sensorData.x;
+  r[1] = wayPoints[wpNum].y - sensorData.y;
   w[0] = cos((sensorData.windDir)*(PI/180.0));
   w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_t currentPosition = {sensorData.lati, sensorData.longi};
-  normr = havDist(wayPoints[wpNum], currentPosition);
+  coord_xy currentPosition = {sensorData.x, sensorData.y};
 
-  //Dummy normal distance
-  float oldnormr=1000;
-  // if(sensorData.lati==0){
-  //   Serial1.println("Don't have GPS");
-  // }
+  normr = xyDist(wayPoints[wpNum], currentPosition);
+
   printData();
   printWaypointData();
-  // Serial1.print("WP:");
-  // Serial1.print(wpNum);
-  // Serial1.print(";");
 
-  // Serial1.print("D:");
-  // Serial1.print(normr);
-  // Serial1.print(";");
+  float anglewaypoint=angleToTarget(coord_xy({sensorData.x, sensorData.y}), wayPoints[wpNum]);
 
-  // Serial1.print("W:");
-  // Serial1.print(sensorData.windDir);
-  // Serial1.print(";");
-  // Serial1.print("BD:");
-  // Serial1.print(sensorData.boatDir);
-  // Serial1.print(";");
-  float anglewaypoint=angleToTarget(sensorData.lati, sensorData.longi, wayPoints[wpNum].latitude, wayPoints[wpNum].longitude);
+
   anglewaypoint=convertto360(anglewaypoint);
 
 
   /*
   when not doing station keeping, set boolean stationKeeping to false
+
   station keeping code: if we have not reached the required time, keep going
   to the same waypoint over and over (we will never register hitting it)
   set the waypoint to be the middle of the square of the station
@@ -368,6 +437,26 @@ void nShort(void) {
   // float milInt=milTime/1000;
   // Serial1.print(milInt);
   // Serial1.print("; ");
+  
+  
+  /* METHODOLOGY:
+    Endurance: main algorithm
+    Station Keeping: see below
+    Precision Navigation: Set wayPoints that are outside the buoys to ensure boat passes outside buoys
+      To get boat between buoys, set detection radius to 1, line up three wayPoints, 1. in front of finish line
+      2. on finish line directly between the two buoys, 3. behind finish line. All three wayPoints should be in
+      a straight line to encourage the boat to sail straight between the lines
+    Payload: remote control? With AC: five waypoints structured so the boat goes around the buoy
+    Collision Avoidance: Based on distance from object, obstacle travel speed, and our travel speed, calculate if
+      collision will happen, if so, turn toward the object until collision is no longer imminent
+    Search: assuming we have radar: go to reference point, radar searches for object, when it finds it, add waypoint,
+      sail there.
+    
+    WE NEED TO:
+    -create function to add wayPoint
+    
+    
+   
   if (stationKeeping){
     /* plan: we set our first waypoint to be the center of the box w detection radius 20m (40/2)
        if we are going to the first waypoint, set radius to 20.
@@ -378,6 +467,12 @@ void nShort(void) {
        once 5 minutes are up, increase the waypoint number to 2 and set station keeping to false
        in this way we will sail out the box to wp2 which is outisde the box
     */
+    /*
+     Alternative plan: 9/29/2018: tl;dr: sail in square of side length 20m (always 10m away from the side)
+     when time is up, find closest (alternatively most efficient) point outside the square and sail to that.
+     Method:
+     
+     */
     if (wpNum==0){
       detectionradius=25;
       if(normr < detectionradius){
@@ -386,12 +481,14 @@ void nShort(void) {
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
-        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+
+        r[0] = wayPoints[wpNum].x - sensorData.x;
+        r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.lati, sensorData.longi};
-        normr = havDist(wayPoints[wpNum], currentPosition);
+        currentPosition = {sensorData.x, sensorData.y};
+
+        normr = xyDist(wayPoints[wpNum], currentPosition);
         start_box_time=milTime;
       }
     }
@@ -402,12 +499,12 @@ void nShort(void) {
       wpNum += 1 ;
 
       //reset variables because we have reached the old waypoint
-      r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-      r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+      r[0] = wayPoints[wpNum].x - sensorData.x;
+      r[1] = wayPoints[wpNum].y - sensorData.y;
       w[0] = cos((sensorData.windDir)*(PI/180.0));
       w[1] = sin((sensorData.windDir)*(PI/180.0));
-      currentPosition = {sensorData.lati, sensorData.longi};
-      normr = havDist(wayPoints[wpNum], currentPosition);
+      currentPosition = {sensorData.x, sensorData.y};
+      normr = xyDist(wayPoints[wpNum], currentPosition);
       stationKeeping=0;
     }
 
@@ -415,15 +512,16 @@ void nShort(void) {
   else{
     if(normr < detectionradius){
       if ((wpNum + 1) < numWP){
+        Serial1.print("hit");
         wpNum += 1 ;
 
         //reset variables because we have reached the old waypoint
-        r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-        r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+        r[0] = wayPoints[wpNum].x - sensorData.x;
+        r[1] = wayPoints[wpNum].y - sensorData.y;
         w[0] = cos((sensorData.windDir)*(PI/180.0));
         w[1] = sin((sensorData.windDir)*(PI/180.0));
-        currentPosition = {sensorData.lati, sensorData.longi};
-        normr = havDist(wayPoints[wpNum], currentPosition);
+        currentPosition = {sensorData.x, sensorData.y};
+        normr = xyDist(wayPoints[wpNum], currentPosition);
       }
       else{
         //if we are doing endurance, reset the wpNum to 0
@@ -431,12 +529,14 @@ void nShort(void) {
           wpNum += 1 ;
 
           //reset variables because we have reached the old waypoint
-          r[0] = wayPoints[wpNum].longitude - sensorData.longi;
-          r[1] = wayPoints[wpNum].latitude - sensorData.lati;
+          r[0] = wayPoints[wpNum].x - sensorData.x;
+          r[1] = wayPoints[wpNum].y - sensorData.y;
           w[0] = cos((sensorData.windDir)*(PI/180.0));
           w[1] = sin((sensorData.windDir)*(PI/180.0));
-          currentPosition = {sensorData.lati, sensorData.longi};
-          normr = havDist(wayPoints[wpNum], currentPosition);
+
+          currentPosition = {sensorData.x, sensorData.y};
+          normr = xyDist(wayPoints[wpNum], currentPosition);
+
           wpNum=0;
         }
       }
@@ -468,6 +568,7 @@ void nShort(void) {
     w is wind wrt north
     opttop and optboat are 45 or 40 eg
     boatdir is boat wrt north
+
   general: if boat is facing right, and cant sail directly to WP or turn to WP,
     tailangle= wind -offset
     facing left: tailangle=wind+offset
@@ -479,92 +580,123 @@ void nShort(void) {
     w+(|w-opttop-boatdir|)
   facing right, angle is below in the sector: w-offset
     w-(|w+180+optbot-boatdir|)
-*/
-//  boat initially facing right
-  if (boat_wrt_wind<180) {
-    //Up right
+*/Serial1.print("Quadrant: ");
+  Serial1.println(quadrant);
+  //Boat hits upper bound, tack right
+  if(wpNum != 0 && quadrant!=1 && aboveBounds(upperWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant)){
+    Serial1.print("HIT UPPER BOUND, TACK RIGHT");
+    if(!isTacking){
+      quadrant = quadrant;
+      rightLeft = !rightLeft;
+    }
+    isTacking = true;
+  }
+  //Boat hits lower bound, tack left
+  else if(wpNum != 0 && quadrant!=1 && belowBounds(lowerWidth, wayPoints[wpNum-1], wayPoints[wpNum], quadrant) ){
+    Serial1.print("HIT LOWER BOUND, TACK LEFT");
+    if(!isTacking){
+      quadrant = quadrant;
+      rightLeft = !rightLeft;
+    }
+    isTacking = true;
+  }
+  //  boat initially facing right
+  else if (boat_wrt_wind<180) {
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.print("RIGHT UP RIGHT->UP RIGHT");
-      intended_angle= windDir + optpolartop;
-      intended_angle_of_attack = 15;
+      Serial1.print("RIGHT UP RIGHT->");
+      quadrant = 0;
+      rightLeft = false;
+      isTacking = false;
     }
     //Head directly to target to the right
-    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.print("RIGHT DIRECT RIGHT->DIRECT RIGHT");
-      intended_angle = anglewaypoint;
-      intended_angle_of_attack = 15;
+    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
+      Serial1.print("RIGHT DIRECT RIGHT->");
+      quadrant = 1;
+      rightLeft = false;
+      isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.print("RIGHT DIRECT LEFT->TURN LEFT");
+    else if (dirangle>optpolarbot + 180 && dirangle<(360-optpolartop)){
+      Serial1.print("RIGHT DIRECT LEFT->");
       // turning
       // THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
 //      start_box_time+=3000;
 //      delay(3000);
-      intended_angle = anglewaypoint;
-      intended_angle_of_attack = -15;
+      quadrant = 1;
+      rightLeft = true;
+      isTacking = false;
     }
     //Up left
-    else if (dirangle>360-optpolartop){
-      Serial1.print("RIGHT UP LEFT->UP RIGHT");
-      intended_angle = windDir + optpolartop;
-      intended_angle_of_attack = 15;
+    else if (dirangle>(360-optpolartop)){
+      Serial1.print("RIGHT UP LEFT->");
+      quadrant = 0;
+      rightLeft = false;
+      isTacking = false;
     }
     //bottom left
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.print("RIGHT BOTTOM LEFT->BOTTOM RIGHT");
-      intended_angle = windDir + 180 - optpolarbot;
-      intended_angle_of_attack = 15;
+    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
+      Serial1.print("RIGHT BOTTOM LEFT->");
+      quadrant = 2;
+      rightLeft = false;
+      isTacking = false;
     }
     //bottom right
     else {
-      Serial1.print("RIGHT BOTTOM RIGHT->BOTTOM RIGHT");
-      intended_angle = windDir + 180 - optpolarbot;
-      intended_angle_of_attack = 15;
+      Serial1.print("RIGHT BOTTOM RIGHT->");
+      quadrant = 2;
+      rightLeft = false;
+      isTacking = false;
     }
   }
   //boat facing to left
   else{
     //Up right
     if (dirangle<optpolartop && dirangle>0){
-      Serial1.print("LEFT UP RIGHT->UP LEFT");
-      intended_angle = windDir - optpolartop;
-      intended_angle_of_attack = -15;
+      Serial1.print("LEFT UP RIGHT->");
+      quadrant = 0;
+      rightLeft = true;
+      isTacking = false;
     }
     //Head directly to target to the right
-    else if (dirangle>optpolartop && dirangle<180- optpolarbot){
-      Serial1.print("LEFT DIRECT RIGHT->TURN RIGHT");
-      //THIS IS WHERE WE WILL NEED TO CALL A TURN FUNCTION
-//      start_box_time+=3000;
-//      delay(3000);
-      intended_angle = anglewaypoint;
-      intended_angle_of_attack = 15;
+    //WRONG?
+    else if (dirangle>optpolartop && dirangle<(180-optpolarbot)){
+      Serial1.print("LEFT DIRECT RIGHT->");
+      quadrant = 1;
+      rightLeft = false;
+      isTacking = false;
     }
     //Head directly to target to the left
-    else if (dirangle>optpolarbot + 180 && dirangle<360 -optpolartop){
-      Serial1.print("LEFT DIRECT LEFT->DIRECT LEFT");
-      intended_angle = anglewaypoint;
-      intended_angle_of_attack = -15;
+    //WRONG?
+    else if (dirangle>optpolarbot + 180 && dirangle<360 - optpolartop){
+      Serial1.print("LEFT DIRECT LEFT->");
+      quadrant = 1;
+      rightLeft = true;
+      isTacking = false;
     }
     //Up left
-    else if (dirangle>360-optpolartop){
-      Serial1.print("LEFT UP LEFT->UP LEFT");
-      intended_angle = windDir - optpolartop;
-      intended_angle_of_attack = -15;
+    else if (dirangle>(360-optpolartop)){
+      Serial1.print("LEFT UP LEFT->");
+      quadrant = 0;
+      rightLeft = true;
+      isTacking = false;
     }
     //bottom left
-    else if (dirangle < 180 + optpolarbot && dirangle > 180){
-      Serial1.print("LEFT BOTTOM LEFT->BOTTOM LEFT");
-      intended_angle = windDir + 180 + optpolarbot;
-      intended_angle_of_attack = -15;
+    else if (dirangle < (180 + optpolarbot) && dirangle > 180){
+      Serial1.print("LEFT BOTTOM LEFT->");
+      quadrant = 2;
+      rightLeft = true;
+      isTacking = false;
     }
     //bottom right
     else {
-      Serial1.print("LEFT BOTTOM RIGHT->BOTTOM LEFT");
-      intended_angle = windDir + 180 + optpolarbot;
-      intended_angle_of_attack = -15;
+      Serial1.print("LEFT BOTTOM RIGHT->");
+      quadrant = 2;
+      rightLeft = true;
+      isTacking = false;
     }
   }
+  //Call to nav function to set sail and tail angles
+  nav(quadrant, rightLeft, windDir, anglewaypoint);
   //obstacle avoidance code
   if (avoid_test){
     avoidObject();
@@ -602,9 +734,6 @@ void nShort(void) {
   // convert sail to 0-360
   sailAngle = int(sailAngle+360)%360;
 
-  Serial1.print("S:");
-  Serial1.print(sailAngle);
-
   //obstacle avoidance; still needs tuning
 //  avoidObject();
 //
@@ -620,19 +749,21 @@ void nShort(void) {
     sailAngle += 360;
   }
 
-  // printSailTailSet();
+  Serial1.println();
+
+  printSailTailSet();
 
   sensorData.sailAngleBoat = sailAngle;
   sensorData.tailAngleBoat = tailAngle;
 
 // REAL BOAT SAIL AND TAIL MAPPING
-   tailAngle = tailMap(sailAngle, tailAngle);
-   sailAngle = sailMap(sailAngle);
+//   tailAngle = tailMap(sailAngle, tailAngle);
+//   sailAngle = sailMap(sailAngle);
 
    Serial1.println();
 
 // TESTBENCH SAIL AND TAIL MAPPING
-//  tailAngle = tailMapBench(sailAngle, tailAngle);
-//  sailAngle = sailMapBench(sailAngle);
+  tailAngle = tailMapBench(sailAngle, tailAngle);
+  sailAngle = sailMapBench(sailAngle);
 
 }

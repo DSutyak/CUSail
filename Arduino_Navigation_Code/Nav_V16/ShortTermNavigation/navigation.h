@@ -1,9 +1,12 @@
 /*-----------------------------------------------------------------
  CU Sail
  Cornell University Autonomous Sailboat Team
+
  Navigation
  Allows determination of the appropriate Sail and Tail angle and setting of the Servos
+
  Code has been tested and run on an Arduino Due
+
  Sail Servo: HS-785HB by Hitec
  Tail Servo: HS-5646WP by Hitec
 --------------------------------------------------------------------*/
@@ -14,6 +17,11 @@ typedef struct coordinate {
   double longitude; // float longitudes
 } coord_t;
 
+typedef struct coord_xy {
+  double x; // float x coord
+  double y; // float y coord
+} coord_xy;
+
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100
 #define tailServoPin 8
@@ -21,17 +29,17 @@ typedef struct coordinate {
 //Optimal angle to go at if we cannot go directly to the waypoint
 //Puts us on a tack or jibe
 //Different values for top and bottom of polar plot
-#define optPolarTop 60//20
-#define optPolarBot 60//40
-#define angleOfAttack 10
-#define detectionRadius 15
+// #define optPolarTop 60//20
+// #define optPolarBot 60//40
+// #define angleOfAttack 10
+// #define detectionRadius 15
 
 /*----------Global Variables-----------*/
 extern float sailAngle;
 extern float tailAngle;
 extern int wpNum; //the current waypoint's number in the wayPoints array
 extern int numWP;
-extern coord_t wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
+extern coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
 extern unsigned long  milTime; //Time since program started in milliseconds
 
 /*----------Functions----------*/
@@ -51,6 +59,15 @@ void updateTime(void);
 * by creating the wayPoints array*/
 void setWaypoints(void);
 
+/*Determines whether boat is above upper boundary
+*/
+bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant);
+/*Determines whether boat is below lower boundary
+*/
+bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant);
+
+/*Sets sail and tail angle given information from nShort */
+void nav(int quadrant, bool rightLeft);
 /*Short Term Navigation Algorithm
 * Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle.
 * sailAngle and tailAngle are set in terms of servo command numbers, but are first

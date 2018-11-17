@@ -1,11 +1,14 @@
+
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
 #include <PixyI2C.h>
+#include "navigation.h"
+#include "navigation_helper.h"
 
 //Begin Pixy
 PixyI2C pixy;
-  
+
 TinyGPSPlus gps;
 data_t sensorData;
 
@@ -48,7 +51,7 @@ void endianSwap(byte temp[4]) {
 /* Updates objectVals array
  * Only updates x-position
  * NOTE: This only detects objects set to
- * signature 1 on the pixy cam 
+ * signature 1 on the pixy cam
  */
 void addObjects(void) {
     Serial.println("gettting pixy objects");
@@ -99,13 +102,13 @@ double sailMap(double sailAngle){
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
 double tailMap(double sailAngle, double tailAngle){
- 
+
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
-  } 
-  
+  }
+
   double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
-  
+
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
     newTailAngle+=360;
@@ -116,16 +119,17 @@ double tailMap(double sailAngle, double tailAngle){
 
   //map to servo commands
   if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,160,100); 
+    newTailAngle=map(newTailAngle,-30,0,160,100);
   }
-  
+
   else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,100,60); 
+    newTailAngle=map(newTailAngle,0,30,100,60);
   }
 
   return newTailAngle;
-  
+
 }
+
 
 
 double sailMapBench( double sailAngle){
@@ -161,10 +165,10 @@ double tailMapBench( double sailAngle, double tailAngle){
  }
  //map to servo commands
  if (newTailAngle <= 0 ){
-   newTailAngle=map(newTailAngle,-30,0,70,45);
+   newTailAngle=map(newTailAngle,-30,0,13,45);
  }
  else if (newTailAngle > 0 ){
-   newTailAngle=map(newTailAngle,0,30,45,13);
+   newTailAngle=map(newTailAngle,0,30,45,70);
  }
  return newTailAngle;
 }
@@ -207,8 +211,10 @@ void initSensors(void) {
   sensorData.pitch = 0;
   sensorData.roll = 0;
   sensorData.windDir = 0; // Wind direction w.r.t North
-  sensorData.longi = 0; // Longitude of current global position;
-  sensorData.lati = 0; // Longitude of current global position;
+  sensorData.x = 0; // Longitude of current global position;
+  sensorData.y = 0; // Longitude of current global position;
+  sensorData.lat=0;
+  sensorData.longi=0;
 }
 
 /*----------LED control----------*/
@@ -255,7 +261,7 @@ void sRSensor(void) {
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);
-  
+
   //get angle with respect to North
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
@@ -271,18 +277,24 @@ void sRSensor(void) {
 
 //  Serial1.print("Raw Wind WRT NORTH: ");
 //  Serial1.println(wind_wrtN);
-  
+
   sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
   }
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
+coord_xy point;
 void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
-      sensorData.longi = gps.location.lng();
-      sensorData.lati = gps.location.lat();
+      point = xyPoint( coord_t({gps.location.lat(),gps.location.lng()}));
+      sensorData.x=point.x;
+      sensorData.y=point.y;
+
+      sensorData.lat= gps.location.lat();
+      sensorData.longi= gps.location.lng();
+
       sensorData.dateTime.hour = gps.time.hour();
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
@@ -319,7 +331,7 @@ void sIMU(void) {
     }
 
   digitalWrite(redLED, LOW);
-  
+
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
     for (int jj=0; jj<4; jj++) {
@@ -338,13 +350,10 @@ void sIMU(void) {
   if (boatDir < 0) {
     boatDir += 360;
   }
-  
+
   sensorData.boatDir = boatDir;
 //  Serial1.print("BoatDIR raw:");
 //  Serial1.println(boatDir);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
-
-
-
