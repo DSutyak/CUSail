@@ -157,10 +157,10 @@ public:
     coord_t coord_lat_lon = {sensorData.x, sensorData.y}
     coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
-    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition)
+    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
     calcIntendedAngle(bc, nc);
     if (bc.detection_radius >= nc.normalDistance) {
-      (if nc.currentWP != nc.numWP) {
+      if (nc.currentWP != nc.numWP) {
         nc.currentWP++;
         if ((bc.boat_direction - nc.wind_direction) % 360 < 180) {
           nc.portOrStarboard = "Port";
@@ -276,8 +276,8 @@ public:
          nc.intended_angle = nc.wind_direction + 180 - optimal_angle;
          nc.intended_angle_of_attack = 15;
        }
+    }
   }
-
   /*
   Helper function used to determine whether the boat is aboveBounds or belowBounds.
 
@@ -287,8 +287,8 @@ public:
     point1 and point2 are coordinates in the xy plane
   */
 
-bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
-    float slope = xySlope(location, waypoint_array[currentWP+1]);
+bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
+    float slope = xySlope(bc.locat, waypoint_array[nc.currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);
