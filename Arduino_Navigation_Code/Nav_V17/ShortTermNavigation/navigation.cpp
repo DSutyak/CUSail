@@ -125,7 +125,6 @@ public class Navigation_Controller{
     lowerWidth = 10;
   }
 
-
 }
 
   void initializer(void){
@@ -156,7 +155,8 @@ public class Navigation_Controller{
     w[1] = sin((sensorData.windDir)*(PI/180.0));
     coord_xy currentPosition = {sensorData.x, sensorData.y};
     bc.location = currentPosition;
-    calcIntendedAngle(bc.PointofSail, nc.portOrStarboard, bc.windDir, nc.angleToWaypoint);
+    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition)
+    calcIntendedAngle(bc, nc);
     if (bc.detection_radius >= nc.normalDistance) {
       (if nc.currentWP != nc.numWP) {
         nc.currentWP++;
@@ -217,7 +217,7 @@ public class Navigation_Controller{
 
     //Get servo commands from the calculated sail and tail angles
     if (bc.sail_angle < 0) {
-      sail_angle += 360;
+      bc.sail_angle += 360;
     }
 
     bc.set_sail_angle(bc.sail_angle);
@@ -235,7 +235,7 @@ public class Navigation_Controller{
 
     portOrStarboard is a string that represents port (left) or starboard (right)
   */
-  void calcIntendedAngle(string PointofSail, string portOrStarboard, float windDir, float angleToWaypoint) {
+  void calcIntendedAngle(bc, nc) {
     if (bc.PointofSail != "Upwind" && nc.PointofSail != "Reach" && nc.PointofSail != "Downwind" ) {
       Serial1.print("Invalid argument sent to nav");
     }
@@ -314,7 +314,6 @@ void station_keeping(coord_xy buoyLocations[]){
   if(true){
     coord_xy next = nc.waypoint_array[(nc.currentWP + 1)%4];
     coord_xy current = bc.location;
-
   }
   if(nc.currentWP = buoyLocations.length){
     nc.currentWP = 0;
@@ -322,6 +321,36 @@ void station_keeping(coord_xy buoyLocations[]){
   nc.waypoint_array = buoyLocations;
   nav()
 }
+
+// Once again, always be 5 meters outside bouy, must be within 3 feet of buoy
+// to avoid hitting buoy
+// Alternatively, set distance to .75m for the whole thing. Set wayPoints to
+//  be 2 meters away from buoys.
+// Steps: 1. Sail to waypoint about 5 meters in front of buoys
+// 2. Sail to waypoint adjacent to first bouy, 5 meters outside it
+// 3. Sail to waypoint "below" first buoy, 5 meters away from it
+// 4. Sail to waypoint "below" second buoy ~5 meters
+// 5. Sail to waypoint adjecent to second buoy, ~5 meters outside
+// 6. Sail to waypoints ~5 meters in front of the double buoys
+// 7. Sail to waypoint directly between buoys. Must be within .75 meters
+// 8. Sail to waypoint behind buoys. Must be within .75 meters.
+bool waypointsSet = false
+void precision_nav(coord_xy buoyLocations[]){
+  if (not waypointsSet) {
+    coord_xy w1 =
+    coord_xy w2 =
+    coord_xy w3 =
+    coord_xy w4 =
+    coord_xy w5 =
+    coord_xy w6 =
+    coord_xy w7 = middlePoint(buoyLocation[0], buoyLocation[1])
+    coord_xy w8 =
+  }
+
+
+}
+
+
 // Ints corresponding to the different events
 int endurance = 1;
 int station_keeping = 2;
@@ -338,8 +367,8 @@ float accSeconds = 0;
 
 void nShort(void){
   switch (current){
-    case endurance: endurance()
-    case station_keeping:
+    case endurance: endurance(buoyLocations)
+    case station_keeping: station_keeping(buoyLocations)
     case precision:
     case payload:
     case collision:
