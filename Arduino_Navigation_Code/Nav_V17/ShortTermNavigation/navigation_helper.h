@@ -6,6 +6,7 @@
  Provides helper functions for Navigation
 --------------------------------------------------------------------*/
 
+
 extern coord_xy origin;
 /*Sets the origin of the XY plane to a starting point*/
 void setOrigin(coord_t startPoint);
@@ -30,4 +31,3 @@ float convertto360(float angle);
 
 /*Calculates slope between two xy coordinate points*/
 float xySlope(coord_xy point1, coord_xy point2);
-

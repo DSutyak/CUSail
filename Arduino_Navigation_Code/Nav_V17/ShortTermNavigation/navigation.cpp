@@ -6,7 +6,6 @@
 #include "navigation.h"
 #include "navigation_helper.h"
 #include "coordinates.cpp"
-#include <stack>
 
 use namespace std
 
@@ -17,7 +16,8 @@ An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
 */
 
-public class Boat_Controller {
+class Boat_Controller {
+public:
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -45,7 +45,7 @@ public class Boat_Controller {
     sail_angle = set_sail_angle(0.00);
     tail_angle = set_tail_angle(0.00);
     boat_direction = sensorData.boatDir;
-    location = currentPosition = {sensorData.x, sensorData.y};
+    location = void;
     tailServo.attach(tailServoPin);
     sailServo.attach(sailServoPin);
     detection_radius = d;
@@ -71,7 +71,8 @@ An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
 navigate a body of water.
 */
-public class Navigation_Controller{
+class Navigation_Controller {
+public:
   coord_xy waypoint_array[];
   float angleToWaypoint;
   float normalDistance;
@@ -153,7 +154,8 @@ public class Navigation_Controller{
     r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_xy currentPosition = {sensorData.x, sensorData.y};
+    coord_t coord_lat_lon = {sensorData.x, sensorData.y}
+    coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
     bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition)
     calcIntendedAngle(bc, nc);
@@ -174,7 +176,7 @@ public class Navigation_Controller{
         if (nc.portOrStarboard == "Port") {
           nc.portOrStarboard = "Starboard";
         }
-        else {]
+        else {
           nc.portOrStarboard = "Port";
         }
       }
@@ -235,7 +237,7 @@ public class Navigation_Controller{
 
     portOrStarboard is a string that represents port (left) or starboard (right)
   */
-  void calcIntendedAngle(bc, nc) {
+  void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
     if (bc.PointofSail != "Upwind" && nc.PointofSail != "Reach" && nc.PointofSail != "Downwind" ) {
       Serial1.print("Invalid argument sent to nav");
     }
@@ -285,21 +287,21 @@ public class Navigation_Controller{
     point1 and point2 are coordinates in the xy plane
   */
 
-  bool aboveBounds(float upperWidth, coord_xy location, coord_xy waypoint_array[currentWP+1], string pointOfSail){
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-  bool belowBounds(float lowerWidth, coord_xy location, coord_xy waypoint_array[currentWP+1], string ){
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = (slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > lowerWidth);
 }
 
-void endurance(coord_xy buoyLocations[]){
+/*void endurance(coord_xy buoyLocations[]){
   if(nc.currentWP = buoyLocations.length){
     nc.currentWP = 0;
   }
@@ -375,3 +377,4 @@ void nShort(void){
     case search:
   }
 }
+*/
