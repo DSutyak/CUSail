@@ -11,7 +11,6 @@
 
 //Begin Pixy
 PixyI2C pixy;
-
 XBee xbee;
 TinyGPSPlus gps;
 data_t sensorData;
