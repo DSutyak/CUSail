@@ -10,7 +10,7 @@
  Sail Servo: HS-785HB by Hitec
  Tail Servo: HS-5646WP by Hitec
 --------------------------------------------------------------------*/
-
+#include <Servo.h>
 /*----------Type Definitions----------*/
 typedef struct coordinate {
   double latitude; // float latitude
@@ -21,7 +21,55 @@ typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
+public:
+  float sail_angle;
+  float tail_angle;
+  float boat_direction;
+  coord_xy location;
+  Servo tailServo;
+  Servo sailServo;
+  float detection_radius;
+  float port_boundary;
+  float starboard_boundary;
+  bool isTacking;
+  String PointofSail;
+  float angle_of_attack = 10;
+  float static optimal_angle = 60;
 
+  //Sets the angle of the main sail
+  void set_sail_angle (float angle);
+
+  //Sets the angle of the tail sail
+  void set_tail_angle (float angle);
+
+};
+/*
+An object of class Navigation_Controller represents the abstract
+(not directly related to the boat) variables and operations performed on them to
+navigate a body of water.
+*/
+class Navigation_Controller {
+public:
+  coord_xy waypoint_array[];
+  float angleToWaypoint;
+  float normalDistance;
+  bool isTacking;
+  float intendedAngle;
+  string portOrStarboard;
+  float maxDistance;
+  int numWP;
+  int currentWP;
+  float dirAngle;
+  float offset;
+  float wind_direction;
+  float port_boundary;
+  float starboard_boundary;
+  float upperWidth;
+  float lowerWidth;
+  float r[2];
+  float w[2];
+
+};
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100
 #define tailServoPin 8
@@ -35,44 +83,19 @@ typedef struct coord_xy {
 // #define detectionRadius 15
 
 /*----------Global Variables-----------*/
-extern float sailAngle;
-extern float tailAngle;
-extern int wpNum; //the current waypoint's number in the wayPoints array
-extern int numWP;
 extern coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
-extern unsigned long  milTime; //Time since program started in milliseconds
+
 
 /*----------Functions----------*/
-/*Servos setup
-* "Attaches" sail servo and tail servo.*/
-void initServos(void);
+void initializer(void);
 
-/*Navigation algorithm setup.
-* Sets current waypoint number and total number of waypoints to 0*/
-void initNavigation(void);
-
-/*Time update
-* Updates the value of @milTime with the milliseconds passed since the program started running*/
-void updateTime(void);
-
-/*Sets waypoints for navigation
-* by creating the wayPoints array*/
-void setWaypoints(void);
-
+void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant);
-/*Determines whether boat is below lower boundary
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
+/*Determines whether boat is below lower boundaryd
 */
-bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant);
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
 void nav(int quadrant, bool rightLeft);
-/*Short Term Navigation Algorithm
-* Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle.
-* sailAngle and tailAngle are set in terms of servo command numbers, but are first
-* calculated in terms of angle w.r.t the boat direction*/
-void nShort(void);
-
-/*Sets servos to the sailAngle and tailAngle*/
-void nServos(void);

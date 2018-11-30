@@ -1,4 +1,4 @@
-#include "navigation_helper.h"
+
 #include "navigation.h"
 
 //Coordinates in and around the Engineering Quad, Cornell university
