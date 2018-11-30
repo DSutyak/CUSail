@@ -2,13 +2,13 @@
 #include <math.h>
 #include "sensors.h"
 #include "navigation.h"
-#include <limits>
 
 coord_xy origin;
 double latOffset;
 double longOffset;
 double longScale;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
+
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
