@@ -2,6 +2,7 @@
 #include <math.h>
 #include "sensors.h"
 #include "navigation.h"
+#include "coordinates.cpp"
 
 coord_xy origin;
 double latOffset;

@@ -2,9 +2,10 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
-#include <PixyI2C.h>
+//#include <PixyI2C.h>
 #include "navigation.h"
 #include "navigation_helper.h"
+#include "coordinates.cpp"
 
 //Begin Pixy
 PixyI2C pixy;

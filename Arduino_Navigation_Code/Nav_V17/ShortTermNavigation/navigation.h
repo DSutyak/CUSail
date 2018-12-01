@@ -11,16 +11,16 @@
  Tail Servo: HS-5646WP by Hitec
 --------------------------------------------------------------------*/
 #include <Servo.h>
+#include <Arduino.h>
+#include "coordinates.cpp"
 /*----------Type Definitions----------*/
-typedef struct coordinate {
-  double latitude; // float latitude
-  double longitude; // float longitudes
-} coord_t;
+coord_t;
 
 typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
+class Boat_Controller{
 public:
   float sail_angle;
   float tail_angle;
@@ -55,7 +55,7 @@ public:
   float normalDistance;
   bool isTacking;
   float intendedAngle;
-  string portOrStarboard;
+  String portOrStarboard;
   float maxDistance;
   int numWP;
   int currentWP;
@@ -92,10 +92,10 @@ void initializer(void);
 void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 /*Determines whether boat is below lower boundaryd
 */
-bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
 void nav(int quadrant, bool rightLeft);
