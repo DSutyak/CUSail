@@ -2,10 +2,11 @@
 #include <tuple>
 #include <Servo.h>
 #include <map>
+#include "navigation.cpp"
 
 class lidar{
 
-  std::map<coord_xy, int> obstacleMap = new coord_xy[0];
+  std::map<coord_xy, int> obstacleMap;
 
   std::tuple<float,float>[] sweep_lidar(){
     //todo
@@ -35,7 +36,12 @@ class lidar{
     //sweeps the lidar and returns a list of (angle, distance pairs)
     std::tuple<float,float>[] lidar_data = sweep_lidar();
     for(int i = 0; i < sizeOf(lidar_data); i++){
-      coord_xy obst = convert_r_xy(std::get<0>lidar_data[i], std::get<1>lidar_data[i]);
+      //adds the angle of the lidar sensor with the angle of the boat's direction.
+      angle_with_respect_to_boat = navigation::bc.boat_direction + std::get<0>lidar_data[i];
+      //converts the polar coordiantes to xy coordinates we can use with our map.
+      coord_xy obst = convert_r_xy(angle_with_respect_to_boat, std::get<1>lidar_data[i]);
+      obstacleMap.insert(pair<coord_xy, int>(obst, obstacleMap[obst]+1))
+
       
     }
   }

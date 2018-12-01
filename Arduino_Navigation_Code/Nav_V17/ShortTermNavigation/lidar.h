@@ -5,7 +5,7 @@
 class lidar{
 
 private:
-  coord_xy origin; //The origin of the xy plane that the boat uses for waypoints
+  coord_xy[] obstacleMap;
   std::tuple<float,float>[] sweep_lidar(); //sweeps-the lidar and returns an array of the (angle, distance) pairs recieved by the lidar
 
 public:
