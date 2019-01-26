@@ -18,19 +18,16 @@ class mclass:
         self.waypoints.grid(row=0, column=1)
         self.info.grid(row=1, column=0, columnspan=2)
 
-        x=np.array ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        v= np.array ([16,16.31925,17.6394,16.003,17.2861,17.3131,19.1259,18.9694,22.0003,22.81226])
-        p= np.array ([16.23697,     17.31653,     17.22094,     17.68631,     17.73641 ,    18.6368,
-            19.32125,     19.31756 ,    21.20247  ,   22.41444   ,  22.11718  ,   22.12453])
+        p = np.array ([])
 
         fig = Figure(figsize=(6,6))
         a = fig.add_subplot(111)
-        a.scatter(v,x,color='red')
-        a.plot(p, range(2 +max(x)),color='blue')
+        a.plot(p, range(0),color='blue')
 
         a.set_title ("Boat Position", fontsize=16)
 
         self.canvas = FigureCanvasTkAgg(fig, master=self.window)
+        # self.canvas.autoscale(enable=True)
         self.canvas.get_tk_widget().grid(row=0, column=0)
         self.canvas.draw()
 
