@@ -8,10 +8,15 @@ from tkinter import *
 class mclass:
     def __init__(self,  window):
         self.window = window
-        self.box = Entry(window)
-        self.button = Button (window, text="check", command=self.plot)
-        self.box.grid(row=0, column=0)
-        self.button.grid(row=0, column=1)
+        self.window.resizable(0,0)
+        self.plot = Canvas(window, width=600, height=600)
+        self.plot.create_line(0, 600, 600, 0, fill="red", dash=(4, 4))
+        # self.box = Entry(window)
+        self.waypoints= Canvas (window, width=200, height=600, bg="red")
+        self.info = Frame (window, bg="white", height=100, width=800)
+        self.plot.grid(row=0, column=0)
+        self.waypoints.grid(row=0, column=1)
+        self.info.grid(row=1, column=0, columnspan=2)
 
     def plot (self):
         x=np.array ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
@@ -35,4 +40,4 @@ class mclass:
 
 window= Tk()
 start= mclass (window)
-window.mainloop()
+window.mainloop() 
