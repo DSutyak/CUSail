@@ -12,11 +12,26 @@ class mclass:
         # self.graph = Canvas(window, width=600, height=600)
         # self.graph.create_line(0, 600, 600, 0, fill="red", dash=(4, 4))
         # self.box = Entry(window)
-        self.waypoints= Canvas (window, width=200, height=600, bg="red")
-        self.info = Frame (window, bg="white", height=100, width=800)
+        self.boatmode = Canvas(window, width=200, height=50, bg="green")
+        self.waypoints = Canvas (window, width=200, height=275, bg="red")
+        self.bouypoints = Canvas (window, width=200, height=275, bg="blue")
+        self.info = Frame (window, bg="purple", height=100, width=800)
         # self.graph.grid(row=0, column=0)
-        self.waypoints.grid(row=0, column=1)
-        self.info.grid(row=1, column=0, columnspan=2)
+        self.boatmode.grid(row=0,column=1)
+        self.waypoints.grid(row=1, column=1)
+        self.bouypoints.grid(row=2, column=1)
+        self.info.grid(row=3, column=0, columnspan=2)
+        
+        #draws a black x in each box (practicing making changes)
+        self.boatmode.create_line(0, 0, 200, 50)
+        self.boatmode.create_line(200, 0, 0, 50)
+        self.waypoints.create_line(0, 0, 200, 275)
+        self.waypoints.create_line(200, 0, 0, 275)
+        self.bouypoints.create_line(0, 0, 200, 275)
+        self.bouypoints.create_line(200, 0, 0, 275)
+
+        #add a window on top of the canvas
+        self.waypoints.create_window(0, 0)
 
         p = np.array ([])
 
@@ -28,13 +43,16 @@ class mclass:
 
         self.canvas = FigureCanvasTkAgg(fig, master=self.window)
         # self.canvas.autoscale(enable=True)
-        self.canvas.get_tk_widget().grid(row=0, column=0)
+        self.canvas.get_tk_widget().grid(row=0, rowspan=3, column=0)
         self.canvas.draw()
-
 
     def update (self, data):
         arr=[]
 
 window= Tk()
-start= mclass (window)
-window.mainloop() 
+start= mclass(window)
+window.mainloop()
+
+
+#want to rename the window so instead of saying tk it says "CUSail GUI or new_basestation"
+#want to resize the window so that it fits in my computer screen (currently it is too tall)
