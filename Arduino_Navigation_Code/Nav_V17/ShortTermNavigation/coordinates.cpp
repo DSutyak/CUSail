@@ -1,6 +1,9 @@
-#include "navigation_helper.h"
-#include "navigation.h"
 
+//#include "navigation.h"
+typedef struct coordinate {
+  double latitude; // float latitude
+  double longitude; // float longitudes
+}coord_t;
 //Coordinates in and around the Engineering Quad, Cornell university
 coord_t olin = {42.445457, -76.484322}; //Olin Hall
 coord_t hollister = {42.444259, -76.484435}; //Hollister Hall

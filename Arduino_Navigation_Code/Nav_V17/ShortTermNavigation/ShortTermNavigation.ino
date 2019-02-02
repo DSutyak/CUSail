@@ -2,8 +2,8 @@
 #include "navigation.h"
 
 /*-----------------------------------------------------------------
- CU Sail
-`Cornell University Autonomous Sailboat Team
+ CUSail
+`Cornell Autonomous Sailboat Team
 
  ShortTermNavigation
   The primary file that schedules tasks for SailVane:

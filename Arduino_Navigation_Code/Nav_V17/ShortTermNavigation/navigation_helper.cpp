@@ -2,12 +2,14 @@
 #include <math.h>
 #include "sensors.h"
 #include "navigation.h"
+#include "coordinates.cpp"
 
 coord_xy origin;
 double latOffset;
 double longOffset;
 double longScale;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
+
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
@@ -26,7 +28,6 @@ void setOrigin(coord_t startPoint){
 coord_xy xyPoint(coord_t latlong){
   double x = (latlong.longitude - longOffset) * longScale * latToMeter;
   double y = (latlong.latitude - latOffset) * latToMeter;
-
   return coord_xy({x, y});
 }
 
@@ -67,6 +68,14 @@ float xySlope(coord_xy point1, coord_xy point2){
       return sign * 10000000;
     }
     return dy/dx;
+}
+
+coord_xy middlePoint(coord_xy point1, coord_xy point2){
+  double xdis= (point1.x - point2.x)/2;
+  double ydis= (point1.y - point2.y)/2;
+  double pointx= point1.x-xdis;
+  double pointy = point1.y-ydis;
+  return coord_xy({pointx, pointy})
 }
 
 /*Returns great circle distance (in meters) between two global coordinates.*/

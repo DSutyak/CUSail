@@ -17,7 +17,11 @@ It handles all variables specicic to the state of the boat itself.
 */
 
 class Boat_Controller {
+<<<<<<< HEAD
  public:
+=======
+public:
+>>>>>>> 4eddd31f83ac56c1dd78147404c938d406d24046
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -45,7 +49,7 @@ class Boat_Controller {
     sail_angle = set_sail_angle(0.00);
     tail_angle = set_tail_angle(0.00);
     boat_direction = sensorData.boatDir;
-    location = currentPosition = {sensorData.x, sensorData.y};
+    location = void;
     tailServo.attach(tailServoPin);
     sailServo.attach(sailServoPin);
     detection_radius = d;
@@ -71,7 +75,8 @@ An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
 navigate a body of water.
 */
-public class Navigation_Controller{
+class Navigation_Controller {
+public:
   coord_xy waypoint_array[];
   float angleToWaypoint;
   float normalDistance;
@@ -153,12 +158,13 @@ public class Navigation_Controller{
     r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_xy currentPosition = {sensorData.x, sensorData.y};
+    coord_t coord_lat_lon = {sensorData.x, sensorData.y}
+    coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
-    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition)
+    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
     calcIntendedAngle(bc, nc);
     if (bc.detection_radius >= nc.normalDistance) {
-      (if nc.currentWP != nc.numWP) {
+      if (nc.currentWP != nc.numWP) {
         nc.currentWP++;
         if ((bc.boat_direction - nc.wind_direction) % 360 < 180) {
           nc.portOrStarboard = "Port";
@@ -274,8 +280,8 @@ public class Navigation_Controller{
          nc.intended_angle = nc.wind_direction + 180 - optimal_angle;
          nc.intended_angle_of_attack = 15;
        }
+    }
   }
-
   /*
   Helper function used to determine whether the boat is aboveBounds or belowBounds.
 
@@ -285,8 +291,13 @@ public class Navigation_Controller{
     point1 and point2 are coordinates in the xy plane
   */
 
+<<<<<<< HEAD
 bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
+=======
+bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
+    float slope = xySlope(bc.locat, waypoint_array[nc.currentWP+1]);
+>>>>>>> 4eddd31f83ac56c1dd78147404c938d406d24046
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);
