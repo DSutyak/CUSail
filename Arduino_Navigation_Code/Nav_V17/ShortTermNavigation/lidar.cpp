@@ -21,7 +21,7 @@ class lidar{
   }
 
   coord_xy[] getObstacleMap(){
-    return obstacleMap
+    return obstacleMap;
   }
 
   //Converst the radius distance coordinates into x y coordinates

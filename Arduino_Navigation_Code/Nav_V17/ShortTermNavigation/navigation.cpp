@@ -7,21 +7,17 @@
 #include "coordinates.cpp"
 #include <String.h>
 
-use namespace std
+using namespace std;
 
-Navigation_Controller nc;
-Boat_Controller bc;
 /*
 An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
 */
+#ifndef Boat_Controller
+#define Boat_Controller
 
 class Boat_Controller {
-<<<<<<< HEAD
- public:
-=======
-public:
->>>>>>> 4eddd31f83ac56c1dd78147404c938d406d24046
+  public:
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -34,11 +30,12 @@ public:
   bool isTacking;
   String PointofSail;
   float angle_of_attack = 10;
-  float static optimal_angle = 60;
+  constexpr float static optimal_angle = 60;
 
+#endif
   /*
   Constructor for a boat. Sets up the servos, and establishes intial values
-  for each boat vaiable.
+  for each boat variable.
 
   Arguments:
     detection_radius is a float that represents how close we have to
@@ -75,6 +72,8 @@ An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
 navigate a body of water.
 */
+#ifndef Navigation_Controller
+#define Navigation_Controller
 class Navigation_Controller {
 public:
   coord_xy waypoint_array[];
@@ -111,14 +110,13 @@ public:
     how far (in meters) to port and starboard the boat is allowed to
     go before tacking.
   */
-  Navigation_Controller(float max, int num, array<coord_xy> waypoints,
-  float port, float starboard){
+  Navigation_Controller(float limit, int num, array<coord_xy> waypoints, float port, float starboard){
     waypoint_array = waypoints;
     angleToWaypoint = 0.0;
     normalDistance = 0.0;
     intendedAngle = 0.0;
-    portOrStarboard = ""
-    maxDistance = max;
+    portOrStarboard = "";
+    maxDistance = limit;
     numWP = num;
     currentWP = 0;
     dirAngle = 0.0;
@@ -131,6 +129,9 @@ public:
   }
 
 }
+#endif
+Navigation_Controller nc;
+Boat_Controller bc;
 
   void initializer(void){
 
@@ -145,8 +146,8 @@ public:
       waypoint_array = coordinates;
       port_boundary = 10.0;
       starboard_boundary = 10.0;
-      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary)
-      bc = Boat_Controller(5.0)
+      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
+      bc = Boat_Controller(5.0);
   }
 
   // nav must be called after the initializer
@@ -158,7 +159,7 @@ public:
     r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
     w[0] = cos((sensorData.windDir)*(PI/180.0));
     w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_t coord_lat_lon = {sensorData.x, sensorData.y}
+    coord_t coord_lat_lon = {sensorData.x, sensorData.y};
     coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
     bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
@@ -291,13 +292,8 @@ public:
     point1 and point2 are coordinates in the xy plane
   */
 
-<<<<<<< HEAD
-bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail){
-    float slope = xySlope(location, waypoint_array[currentWP+1]);
-=======
 bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
     float slope = xySlope(bc.locat, waypoint_array[nc.currentWP+1]);
->>>>>>> 4eddd31f83ac56c1dd78147404c938d406d24046
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);

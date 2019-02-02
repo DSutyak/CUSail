@@ -31,9 +31,6 @@ float convertto360(float angle);
 
 /*Calculates slope between two xy coordinate points*/
 float xySlope(coord_xy point1, coord_xy point2);
-<<<<<<< HEAD
 
 /*Finds coordinate directly between two xy coordinate points*/
-coord_xy middlePoint(coord_xy point1, coord_xy point2)
-=======
->>>>>>> 1686d397002ec790ae311e9368b8e66b66107614
+coord_xy middlePoint(coord_xy point1, coord_xy point2);
