@@ -3,7 +3,7 @@ from xbee import XBee
 import re
 import pprint
 
-serial_port = serial.Serial('COM5', 9600)
+serial_port = serial.Serial('COM3', 9600)
 xbee = XBee(serial_port)
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -27,9 +27,14 @@ while True:
 				header_end = header_start + len(header)
 				data_to_send = data[0:header_start]
 				data_arr = data_to_send.split("\\n")
-				data_assoc = []
+				#data_assoc = []
+				data_assoc = {}
+
 				for datum in data_arr:
-					data_assoc.append(tuple(datum.split(":")))
+				#data_assoc.append(tuple(datum.split(":")))
+					label, value = datum.split(":")
+					data_assoc[label] = value
+					
 				pp.pprint ("Parse data cycle to GUI")
 				# Update gui with data
 				pp.pprint (data_assoc)
