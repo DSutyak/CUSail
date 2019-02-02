@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <math.h>
-#include <Servo.h>
 #include "print.h"
 #include "sensors.h"
 #include "navigation.h"
 #include "navigation_helper.h"
 #include "coordinates.cpp"
+#include <String.h>
 
 use namespace std
 
@@ -16,7 +16,8 @@ An object of class Boat_Controller represents the boat navigating in the water.
 It handles all variables specicic to the state of the boat itself.
 */
 
-public class Boat_Controller {
+class Boat_Controller {
+ public:
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -27,7 +28,7 @@ public class Boat_Controller {
   float port_boundary;
   float starboard_boundary;
   bool isTacking;
-  string PointofSail;
+  String PointofSail;
   float angle_of_attack = 10;
   float static optimal_angle = 60;
 
@@ -76,7 +77,7 @@ public class Navigation_Controller{
   float normalDistance;
   bool isTacking;
   float intendedAngle;
-  string portOrStarboard;
+  String portOrStarboard;
   float maxDistance;
   int numWP;
   int currentWP;
@@ -128,10 +129,10 @@ public class Navigation_Controller{
 
   void initializer(void){
 
-      coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
-      set_origin(coordinates[0]);
-      for(int i =0; i < sizeof(coordinates); i++){
-        coordinates[i] = xyPoint(coordinates[i]);
+      coord_t [3] = {outsideDuffield, outsideThurston, engQuadRight};
+      set_origin([0]);
+      for(int i =0; i < sizeof(); i++){
+        [i] = xyPoint(coordinates[i]);
       }
 
       maxDistance = 10000.0;
@@ -284,14 +285,14 @@ public class Navigation_Controller{
     point1 and point2 are coordinates in the xy plane
   */
 
-bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
     return (distance > upperWidth);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail){
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, String pointOfSail){
     float slope = xySlope(location, waypoint_array[currentWP+1]);
     float intercept = location.y - slope * location.x;
     float distance = (slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);

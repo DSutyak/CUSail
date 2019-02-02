@@ -16,18 +16,18 @@ void printData(){
 
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
-  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]));
+  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[numWP]));
   Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[wpNum]));
 }
 
 void printWaypointData(){
   Serial1.println("----------NAVIGATION----------");
   Serial1.print("Next Waypoint #");
-  Serial1.print(wpNum);
+  Serial1.print(numWP);
   Serial1.print(": ");
-  Serial1.print(wayPoints[wpNum].x,10);
+  Serial1.print(wayPoints[numWP].x,10);
   Serial1.print(", ");
-  Serial1.println(wayPoints[wpNum].y,10);
+  Serial1.println(wayPoints[numWP].y,10);
 }
 
 void printHitWaypointData(){

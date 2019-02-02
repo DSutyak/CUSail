@@ -10,9 +10,14 @@
  Sail Servo: HS-785HB by Hitec
  Tail Servo: HS-5646WP by Hitec
 --------------------------------------------------------------------*/
+#include "Servo.h"
+#include <String.h>
+#include <WString.h>
 
 /*----------Type Definitions----------*/
-typedef struct coordinate {
+#ifndef coordinate
+#define coordinate
+typedef struct coordinate{
   double latitude; // float latitude
   double longitude; // float longitudes
 } coord_t;
@@ -21,6 +26,52 @@ typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
+
+class Boat_Controller {
+ public:
+  float sail_angle;
+  float tail_angle;
+  float boat_direction;
+  coord_xy location;
+  Servo tailServo;
+  Servo sailServo;
+  float detection_radius;
+  float port_boundary;
+  float starboard_boundary;
+  bool isTacking;
+  String PointofSail;
+  float angle_of_attack = 10;
+  constexpr float static optimal_angle = 60;
+
+  //Sets the angle of the main sail
+  void set_sail_angle(float angle);
+
+  //Sets the angle of the tail sail
+  void set_tail_angle(float angle);
+
+};
+
+class Navigation_Controller{
+  coord_xy waypoint_array[];
+  float angleToWaypoint;
+  float normalDistance;
+  bool isTacking;
+  float intendedAngle;
+  String portOrStarboard;
+  float maxDistance;
+  int numWP;
+  int currentWP;
+  float dirAngle;
+  float offset;
+  float wind_direction;
+  float port_boundary;
+  float starboard_boundary;
+  float upperWidth;
+  float lowerWidth;
+  float r[2];
+  float w[2];
+};
+#endif
 
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100
@@ -44,10 +95,10 @@ void initializer(void);
 void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 /*Determines whether boat is below lower boundaryd
 */
-bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, string pointOfSail);
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
-void nav(int quadrant, bool rightLeft);
+void nav();

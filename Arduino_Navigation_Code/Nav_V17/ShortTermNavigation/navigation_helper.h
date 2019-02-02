@@ -5,7 +5,7 @@
  Navigation_helper
  Provides helper functions for Navigation
 --------------------------------------------------------------------*/
-
+#include "navigation.h"
 
 extern coord_xy origin;
 /*Sets the origin of the XY plane to a starting point*/
