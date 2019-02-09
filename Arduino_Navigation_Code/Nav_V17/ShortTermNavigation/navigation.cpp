@@ -6,8 +6,13 @@
 #include "navigation_helper.h"
 #include "coordinates.cpp"
 #include <String.h>
+#include <iostream>
+#include <array>
 
 using namespace std;
+
+void initializer(void){
+
 
   /*
   Constructor for a boat. Sets up the servos, and establishes intial values
@@ -37,27 +42,6 @@ An object of class Navigation_Controller represents the abstract
 navigate a body of water.
 */
 
-class Navigation_Controller {
-public:
-  coord_xy waypoint_array[];
-  float angleToWaypoint;
-  float normalDistance;
-  bool isTacking;
-  float intendedAngle;
-  String portOrStarboard;
-  float maxDistance;
-  int numWP;
-  int currentWP;
-  float dirAngle;
-  float offset;
-  float wind_direction;
-  float port_boundary;
-  float starboard_boundary;
-  float upperWidth;
-  float lowerWidth;
-  float r[2];
-  float w[2];
-};
   /*
   Constructor for a Navigation Controller.
   Sets up the waypoints, and establishes
@@ -74,8 +58,12 @@ public:
     how far (in meters) to port and starboard the boat is allowed to
     go before tacking.
   */
-  Navigation_Controller::Navigation_Controller (float limit, int num, array <coord_xy> waypoints, float port, float starboard){
-    waypoint_array = waypoints;
+  Navigation_Controller::Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard){
+    int count = 0;
+    while (count < num){
+      waypoint_array[count] = waypoints[count];
+      count++;
+    }
     angleToWaypoint = 0.0;
     normalDistance = 0.0;
     intendedAngle = 0.0;
@@ -90,12 +78,7 @@ public:
     starboard_boundary = starboard;
     upperWidth = 10;
     lowerWidth = 10;
-}
-
-Navigation_Controller nc;
-Boat_Controller bc;
-
-public void initializer(void){
+  }
 
   coord_t [3] = {outsideDuffield, outsideThurston, engQuadRight};
   set_origin([0]);
@@ -108,8 +91,8 @@ public void initializer(void){
   coord_xy waypoint_array = coordinates;
   port_boundary = 10.0;
   starboard_boundary = 10.0;
-  nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
-  bc = Boat_Controller(5.0);
+  Navigation_Controller nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
+  Boat_Controller bc = Boat_Controller(5.0);
 }
 
 // nav must be called after the initializer
@@ -237,36 +220,36 @@ public void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
   }
   else if (nc.PointofSail == "Upwind") {
     if (bc.portOrStarboard == "Port") {
-      Serial1.print("UPWIND PORT");
+      Serial1.println("Quadrant: UPWIND PORT");
       this->nc.intendedAngle = nc.wind_direction - optimal_angle;
       this.nc.angle_of_attack = -15;
     }
     else {
-      Serial1.print("UPWIND STARBOARD");
+      Serial1.println("Quadrant: UPWIND STARBOARD");
       nc.intendedAngle= nc.wind_direction + optimal_angle;
       nc.angle_of_attack = 15;
     }
   }
   else if (nc.PointofSail == "Reach") {
     if (bc.portOrStarboard == "Port") {
-      Serial1.print("REACH PORT");
+      Serial1.println("Quadrant: REACH PORT");
       nc.intendedAngle = angleToWaypoint;
       nc.angle_of_attack = -15;
     }
     else {
-      Serial1.print("REACH STARBOARD");
+      Serial1.println("Quadrant: REACH STARBOARD");
       nc.intendedAngle = angleToWaypoint;
       nc.angle_of_attack = 15;
     }
   }
   else{
      if(bc.portOrStarboard == "Port") {
-       Serial1.print("DOWNWIND PORT");
+       Serial1.println("Quadrant: DOWNWIND PORT");
        nc.intendedAngle = windDir + 180 + optimal_angle;
        nc.intended_angle_of_attack = -15;
      }
      else{
-       Serial1.print("DOWNWIND STARBOARD");
+       Serial1.println("Quadrant: DOWNWIND STARBOARD");
        nc.intendedAngle = nc.wind_direction + 180 - optimal_angle;
        nc.intended_angle_of_attack = 15;
      }
@@ -280,19 +263,11 @@ Arguments:
   point1 and point2 are coordinates in the xy plane
 */
 
-<<<<<<< Updated upstream
 public bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
   float slope = xySlope(bc.locatation, waypoint_array[nc.currentWP+1]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
   return (distance > nc.upperWidth);
-=======
-bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
-    float slope = xySlope(bc.locat, waypoint_array[nc.currentWP+1]);
-    float intercept = location.y - slope * location.x;
-    float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
-    return (distance > upperWidth);
->>>>>>> Stashed changes
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
 public bool belowBounds(Navigation_Controller nc, Boat_Controller bc){

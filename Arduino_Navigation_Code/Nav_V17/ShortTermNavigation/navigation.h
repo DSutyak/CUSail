@@ -40,7 +40,7 @@ typedef struct _coord_xy {
 
 class Boat_Controller{
 public:
-  Boat_Controller();
+  Boat_Controller(float d);
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -65,7 +65,7 @@ public:
     tailServo.write(angle);
   }
 
-} Boat_Controller;
+};
 #endif
 /*
 An object of class Navigation_Controller represents the abstract
@@ -76,7 +76,8 @@ navigate a body of water.
 #define Navigation_Controller_h
 class Navigation_Controller {
 public:
-  _coord_xy waypoint_array[];
+  Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard);
+  coord_xy waypoint_array[];
   float angleToWaypoint;
   float normalDistance;
   bool isTacking;
@@ -95,6 +96,7 @@ public:
   float r[2];
   float w[2];
 };
+
 #endif
 
 /*----------Predefined Variables----------*/
