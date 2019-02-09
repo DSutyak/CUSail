@@ -30,9 +30,7 @@ class Boat_Controller {
   bool isTacking;
   String PointofSail;
   float angle_of_attack = 10;
-  constexpr float static optimal_angle = 60;
-
-#endif
+  float optimal_angle = 60;
   /*
   Constructor for a boat. Sets up the servos, and establishes intial values
   for each boat variable.
@@ -65,8 +63,8 @@ class Boat_Controller {
     tailServo.write(angle);
   }
 
-}
-
+};
+#endif
 /*
 An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
@@ -110,7 +108,7 @@ public:
     how far (in meters) to port and starboard the boat is allowed to
     go before tacking.
   */
-  Navigation_Controller(float limit, int num, array<coord_xy> waypoints, float port, float starboard){
+  Navigation_Controller(float limit, int num, array <coord_xy> waypoints, float port, float starboard){
     waypoint_array = waypoints;
     angleToWaypoint = 0.0;
     normalDistance = 0.0;
@@ -128,182 +126,178 @@ public:
     lowerWidth = 10;
   }
 
-}
+};
 #endif
 Navigation_Controller nc;
 Boat_Controller bc;
 
-  void initializer(void){
+public void initializer(void){
 
-      coord_t [3] = {outsideDuffield, outsideThurston, engQuadRight};
-      set_origin([0]);
-      for(int i =0; i < sizeof(); i++){
-        [i] = xyPoint(coordinates[i]);
-      }
-
-      maxDistance = 10000.0;
-      numWp = 3;
-      waypoint_array = coordinates;
-      port_boundary = 10.0;
-      starboard_boundary = 10.0;
-      nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
-      bc = Boat_Controller(5.0);
+  coord_t [3] = {outsideDuffield, outsideThurston, engQuadRight};
+  set_origin([0]);
+  for(int i =0; i < sizeof(); i++){
+    [i] = xyPoint(coordinates[i]);
   }
+  float maxDistance = 10000.0;
+  int numWp = 3;
+  coord_xy waypoint_array = coordinates;
+  port_boundary = 10.0;
+  starboard_boundary = 10.0;
+  nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
+  bc = Boat_Controller(5.0);
+}
 
-  // nav must be called after the initializer
-  void nav(void) {
-
-    nc.wind_direction = sensorData.windDir;
-    bc.boat_direction = sensorData.boatDir;
-    r[0] = nc.waypoint_array[nc.numWP].x - sensorData.x;
-    r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
-    w[0] = cos((sensorData.windDir)*(PI/180.0));
-    w[1] = sin((sensorData.windDir)*(PI/180.0));
-    coord_t coord_lat_lon = {sensorData.x, sensorData.y};
-    coord_xy currentPosition = xyPoint(coord_lat_lon);
-    bc.location = currentPosition;
-    bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
-    calcIntendedAngle(bc, nc);
-    if (bc.detection_radius >= nc.normalDistance) {
-      if (nc.currentWP != nc.numWP) {
-        nc.currentWP++;
-        if ((bc.boat_direction - nc.wind_direction) % 360 < 180) {
-          nc.portOrStarboard = "Port";
-        }
-        else {
-          nc.portOrStarboard = "Starboard";
-        }
-      }
-    }
-    if(nc.currenWP != 0 && bc.pointOfSail!=1 && aboveBounds(nc.upperWidth, bc.location, nc.waypoint_array[currentWP+1], bc.PointOfSail)){
-      Serial1.print("HIT UPPER BOUND, TACK RIGHT");
-      if(!bc.isTacking){
-        if (nc.portOrStarboard == "Port") {
-          nc.portOrStarboard = "Starboard";
-        }
-        else {
-          nc.portOrStarboard = "Port";
-        }
-      }
-      bc.isTacking = true;
-    }
-    //Boat hits lower bound, tack left
-    else if(wpNum != 0 && pointOfSail!=1 && belowBounds(nc.lowerWidth, bc.location, nc.waypoint_array[nc.currentWP+1], bc.PointOfSail) ){
-      Serial1.print("HIT LOWER BOUND, TACK LEFT");
-      if(!isTacking){
-        if (nc.portOrStarboard == "Port") {
-          nc.portOrStarboard = "Starboard";
-        }
-        else {
-          nc.portOrStarboard = "Port";
-        }
-      }
-      bc.isTacking = true;
-    }
-    bc.tail_angle = nc.wind_direction + nc.offset;
-    bc.sail_angle = bc.tail_angle + nc.intended_angle;
-
-    bc.tail_angle = (float)((int)bc.tail_angle%360);
-    bc.tail_angle = tailAngle + 360;
-    bc.tail_angle = (float)((int)bc.tail_angle%360);
-
-    bc.sail_angle = (float)((int)bc.sail_angle%360);
-    bc.sail_angle = sail_angle+360;
-    bc.sail_angle = (float)((int)bc.sail_angle%360);
-
-    //Convert sail and tail from wrt north to wrt boat
-    bc.sail_angle = bc.sail_angle - sensorData.boat_direction;
-    bc.tail_angle = bc.tail_angle - sensorData.boat_direction;
-
-    // convert sail to 0-360
-    bc.sail_angle = int(bc.sail_angle+360)%360;
-
-    // convert tail to -180-180
-    bc.tail_angle = int(bc.tail_angle+360)%360;
-    if (bc.tail_angle> 180) {bc.tail_angle -= 360;}
-
-    //Get servo commands from the calculated sail and tail angles
-    if (bc.sail_angle < 0) {
-      bc.sail_angle += 360;
-    }
-
-    bc.set_sail_angle(bc.sail_angle);
-    bc.set_tail_angle(bc.tail_angle);
-
-  }
-
-  /*
-  Helper function used to calculate intendedAngle.
-  Determines if the boat is upwind, downwind, or reach, and if
-  port or starboard, then determines intendedAngle and
-  angle_of_attack.
-  Arguments:
-    pointOfSail is a string that represents upwind, downwind, or reach (direct)
-
-    portOrStarboard is a string that represents port (left) or starboard (right)
-  */
-  void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
-    if (bc.PointofSail != "Upwind" && nc.PointofSail != "Reach" && nc.PointofSail != "Downwind" ) {
-      Serial1.print("Invalid argument sent to nav");
-    }
-    else if (nc.PointofSail == "Upwind") {
-      if (bc.portOrStarboard == "Port") {
-        Serial1.print("UPWIND PORT");
-        nc.intendedAngle = nc.wind_direction - optimal_angle;
-        nc.angle_of_attack = -15;
+// nav must be called after the initializer
+public void nav(void) {
+  nc.wind_direction = sensorData.windDir;
+  bc.boat_direction = sensorData.boatDir;
+  nc.r[0] = nc.waypoint_array[nc.numWP].x - sensorData.x;
+  nc.r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
+  nc.w[0] = cos((sensorData.windDir)*(PI/180.0));
+  nc.w[1] = sin((sensorData.windDir)*(PI/180.0));
+  coord_t coord_lat_lon = {sensorData.x, sensorData.y};
+  coord_xy currentPosition = xyPoint(coord_lat_lon);
+  bc.location = currentPosition;
+  bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
+  calcIntendedAngle(bc, nc);
+  if (bc.detection_radius >= nc.normalDistance) {
+    if (nc.currentWP != nc.numWP) {
+      nc.currentWP++;
+      if ((bc.boat_direction - nc.wind_direction) % 360 < 180) {
+        nc.portOrStarboard = "Port";
       }
       else {
-        Serial1.print("UPWIND STARBOARD");
-        nc.intended_angle= nc.wind_direction + optimal_angle;
-        nc.angle_of_attack = 15;
+        nc.portOrStarboard = "Starboard";
       }
-    }
-    else if (nc.PointofSail == "Reach") {
-      if (bc.portOrStarboard == "Port") {
-        Serial1.print("REACH PORT");
-        nc.intended_angle = angleToWaypoint;
-        nc.angle_of_attack = -15;
-      }
-      else {
-        Serial1.print("REACH STARBOARD");
-        nc.intended_angle = angleToWaypoint;
-        nc.angle_of_attack = 15;
-      }
-    }
-    else{
-       if(bc.portOrStarboard == "Port") {
-         Serial1.print("DOWNWIND PORT");
-         nc.intended_angle = windDir + 180 + optimal_angle;
-         nc.intended_angle_of_attack = -15;
-       }
-       else{
-         Serial1.print("DOWNWIND STARBOARD");
-         nc.intended_angle = nc.wind_direction + 180 - optimal_angle;
-         nc.intended_angle_of_attack = 15;
-       }
     }
   }
-  /*
-  Helper function used to determine whether the boat is aboveBounds or belowBounds.
+  if(nc.currentWP != 0 && bc.pointofSail!=1 && aboveBounds(nc.upperWidth, bc.location, nc.waypoint_array[currentWP+1], bc.PointofSail)){
+    Serial1.print("HIT UPPER BOUND, TACK RIGHT");
+    if(!bc.isTacking){
+      if (nc.portOrStarboard == "Port") {
+        nc.portOrStarboard = "Starboard";
+      }
+      else {
+        nc.portOrStarboard = "Port";
+      }
+    }
+    bc.isTacking = true;
+  }
+  //Boat hits lower bound, tack left
+  else if(wpNum != 0 && pointofSail!=1 && belowBounds(nc.lowerWidth, bc.location, nc.waypoint_array[nc.currentWP+1], bc.PointofSail) ){
+    Serial1.print("HIT LOWER BOUND, TACK LEFT");
+    if(!bc.isTacking){
+      if (nc.portOrStarboard == "Port") {
+        nc.portOrStarboard = "Starboard";
+      }
+      else {
+        nc.portOrStarboard = "Port";
+      }
+    }
+    bc.isTacking = true;
+  }
+  bc.tail_angle = nc.wind_direction + nc.offset;
+  bc.sail_angle = bc.tail_angle + nc.intendedAngle;
 
-  Arguments:
-    width is a float that sets the maximum allowable width for boat to sail within
+  bc.tail_angle = (float)((int)bc.tail_angle%360);
+  bc.tail_angle = bc.tail_angle + 360;
+  bc.tail_angle = (float)((int)bc.tail_angle%360);
 
-    point1 and point2 are coordinates in the xy plane
-  */
+  bc.sail_angle = (float)((int)bc.sail_angle%360);
+  bc.sail_angle = bc.sail_angle+360;
+  bc.sail_angle = (float)((int)bc.sail_angle%360);
 
-bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
-    float slope = xySlope(bc.locat, waypoint_array[nc.currentWP+1]);
-    float intercept = location.y - slope * location.x;
-    float distance = -1*(slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
-    return (distance > upperWidth);
+  //Convert sail and tail from wrt north to wrt boat
+  bc.sail_angle = bc.sail_angle - sensorData.boatDir;
+  bc.tail_angle = bc.tail_angle - sensorData.boatDir;
+
+  // convert sail to 0-360
+  bc.sail_angle = int(bc.sail_angle+360)%360;
+
+  // convert tail to -180-180
+  bc.tail_angle = int(bc.tail_angle+360)%360;
+  if (bc.tail_angle> 180) {bc.tail_angle -= 360;}
+
+  //Get servo commands from the calculated sail and tail angles
+  if (bc.sail_angle < 0) {
+    bc.sail_angle += 360;
+  }
+
+  bc.set_sail_angle(bc.sail_angle);
+  bc.set_tail_angle(bc.tail_angle);
+
+}
+
+/*
+Helper function used to calculate intendedAngle.
+Determines if the boat is upwind, downwind, or reach, and if
+port or starboard, then determines intendedAngle and
+angle_of_attack.
+Arguments:
+  pointOfSail is a string that represents upwind, downwind, or reach (direct)
+  portOrStarboard is a string that represents port (left) or starboard (right)
+*/
+public void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
+  if (bc.PointofSail != "Upwind" && nc.PointofSail != "Reach" && nc.PointofSail != "Downwind" ) {
+    Serial1.print("Invalid argument sent to nav");
+  }
+  else if (nc.PointofSail == "Upwind") {
+    if (bc.portOrStarboard == "Port") {
+      Serial1.print("UPWIND PORT");
+      this->nc.intendedAngle = nc.wind_direction - optimal_angle;
+      this.nc.angle_of_attack = -15;
+    }
+    else {
+      Serial1.print("UPWIND STARBOARD");
+      nc.intendedAngle= nc.wind_direction + optimal_angle;
+      nc.angle_of_attack = 15;
+    }
+  }
+  else if (nc.PointofSail == "Reach") {
+    if (bc.portOrStarboard == "Port") {
+      Serial1.print("REACH PORT");
+      nc.intendedAngle = angleToWaypoint;
+      nc.angle_of_attack = -15;
+    }
+    else {
+      Serial1.print("REACH STARBOARD");
+      nc.intendedAngle = angleToWaypoint;
+      nc.angle_of_attack = 15;
+    }
+  }
+  else{
+     if(bc.portOrStarboard == "Port") {
+       Serial1.print("DOWNWIND PORT");
+       nc.intendedAngle = windDir + 180 + optimal_angle;
+       nc.intended_angle_of_attack = -15;
+     }
+     else{
+       Serial1.print("DOWNWIND STARBOARD");
+       nc.intendedAngle = nc.wind_direction + 180 - optimal_angle;
+       nc.intended_angle_of_attack = 15;
+     }
+  }
+}
+/*
+Helper function used to determine whether the boat is aboveBounds or belowBounds.
+Arguments:
+  width is a float that sets the maximum allowable width for boat to sail within
+
+  point1 and point2 are coordinates in the xy plane
+*/
+
+public bool aboveBounds(Navigation_Controller nc, Boat_Controller bc){
+  float slope = xySlope(bc.locatation, waypoint_array[nc.currentWP+1]);
+  float intercept = bc.location.y - slope * bc.location.x;
+  float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
+  return (distance > nc.upperWidth);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
-bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, String pointOfSail){
-    float slope = xySlope(location, waypoint_array[currentWP+1]);
-    float intercept = location.y - slope * location.x;
-    float distance = (slope * location.x - location.y + intercept)/sqrtf(intercept*intercept+1);
-    return (distance > lowerWidth);
+public bool belowBounds(Navigation_Controller nc, Boat_Controller bc){
+  float slope = xySlope(bc.location, waypoint_array[nc.currentWP+1]);
+  float intercept = bc.location.y - slope * bc.location.x;
+  float distance = (slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
+  return (distance > nc.lowerWidth);
 }
 
 /*void endurance(coord_xy buoyLocations[]){
