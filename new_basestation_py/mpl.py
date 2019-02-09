@@ -23,12 +23,14 @@ class mclass:
         self.info.grid(row=3, column=0, columnspan=2)
         
         #draws a black x in each box (practicing making changes)
-        self.boatmode.create_line(0, 0, 200, 50)
-        self.boatmode.create_line(200, 0, 0, 50)
-        self.waypoints.create_line(0, 0, 200, 275)
-        self.waypoints.create_line(200, 0, 0, 275)
-        self.bouypoints.create_line(0, 0, 200, 275)
-        self.bouypoints.create_line(200, 0, 0, 275)
+       # self.boatmode.create_line(0, 0, 200, 50)
+       # self.boatmode.create_line(200, 0, 0, 50)
+       # self.waypoints.create_line(0, 0, 200, 275)
+       # self.waypoints.create_line(200, 0, 0, 275)
+       # self.bouypoints.create_line(0, 0, 200, 275)
+       # self.bouypoints.create_line(200, 0, 0, 275)
+
+        self.boatmode.create_text(5, 5, anchor= "nw", text="Boatmode!")
 
         #add a window on top of the canvas
         self.waypoints.create_window(0, 0)
@@ -56,3 +58,4 @@ window.mainloop()
 
 #want to rename the window so instead of saying tk it says "CUSail GUI or new_basestation"
 #want to resize the window so that it fits in my computer screen (currently it is too tall)
+#implement into xbeeComm code

@@ -1,3 +1,4 @@
+import mpl
 import serial
 from xbee import XBee
 import re
@@ -10,6 +11,9 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 # Initialize gui
+#window= Tk()
+#start= mclass(window)
+#window.mainloop()
 
 header = "----------NAVIGATION----------"
 regex = "(?:'rf_data': b')((.|\n)*)'"
@@ -34,7 +38,7 @@ while True:
 				for datum in data_arr:
 					if (":" in datum):
 						#data_assoc.append(tuple(datum.split(":")))
-					    label, value = datum.split(":") 1
+					    label, value = datum.split(":")
 					    data_assoc[label] = value
 					
 				pp.pprint ("Parse data cycle to GUI")
