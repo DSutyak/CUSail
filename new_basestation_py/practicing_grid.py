@@ -6,6 +6,33 @@ from matplotlib.figure import Figure
 import tkinter as tk
 from tkinter import ttk
 
+#import tkinter
+from tkinter import *
+import matplotlib
+from matplotlib.figure import Figure
+
+
+window = Tk()
+window.geometry("500x500")
+window.title("new_basestation")
+lbl = Label(window, text = "Hello")
+lbl2 = Label(window, text = "Hello world")
+lbl.grid(column = 0, row = 0)
+lbl2.grid(column = 0, row = 50)
+def callback():
+    print ("click")
+
+Button(window, text="test", command=callback).grid(column=4, row=4)
+
+
+
+
+
+
+window.mainloop()
+
+#
+
 
 LARGE_FONT= ("Verdana", 12)
 
@@ -17,7 +44,7 @@ class SeaofBTCapp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
        # tk.Tk.iconbitmap(self, default="clienticon.ico")
-        tk.Tk.wm_title(self, "Sea of BTC client")
+        tk.Tk.wm_title(self, "base_station")
         
         
         container = tk.Frame(self)
@@ -54,46 +81,7 @@ class StartPage(tk.Frame):
                             command=lambda: controller.show_frame(PageOne))
         button.pack()
 
-        button2 = ttk.Button(self, text="Visit Page 2",
-                            command=lambda: controller.show_frame(PageTwo))
-        button2.pack()
-
-        button3 = ttk.Button(self, text="Graph Page",
-                            command=lambda: controller.show_frame(PageThree))
-        button3.pack()
-
-
-class PageOne(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Page One!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
-
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.pack()
-
-        button2 = ttk.Button(self, text="Page Two",
-                            command=lambda: controller.show_frame(PageTwo))
-        button2.pack()
-
-
-class PageTwo(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Page Two!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
-
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.pack()
-
-        button2 = ttk.Button(self, text="Page One",
-                            command=lambda: controller.show_frame(PageOne))
-        button2.pack()
-
+        
 
 class PageThree(tk.Frame):
 
