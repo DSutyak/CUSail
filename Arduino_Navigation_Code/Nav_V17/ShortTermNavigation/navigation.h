@@ -40,6 +40,7 @@ typedef struct _coord_xy {
 
 class Boat_Controller{
 public:
+  Boat_Controller();
   float sail_angle;
   float tail_angle;
   float boat_direction;
@@ -55,10 +56,14 @@ public:
   constexpr float static optimal_angle = 60;
 
   //Sets the angle of the main sail
-  void set_sail_angle (float angle);
+  void set_sail_angle (float angle){
+    sailServo.write(angle);
+  }
 
   //Sets the angle of the tail sail
-  void set_tail_angle (float angle);
+  void set_tail_angle (float angle) {
+    tailServo.write(angle);
+  }
 
 } Boat_Controller;
 #endif
@@ -69,7 +74,6 @@ navigate a body of water.
 */
 #ifndef Navigation_Controller_h
 #define Navigation_Controller_h
-
 class Navigation_Controller {
 public:
   _coord_xy waypoint_array[];
