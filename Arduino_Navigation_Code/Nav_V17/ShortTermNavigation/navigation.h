@@ -28,12 +28,10 @@ typedef struct coord_t {
 
 #ifndef coord_xy_h
 #define coord_xy_h
-
 typedef struct _coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
-
 #endif
 
 /*----------Type Definitions----------*/
@@ -53,7 +51,7 @@ public:
   float starboard_boundary;
   bool isTacking;
   String PointofSail;
-  float angle_of_attack = 10;
+  constexpr float static angle_of_attack = 10;
   constexpr float static optimal_angle = 60;
 
   //Sets the angle of the main sail
@@ -93,6 +91,7 @@ public:
   float w[2];
 };
 #endif
+
 /*----------Predefined Variables----------*/
 #define maxPossibleWaypoints 100
 #define tailServoPin 8
@@ -100,10 +99,10 @@ public:
 //Optimal angle to go at if we cannot go directly to the waypoint
 //Puts us on a tack or jibe
 //Different values for top and bottom of polar plot
-// #define optPolarTop 60//20
-// #define optPolarBot 60//40
-// #define angleOfAttack 10
-// #define detectionRadius 15
+#define optPolarTop 60//20
+#define optPolarBot 60//40
+#define angleOfAttack 10
+#define detectionRadius 15
 
 /*----------Global Variables-----------*/
 extern _coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t

@@ -8,7 +8,8 @@
 //}coord_t;
 //#endif
 //Coordinates in and around the Engineering Quad, Cornell university
-
+//
+////Coordinates in and around the Engineering Quad, Cornell university
 //coord_t olin = {42.445457, -76.484322}; //Olin Hall
 //coord_t hollister = {42.444259, -76.484435}; //Hollister Hall
 //coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
@@ -63,4 +64,3 @@
 //coord_t end_17 = {38.983646, -76.478501};
 //coord_t end_18 = {38.983304, -76.478074};
 //coord_t end_19 = {38.982930, -76.477625};
-

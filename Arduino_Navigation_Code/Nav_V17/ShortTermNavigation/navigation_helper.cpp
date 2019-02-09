@@ -75,7 +75,7 @@ coord_xy middlePoint(coord_xy point1, coord_xy point2){
   double ydis= (point1.y - point2.y)/2;
   double pointx= point1.x-xdis;
   double pointy = point1.y-ydis;
-  return coord_xy({pointx, pointy})
+  return coord_xy({pointx, pointy});
 }
 
 /*Returns great circle distance (in meters) between two global coordinates.*/

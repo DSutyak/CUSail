@@ -1,8 +1,9 @@
-  #include <Arduino.h>
+#include <Arduino.h>
 #include <math.h>
 #include <Servo.h>
 #include "sensors.h"
 #include "navigation.h"
+#include "navigation.cpp"
 #include "navigation_helper.h"
 
 void printData(){
@@ -17,7 +18,7 @@ void printData(){
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
   Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[numWP]));
-  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[wpNum]));
+  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[numWP]));
 }
 
 void printWaypointData(){

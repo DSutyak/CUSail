@@ -15,6 +15,8 @@
 --------------------------------------------------------------------*/
 
 /*------------------------------ Structures ------------------------------*/
+#ifndef date_h
+#define date_h
 typedef struct date {
   int year;
   unsigned char month;
@@ -37,6 +39,7 @@ typedef struct dataStructure {
   double longi;
   date_t dateTime; // Current date and time, of type date_t
 } data_t;
+#endif
 
 /*--------------------------- Predefined Variables ---------------------------*/
 #define RS_CSN          52
