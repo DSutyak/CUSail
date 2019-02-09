@@ -69,6 +69,7 @@ navigate a body of water.
 */
 #ifndef Navigation_Controller_h
 #define Navigation_Controller_h
+
 class Navigation_Controller {
 public:
   _coord_xy waypoint_array[];
