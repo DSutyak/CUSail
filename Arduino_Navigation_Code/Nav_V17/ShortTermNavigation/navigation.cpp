@@ -95,34 +95,8 @@ navigate a body of water.
   Boat_Controller bc = Boat_Controller(5.0);
 }
 
-// nav must be called after the initializer
-public void nav(void) {
-  nc.wind_direction = sensorData.windDir;
-  bc.boat_direction = sensorData.boatDir;
-  nc.r[0] = nc.waypoint_array[nc.numWP].x - sensorData.x;
-  nc.r[1] = nc.waypoint_array[nc.numWP].y - sensorData.y;
-  nc.w[0] = cos((sensorData.windDir)*(PI/180.0));
-  nc.w[1] = sin((sensorData.windDir)*(PI/180.0));
-  coord_t coord_lat_lon = {sensorData.x, sensorData.y};
-  coord_xy currentPosition = xyPoint(coord_lat_lon);
-  bc.location = currentPosition;
-  bc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.currentPosition);
-  calcIntendedAngle(bc, nc);
-  if (bc.detection_radius >= nc.normalDistance) {
-    if (nc.currentWP != nc.numWP) {
-      nc.currentWP++;
-      if ((bc.boat_direction - nc.wind_direction) % 360 < 180) {
-        nc.portOrStarboard = "Port";
-      }
-      else {
-        nc.portOrStarboard = "Starboard";
-=======
-Navigation_Controller nc;
-Boat_Controller bc;
-int wpNum;
-
   // nav must be called after the initializer
-  void nav(void) {
+void nav(void) {
 
     nc.wind_direction = sensorData.windDir;
     bc.boat_direction = sensorData.boatDir;
@@ -144,7 +118,6 @@ int wpNum;
         else {
           nc.portOrStarboard = "Starboard";
         }
->>>>>>> Stashed changes
       }
     }
   }
