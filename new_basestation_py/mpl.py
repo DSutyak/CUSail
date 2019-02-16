@@ -21,7 +21,7 @@ class mclass:
         self.waypoints.grid(row=1, column=1)
         self.bouypoints.grid(row=2, column=1)
         self.info.grid(row=3, column=0, columnspan=2)
-        
+
         #draws a black x in each box (practicing making changes)
        # self.boatmode.create_line(0, 0, 200, 50)
        # self.boatmode.create_line(200, 0, 0, 50)
@@ -30,7 +30,23 @@ class mclass:
        # self.bouypoints.create_line(0, 0, 200, 275)
        # self.bouypoints.create_line(200, 0, 0, 275)
 
-        self.boatmode.create_text(5, 5, anchor= "nw", text="Boatmode!")
+
+        #text to display in right-hand side boxes
+        self.boatmode.create_text(70, 5, anchor= "nw", text="Boatmode")
+        self.waypoints.create_text(70, 5, anchor= "nw", text="Waypoints")
+        self.bouypoints.create_text(70, 5, anchor= "nw", text="Bouypoints")
+
+        #waypoint entries
+        e = Entry(window, text="Waypoints", width=10)
+        self.waypoints.create_window(90, 37, anchor="nw",window=e)
+        print(e.get())
+
+        #make buttons to add waypoints
+        def callback():
+            print('clicked')
+        b=Button(window, text="Waypoints", command=callback)
+        self.waypoints.create_window(10, 40, anchor="nw", window=b)
+
 
         #add a window on top of the canvas
         self.waypoints.create_window(0, 0)
