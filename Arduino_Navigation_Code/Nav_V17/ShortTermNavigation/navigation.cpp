@@ -36,6 +36,7 @@ void initializer(void){
   }  //Sets the angle of the main sail
 
 
+
 /*
 An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
