@@ -6,7 +6,6 @@
 #include "navigation_helper.h"
 #include "coordinates.cpp"
 #include <String.h>
-#include <iostream>
 #include <array>
 
 using namespace std;
@@ -19,10 +18,10 @@ void initializer(){
   coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
   coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
   coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
-  
-  float maxDistance = 10000.0;
+
+  float max_distance = 10000.0;
   coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
-  int numWp = 3;
+  int num_wp = 3;
   setOrigin(coordinates[0]);
   waypoint_array[numWp];
   for(int i =0; i < sizeof(coordinates); i++) {
@@ -30,7 +29,7 @@ void initializer(){
   }
   float port_boundary = 10.0;
   float starboard_boundary = 10.0;
-  nc.nav_init(maxDistance, numWp, waypoint_array, port_boundary, starboard_boundary);
+  nc.nav_init(max_distance, num_wp, waypoint_array, port_boundary, starboard_boundary);
   bc.boat_init(5.0, tailServoPin, sailServoPin);
 }
 
@@ -46,42 +45,42 @@ Arguments:
 */
 
 void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
-  if (bc.PointofSail != "Upwind" && bc.PointofSail != "Reach" && bc.PointofSail != "Downwind" ) {
+  if (bc.point_of_sail != "Upwind" && bc.point_of_sail != "Reach" && bc.point_of_sail != "Downwind" ) {
     Serial1.print("Invalid argument sent to nav");
   }
-  else if (bc.PointofSail == "Upwind") {
-    if (nc.portOrStarboard == "Port") {
+  else if (bc.point_of_sail == "Upwind") {
+    if (nc.port_or_starboard == "Port") {
       Serial1.println("Quadrant: UPWIND PORT");
-      nc.intendedAngle = nc.wind_direction - bc.optimal_angle;
+      nc.intended_angle = nc.wind_direction - bc.optimal_angle;
       bc.angle_of_attack = -15;
     }
     else {
       Serial1.println("Quadrant: UPWIND STARBOARD");
-      nc.intendedAngle= nc.wind_direction + bc.optimal_angle;
+      nc.intended_angle= nc.wind_direction + bc.optimal_angle;
       bc.angle_of_attack = 15;
     }
   }
-  else if (bc.PointofSail == "Reach") {
-    if (nc.portOrStarboard == "Port") {
+  else if (bc.point_of_sail == "Reach") {
+    if (nc.port_or_starboard == "Port") {
       Serial1.println("Quadrant: REACH PORT");
-      nc.intendedAngle = nc.angleToWaypoint;
+      nc.intended_angle = nc.angle_to_waypoint;
       bc.angle_of_attack = -15;
     }
     else {
       Serial1.println("Quadrant: REACH STARBOARD");
-      nc.intendedAngle = nc.angleToWaypoint;
+      nc.intended_angle = nc.angle_to_waypoint;
       bc.angle_of_attack = 15;
     }
   }
   else{
-     if(nc.portOrStarboard == "Port") {
+     if(nc.port_or_starboard == "Port") {
        Serial1.println("Quadrant: DOWNWIND PORT");
-       nc.intendedAngle = nc.wind_direction + 180 + bc.optimal_angle;
+       nc.intended_angle = nc.wind_direction + 180 + bc.optimal_angle;
        bc.angle_of_attack = -15;
      }
      else{
        Serial1.println("Quadrant: DOWNWIND STARBOARD");
-       nc.intendedAngle = nc.wind_direction + 180 - bc.optimal_angle;
+       nc.intended_angle = nc.wind_direction + 180 - bc.optimal_angle;
        bc.angle_of_attack = 15;
      }
   }
@@ -111,7 +110,7 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 }
 
 void nav() {
-    
+
     nc.wind_direction = sensorData.windDir;
     bc.boat_direction = sensorData.boatDir;
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
@@ -130,7 +129,7 @@ void nav() {
         }
       }
     }
-  
+
   if(nc.currentWP != 0 && bc.PointofSail!= "Reach" && aboveBounds(bc, nc)){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
     if(!bc.isTacking){

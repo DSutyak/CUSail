@@ -50,8 +50,8 @@ public:
   float detection_radius;
   float port_boundary;
   float starboard_boundary;
-  bool isTacking;
-  String PointofSail;
+  bool is_tacking;
+  String point_of_sail;
   float angle_of_attack = 10;
   constexpr float static optimal_angle = 60;
 
@@ -83,8 +83,8 @@ public:
     tailServo.attach(tailServoPin);
     sailServo.attach(sailServoPin);
     detection_radius = d;
-    isTacking = false;
-    PointofSail = "";
+    is_tacking = false;
+    point_of_sail = "";
     initSensors();
   }  //Sets the angle of the main sail
 };
@@ -99,21 +99,21 @@ navigate a body of water.
 class Navigation_Controller {
 public:
   coord_xy waypoint_array[];
-  float angleToWaypoint;
-  float normalDistance;
-  bool isTacking;
-  float intendedAngle;
-  String portOrStarboard;
-  float maxDistance;
-  int numWP;
-  int currentWP;
-  float dirAngle;
+  float angle_to_waypoint;
+  float normal_distance;
+  bool is_tacking;
+  float intended_angle;
+  String port_or_starboard;
+  float max_distance;
+  int num_wp;
+  int current_wp;
+  float dir_angle;
   float offset;
   float wind_direction;
   float port_boundary;
   float starboard_boundary;
-  float upperWidth;
-  float lowerWidth;
+  float upper_width;
+  float lower_width;
   float r[2];
   float w[2];
   

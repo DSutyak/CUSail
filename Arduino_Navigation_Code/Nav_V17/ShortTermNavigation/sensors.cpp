@@ -81,96 +81,96 @@ void addObjects(void) {
 /* Returns servo command for sail servo for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
  */
-double sailMap(double sailAngle){
-  double newSailAngle;
-  if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 142, 125);
+double sailMap(double sail_angle){
+  double new_sail_angle;
+  if (sail_angle <= 90){
+    new_sail_angle = map(sail_angle, 0, 90, 142, 125);
   }
   else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 125, 108);
+    new_sail_angle = map(sail_angle, 90, 180, 125, 108);
   }
   else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 108, 91);
+    new_sail_angle = map(sail_angle, 180, 270, 108, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360,91, 74);
+   new_sail_angle = map(sail_angle, 270, 360,91, 74);
   }
-  return newSailAngle;
+  return new_sail_angle;
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
-double tailMap(double sailAngle, double tailAngle){
+double tailMap(double sail_angle, double tail_angle){
 
   if (sailAngle > 180){ //convert sail angle to -180.. 180
     sailAngle -= 360;
   }
 
-  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+  double new_tail_angle=tail_angle-sail_angle; //calculate position of tail with respect to sail
 
   //make sure tail angle is in range -180.. 180
-  if(newTailAngle<-180){
-    newTailAngle+=360;
+  if(new_tail_angle<-180){
+    new_tail_angle+=360;
   }
-  else if(newTailAngle>180){
-    newTailAngle-=360;
+  else if(new_tail_angle>180){
+    new_tail_angle-=360;
   }
 
   //map to servo commands
-  if (newTailAngle <= 0 ){
-    newTailAngle=map(newTailAngle,-30,0,160,100);
+  if (new_tail_angle <= 0 ){
+    new_tail_angle=map(newTailAngle,-30,0,160,100);
   }
 
-  else if (newTailAngle > 0 ){
-    newTailAngle=map(newTailAngle,0,30,100,60);
+  else if (new_tail_angle > 0 ){
+    new_tail_angle=map(newTailAngle,0,30,100,60);
   }
 
-  return newTailAngle;
+  return new_tail_angle;
 
 }
 
 
 
-double sailMapBench( double sailAngle){
- double newSailAngle;
- if (sailAngle <= 90){
-   newSailAngle = map(sailAngle, 0, 90, 97, 102.3);
+double sailMapBench( double sail_angle){
+ double new_sail_angle;
+ if (sail_angle <= 90){
+   new_sail_angle = map(sail_angle, 0, 90, 97, 102.3);
  }
- else if (sailAngle <= 180){
-   newSailAngle = map(sailAngle, 90, 180, 102.3, 108);
+ else if (sail_angle <= 180){
+   new_sail_angle = map(sail_angle, 90, 180, 102.3, 108);
  }
- else if (sailAngle <= 270){
-   newSailAngle = map(sailAngle, 180, 270, 108, 113);
+ else if (sail_angle <= 270){
+   new_sail_angle = map(sail_angle, 180, 270, 108, 113);
  }
  else{
-  newSailAngle = map(sailAngle, 270, 360, 113, 118);
+  new_sail_angle = map(sail_angle, 270, 360, 113, 118);
  }
- return newSailAngle;
+ return new_sail_angle;
 }
 
-double tailMapBench( double sailAngle, double tailAngle){
- if (sailAngle > 180){ //convert sail angle to -180.. 180
-   sailAngle -= 360;
+double tailMapBench( double sail_angle, double tail_angle){
+ if (sail_angle > 180){ //convert sail angle to -180.. 180
+   sail_angle -= 360;
  }
 
- double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+ double new_tail_angle=tail_angle-sail_angle; //calculate position of tail with respect to sail
 
  //make sure tail angle is in range -180.. 180
- if(newTailAngle<-180){
-   newTailAngle+=360;
+ if(new_tail_angle<-180){
+   new_tail_angle+=360;
  }
- else if(newTailAngle>180){
-   newTailAngle-=360;
+ else if(new_tail_angle>180){
+   new_tail_angle-=360;
  }
  //map to servo commands
- if (newTailAngle <= 0 ){
-   newTailAngle=map(newTailAngle,-30,0,13,45);
+ if (new_tail_angle <= 0 ){
+   new_tail_angle=map(new_tail_angle,-30,0,13,45);
  }
- else if (newTailAngle > 0 ){
-   newTailAngle=map(newTailAngle,0,30,45,70);
+ else if (new_tail_angle > 0 ){
+   new_tail_angle=map(new_tail_angle,0,30,45,70);
  }
- return newTailAngle;
+ return new_tail_angle;
 }
 
 /*Sensor setup*/
@@ -205,12 +205,12 @@ void initSensors(void) {
   //Initialize pixycam
   pixy.init();
 
-  sensorData.boatDir = 0; //Boat direction w.r.t North
+  sensorData.boat_dir = 0; //Boat direction w.r.t North
   sensorData.sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
   sensorData.tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
   sensorData.pitch = 0;
   sensorData.roll = 0;
-  sensorData.windDir = 0; // Wind direction w.r.t North
+  sensorData.wind_dir = 0; // Wind direction w.r.t North
   sensorData.x = 0; // Longitude of current global position;
   sensorData.y = 0; // Longitude of current global position;
   sensorData.lat=0;
@@ -266,7 +266,7 @@ void sRSensor(void) {
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
-  wind_wrtN = ((int)(wind_wrtN + sensorData.boatDir))%360;
+  wind_wrtN = ((int)(wind_wrtN + sensorData.boat_dir))%360;
 
   //filter wind
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
@@ -278,7 +278,7 @@ void sRSensor(void) {
 //  Serial1.print("Raw Wind WRT NORTH: ");
 //  Serial1.println(wind_wrtN);
 
-  sensorData.windDir = wind_wrtN;
+  sensorData.wind_dir = wind_wrtN;
   prevWindDirection = wind_wrtN;
   }
 
@@ -346,12 +346,12 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  float boatDir =  ((imu_data[1].fval)*(180/PI));
-  if (boatDir < 0) {
-    boatDir += 360;
+  float boat_dir =  ((imu_data[1].fval)*(180/PI));
+  if (boat_dir < 0) {
+    boat_dir += 360;
   }
 
-  sensorData.boatDir = boatDir;
+  sensorData.boat_dir = boat_dir;
 //  Serial1.print("BoatDIR raw:");
 //  Serial1.println(boatDir);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
