@@ -12,88 +12,25 @@
 using namespace std;
 
 void initializer(void){
+  coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
+  coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
+  coord_t engQuadX = {42.444612, -76.483492}; //Center of Engineering Quad
+  coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
 
-
-  /*
-  Constructor for a boat. Sets up the servos, and establishes intial values
-  for each boat variable.
-
-  Arguments:
-    detection_radius is a float that represents how close we have to
-    be to a waypoint to mark it as 'hit'. Precondition: detection_radius must
-    be less than the upper and lower tacking bounds.
-  */
-  Boat_Controller::Boat_Controller (float d) {
-    set_sail_angle(0.00);
-    set_tail_angle(0.00);
-    boat_direction = sensorData.boatDir;
-    tailServo.attach(tailServoPin);
-    sailServo.attach(sailServoPin);
-    detection_radius = d;
-    isTacking = false;
-    PointofSail = "";
-    initSensors();
-  }  //Sets the angle of the main sail
-
-
-
-/*
-An object of class Navigation_Controller represents the abstract
-(not directly related to the boat) variables and operations performed on them to
-navigate a body of water.
-*/
-
-  /*
-  Constructor for a Navigation Controller.
-  Sets up the waypoints, and establishes
-  default values for each navigation variable.
-
-  Arguments:
-    max is a float that represents how far we can get from the origin before
-    the origin must be reset.
-
-    num is an int that represents the number of coord_xy waypoints in the
-    array waypoints argument.
-
-    port and starboard are floats that represent
-    how far (in meters) to port and starboard the boat is allowed to
-    go before tacking.
-  */
-  Navigation_Controller::Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard){
-    int count = 0;
-    while (count < num){
-      waypoint_array[count] = waypoints[count];
-      count++;
-    }
-    angleToWaypoint = 0.0;
-    normalDistance = 0.0;
-    intendedAngle = 0.0;
-    portOrStarboard = "";
-    maxDistance = limit;
-    numWP = num;
-    currentWP = 0;
-    dirAngle = 0.0;
-    offset = 0.0;
-    wind_direction = 0.0;
-    port_boundary = port;
-    starboard_boundary = starboard;
-    upperWidth = 10;
-    lowerWidth = 10;
-  }
-
-  coord_t [3] = {outsideDuffield, outsideThurston, engQuadRight};
-  set_origin([0]);
-  for(int i =0; i < sizeof(); i++){
-    [i] = xyPoint(coordinates[i]);
-  }
   
   float maxDistance = 10000.0;
   int numWp = 3;
-  coord_xy waypoint_array = coordinates;
-  port_boundary = 10.0;
-  starboard_boundary = 10.0;
-  Navigation_Controller nc = Navigation_Controller(maxDistance, numWP, waypoint_array, port_boundary, starboard_boundary);
-  Boat_Controller bc = Boat_Controller(5.0);
+  coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
+  setOrigin(coordinates[0]);
+  coord_xy waypoint_array[numWp];
+  for(int i =0; i < sizeof(coordinates); i++){
+    waypoint_array[i] = xyPoint(coordinates[i]);
+  }
+  float port_boundary = 10.0;
+  float starboard_boundary = 10.0;
+  Navigation_Controller nc = Navigation_Controller(maxDistance, numWp, waypoint_array, port_boundary, starboard_boundary);
+  Boat_Controller bc = Boat_Controller(5.0, tailServoPin, sailServoPin);
+  
 }
 
   // nav must be called after the initializer
