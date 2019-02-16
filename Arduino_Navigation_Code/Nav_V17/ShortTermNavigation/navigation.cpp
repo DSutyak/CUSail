@@ -5,8 +5,7 @@
 #include "navigation.h"
 #include "navigation_helper.h"
 #include "coordinates.cpp"
-#include <String.h>
-#include <array>
+#include <String>
 
 using namespace std;
 
