@@ -38,29 +38,6 @@ typedef struct _coord_xy {
 #ifndef Boat_Controller_h
 #define Boat_Controller_h
 
-/*
-An object of class Navigation_Controller represents the abstract
-(not directly related to the boat) variables and operations performed on them to
-navigate a body of water.
-*/
-
-  /*
-  Constructor for a Navigation Controller.
-  Sets up the waypoints, and establishes
-  default values for each navigation variable.
-
-  Arguments:
-    max is a float that represents how far we can get from the origin before
-    the origin must be reset.
-
-    num is an int that represents the number of coord_xy waypoints in the
-    array waypoints argument.
-
-    port and starboard are floats that represent
-    how far (in meters) to port and starboard the boat is allowed to
-    go before tacking.
-  */
-
 class Boat_Controller{
 public:
   float sail_angle;
@@ -74,29 +51,8 @@ public:
   float starboard_boundary;
   bool isTacking;
   String PointofSail;
-  constexpr float static angle_of_attack = 10;
+  float angle_of_attack = 10;
   constexpr float static optimal_angle = 60;
-
- /*
-  Constructor for a boat. Sets up the servos, and establishes intial values
-  for each boat variable.
-
-  Arguments:
-    detection_radius is a float that represents how close we have to
-    be to a waypoint to mark it as 'hit'. Precondition: detection_radius must
-    be less than the upper and lower tacking bounds.
-  */
-  Boat_Controller (float d, int tailPin, int sailPin) {
-    set_sail_angle(0.00);
-    set_tail_angle(0.00);
-    boat_direction = sensorData.boatDir;
-    tailServo.attach(tailPin);
-    sailServo.attach(sailPin);
-    detection_radius = d;
-    isTacking = false;
-    PointofSail = "";
-    initSensors();
-  }
 
   //Sets the angle of the main sail
   void set_sail_angle (float angle){
@@ -108,6 +64,27 @@ public:
     tailServo.write(angle);
   }
 
+
+  /*
+  Constructor for a boat. Sets up the servos, and establishes intial values
+  for each boat variable.
+
+  Arguments:
+    detection_radius is a float that represents how close we have to
+    be to a waypoint to mark it as 'hit'. Precondition: detection_radius must
+    be less than the upper and lower tacking bounds.
+  */
+  Boat_Controller (float d, int sailServoPin, int tailServoPin) {
+    set_sail_angle(0.00);
+    set_tail_angle(0.00);
+    boat_direction = sensorData.boatDir;
+    tailServo.attach(tailServoPin);
+    sailServo.attach(sailServoPin);
+    detection_radius = d;
+    isTacking = false;
+    PointofSail = "";
+    initSensors();
+  }  //Sets the angle of the main sail
 };
 #endif
 /*
@@ -137,26 +114,49 @@ public:
   float lowerWidth;
   float r[2];
   float w[2];
-  Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard){
-  int count = 0;
-  while (count < num){
-    waypoint_array[count] = waypoints[count];
-    count++;
-  }
-  angleToWaypoint = 0.0;
-  normalDistance = 0.0;
-  intendedAngle = 0.0;
-  portOrStarboard = "";
-  maxDistance = limit;
-  numWP = num;
-  currentWP = 0;
-  dirAngle = 0.0;
-  offset = 0.0;
-  wind_direction = 0.0;
-  port_boundary = port;
-  starboard_boundary = starboard;
-  upperWidth = 10;
-  lowerWidth = 10;
+  
+/*
+An object of class Navigation_Controller represents the abstract
+(not directly related to the boat) variables and operations performed on them to
+navigate a body of water.
+*/
+
+  /*
+  Constructor for a Navigation Controller.
+  Sets up the waypoints, and establishes
+  default values for each navigation variable.
+
+  Arguments:
+    max is a float that represents how far we can get from the origin before
+    the origin must be reset.
+
+    num is an int that represents the number of coord_xy waypoints in the
+    array waypoints argument.
+
+    port and starboard are floats that represent
+    how far (in meters) to port and starboard the boat is allowed to
+    go before tacking.
+  */
+   Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard){
+    int count = 0;
+    while (count < num){
+      waypoint_array[count] = waypoints[count];
+      count++;
+    }
+    angleToWaypoint = 0.0;
+    normalDistance = 0.0;
+    intendedAngle = 0.0;
+    portOrStarboard = "";
+    maxDistance = limit;
+    numWP = num;
+    currentWP = 0;
+    dirAngle = 0.0;
+    offset = 0.0;
+    wind_direction = 0.0;
+    port_boundary = port;
+    starboard_boundary = starboard;
+    upperWidth = 10;
+    lowerWidth = 10;
   }
 };
 
@@ -175,8 +175,9 @@ public:
 #define detectionRadius 15
 
 /*----------Global Variables-----------*/
-extern _coord_xy wayPoints[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
-
+extern _coord_xy waypoint_array[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
+extern Boat_Controller bc;
+extern Navigation_Controller nc;
 
 /*----------Functions----------*/
 void initializer(void);

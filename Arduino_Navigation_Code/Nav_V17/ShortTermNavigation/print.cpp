@@ -3,7 +3,6 @@
 #include <Servo.h>
 #include "sensors.h"
 #include "navigation.h"
-#include "navigation.cpp"
 #include "navigation_helper.h"
 
 void printData(){
@@ -17,18 +16,18 @@ void printData(){
 
   Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
   Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
-  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},wayPoints[numWP]));
-  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},wayPoints[numWP]));
+  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},waypoint_array[nc.numWP]));
+  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},waypoint_array[nc.numWP]));
 }
 
 void printWaypointData(){
   Serial1.println("----------NAVIGATION----------");
   Serial1.print("Next Waypoint #");
-  Serial1.print(numWP);
+  Serial1.print(nc.numWP);
   Serial1.print(": ");
-  Serial1.print(wayPoints[numWP].x,10);
+  Serial1.print(waypoint_array[nc.numWP].x,10);
   Serial1.print(", ");
-  Serial1.println(wayPoints[numWP].y,10);
+  Serial1.println(waypoint_array[nc.numWP].y,10);
 }
 
 void printHitWaypointData(){
@@ -44,6 +43,6 @@ void printHitWaypointData(){
 }
 
 void printSailTailSet(){
-  Serial1.print("Sail angle: ");   Serial1.println(sailAngle);
-  Serial1.print("Tail angle: ");   Serial1.println(tailAngle);
+  Serial1.print("Sail angle: ");   Serial1.println(bc.sail_angle);
+  Serial1.print("Tail angle: ");   Serial1.println(bc.tail_angle);
 }
