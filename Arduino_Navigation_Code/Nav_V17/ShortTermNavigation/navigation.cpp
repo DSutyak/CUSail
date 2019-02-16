@@ -11,6 +11,10 @@
 
 using namespace std;
 
+Navigation_Controller nc;
+Boat_Controller bc;
+coord_xy waypoint_array[];
+
 void initializer(){
   coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
   coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
@@ -20,14 +24,14 @@ void initializer(){
   coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
   int numWp = 3;
   setOrigin(coordinates[0]);
-  coord_xy waypoint_array[numWp];
+  waypoint_array[numWp];
   for(int i =0; i < sizeof(coordinates); i++) {
     waypoint_array[i] = xyPoint(coordinates[i]);
   }
   float port_boundary = 10.0;
   float starboard_boundary = 10.0;
-  Navigation_Controller nc = Navigation_Controller(maxDistance, numWp, waypoint_array, port_boundary, starboard_boundary);
-  Boat_Controller bc = Boat_Controller(5.0, tailServoPin, sailServoPin);
+  nc.nav_init(maxDistance, numWp, waypoint_array, port_boundary, starboard_boundary);
+  bc.boat_init(5.0, tailServoPin, sailServoPin);
 }
 
 
@@ -106,8 +110,8 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
   return (distance > nc.lowerWidth);
 }
 
-void nav(Boat_Controller bc, Navigation_Controller nc) {
-
+void nav() {
+    
     nc.wind_direction = sensorData.windDir;
     bc.boat_direction = sensorData.boatDir;
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};

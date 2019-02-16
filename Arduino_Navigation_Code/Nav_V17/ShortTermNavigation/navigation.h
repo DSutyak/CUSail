@@ -16,6 +16,7 @@
 #include <Servo.h>
 #include <Arduino.h>
 #include "coordinates.cpp"
+
 /*----------Type Definitions----------*/
 #ifndef coordinate_h
 #define coordinate_h
@@ -74,7 +75,8 @@ public:
     be to a waypoint to mark it as 'hit'. Precondition: detection_radius must
     be less than the upper and lower tacking bounds.
   */
-  Boat_Controller (float d, int sailServoPin, int tailServoPin) {
+  Boat_Controller(){}
+  void boat_init (float d, int sailServoPin, int tailServoPin) {
     set_sail_angle(0.00);
     set_tail_angle(0.00);
     boat_direction = sensorData.boatDir;
@@ -137,7 +139,8 @@ navigate a body of water.
     how far (in meters) to port and starboard the boat is allowed to
     go before tacking.
   */
-   Navigation_Controller (float limit, int num, coord_xy waypoints[], float port, float starboard){
+  Navigation_Controller(){}
+  void nav_init (float limit, int num, coord_xy waypoints[], float port, float starboard){
     int count = 0;
     while (count < num){
       waypoint_array[count] = waypoints[count];
