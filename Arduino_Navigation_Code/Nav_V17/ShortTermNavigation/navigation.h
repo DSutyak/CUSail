@@ -114,9 +114,7 @@ public:
   float starboard_boundary;
   float upper_width;
   float lower_width;
-  float r[2];
-  float w[2];
-  
+
 /*
 An object of class Navigation_Controller represents the abstract
 (not directly related to the boat) variables and operations performed on them to
@@ -146,20 +144,20 @@ navigate a body of water.
       waypoint_array[count] = waypoints[count];
       count++;
     }
-    angleToWaypoint = 0.0;
-    normalDistance = 0.0;
-    intendedAngle = 0.0;
-    portOrStarboard = "";
-    maxDistance = limit;
-    numWP = num;
-    currentWP = 0;
-    dirAngle = 0.0;
+    angle_to_waypoint = 0.0;
+    normal_distance = 0.0;
+    intended_angle = 0.0;
+    port_or_starboard = "";
+    max_distance = limit;
+    num_wp = num;
+    current_wp = 0;
+    dir_angle = 0.0;
     offset = 0.0;
     wind_direction = 0.0;
     port_boundary = port;
     starboard_boundary = starboard;
-    upperWidth = 10;
-    lowerWidth = 10;
+    upper_width = 10;
+    lower_width = 10;
   }
 };
 
