@@ -79,7 +79,7 @@ public:
   void boat_init (float d, int sailServoPin, int tailServoPin) {
     set_sail_angle(0.00);
     set_tail_angle(0.00);
-    boat_direction = sensorData.boatDir;
+    boat_direction = sensorData.boat_direction;
     tailServo.attach(tailServoPin);
     sailServo.attach(sailServoPin);
     detection_radius = d;

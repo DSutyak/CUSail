@@ -14,20 +14,20 @@ void printData(){
   Serial1.print("longitude: "); Serial1.println(sensorData.longi,10);
 
 
-  Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.windDir);
-  Serial1.print("Boat direction: "); Serial1.println(sensorData.boatDir);
-  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},waypoint_array[nc.numWP]));
-  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},waypoint_array[nc.numWP]));
+  Serial1.print("Wind w.r.t North: "); Serial1.println(sensorData.wind_dir);
+  Serial1.print("Boat direction: "); Serial1.println(sensorData.boat_direction);
+  Serial1.print("Distance to Waypoint: "); Serial1.println(xyDist({sensorData.x,sensorData.y},waypoint_array[nc.num_wp]));
+  Serial1.print("Angle to Waypoint: "); Serial1.println(angleToTarget({sensorData.x,sensorData.y},waypoint_array[nc.num_wp]));
 }
 
 void printWaypointData(){
   Serial1.println("----------NAVIGATION----------");
   Serial1.print("Next Waypoint #");
-  Serial1.print(nc.numWP);
+  Serial1.print(nc.num_wp);
   Serial1.print(": ");
-  Serial1.print(waypoint_array[nc.numWP].x,10);
+  Serial1.print(waypoint_array[nc.num_wp].x,10);
   Serial1.print(", ");
-  Serial1.println(waypoint_array[nc.numWP].y,10);
+  Serial1.println(waypoint_array[nc.num_wp].y,10);
 }
 
 void printHitWaypointData(){

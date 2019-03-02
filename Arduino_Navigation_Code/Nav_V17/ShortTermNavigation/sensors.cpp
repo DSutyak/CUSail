@@ -86,10 +86,10 @@ double sailMap(double sail_angle){
   if (sail_angle <= 90){
     new_sail_angle = map(sail_angle, 0, 90, 142, 125);
   }
-  else if (sailAngle <= 180){
+  else if (sail_angle <= 180){
     new_sail_angle = map(sail_angle, 90, 180, 125, 108);
   }
-  else if (sailAngle <= 270){
+  else if (sail_angle <= 270){
     new_sail_angle = map(sail_angle, 180, 270, 108, 91);
   }
   else{
@@ -103,30 +103,30 @@ double sailMap(double sail_angle){
  */
 double tailMap(double sail_angle, double tail_angle){
 
-  if (sailAngle > 180){ //convert sail angle to -180.. 180
-    sailAngle -= 360;
+  if (sail_angle > 180){ //convert sail angle to -180.. 180
+    sail_angle -= 360;
   }
 
-  double new_tail_angle=tail_angle-sail_angle; //calculate position of tail with respect to sail
+  double newTailAngle=tail_angle-sail_angle; //calculate position of tail with respect to sail
 
   //make sure tail angle is in range -180.. 180
-  if(new_tail_angle<-180){
-    new_tail_angle+=360;
+  if(newTailAngle<-180){
+    newTailAngle+=360;
   }
-  else if(new_tail_angle>180){
-    new_tail_angle-=360;
+  else if(newTailAngle>180){
+    newTailAngle-=360;
   }
 
   //map to servo commands
-  if (new_tail_angle <= 0 ){
-    new_tail_angle=map(newTailAngle,-30,0,160,100);
+  if (newTailAngle <= 0 ){
+    newTailAngle=map(newTailAngle,-30,0,160,100);
   }
 
-  else if (new_tail_angle > 0 ){
-    new_tail_angle=map(newTailAngle,0,30,100,60);
+  else if (newTailAngle > 0 ){
+    newTailAngle=map(newTailAngle,0,30,100,60);
   }
 
-  return new_tail_angle;
+  return newTailAngle;
 
 }
 
@@ -205,7 +205,7 @@ void initSensors(void) {
   //Initialize pixycam
   pixy.init();
 
-  sensorData.boat_dir = 0; //Boat direction w.r.t North
+  sensorData.boat_direction = 0; //Boat direction w.r.t North
   sensorData.sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
   sensorData.tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
   sensorData.pitch = 0;
@@ -266,7 +266,7 @@ void sRSensor(void) {
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
-  wind_wrtN = ((int)(wind_wrtN + sensorData.boat_dir))%360;
+  wind_wrtN = ((int)(wind_wrtN + sensorData.boat_direction))%360;
 
   //filter wind
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
@@ -346,14 +346,14 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  float boat_dir =  ((imu_data[1].fval)*(180/PI));
-  if (boat_dir < 0) {
-    boat_dir += 360;
+  float boat_direction =  ((imu_data[1].fval)*(180/PI));
+  if (boat_direction < 0) {
+    boat_direction += 360;
   }
 
-  sensorData.boat_dir = boat_dir;
+  sensorData.boat_direction = boat_direction;
 //  Serial1.print("BoatDIR raw:");
-//  Serial1.println(boatDir);
+//  Serial1.println(boat_direction);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }

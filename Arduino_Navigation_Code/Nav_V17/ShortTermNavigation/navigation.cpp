@@ -22,7 +22,7 @@ void initializer(){
   coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
   int num_wp = 3;
   setOrigin(coordinates[0]);
-  waypoint_array[numWp];
+  waypoint_array[num_wp];
   for(int i =0; i < sizeof(coordinates); i++) {
     waypoint_array[i] = xyPoint(coordinates[i]);
   }
@@ -95,67 +95,67 @@ Arguments:
 */
 
 bool aboveBounds(Boat_Controller bc, Navigation_Controller nc){
-  float slope = xySlope(bc.location, waypoint_array[nc.currentWP+1]);
+  float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
-  return (distance > nc.upperWidth);
+  return (distance > nc.upper_width);
 }
 /*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
 bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
-  float slope = xySlope(bc.location, waypoint_array[nc.currentWP+1]);
+  float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = (slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
-  return (distance > nc.lowerWidth);
+  return (distance > nc.lower_width);
 }
 
 void nav() {
 
-    nc.wind_direction = sensorData.windDir;
-    bc.boat_direction = sensorData.boatDir;
+    nc.wind_direction = sensorData.wind_dir;
+    bc.boat_direction = sensorData.boat_direction;
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
     coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
-    nc.normalDistance = xyDist(nc.waypoint_array[nc.currentWP], bc.location);
+    nc.normal_distance = xyDist(nc.waypoint_array[nc.current_wp], bc.location);
     calcIntendedAngle(bc, nc);
-    if (bc.detection_radius >= nc.normalDistance) {
-      if (nc.currentWP != nc.numWP) {
-        nc.currentWP++;
+    if (bc.detection_radius >= nc.normal_distance) {
+      if (nc.current_wp != nc.num_wp) {
+        nc.current_wp++;
         if ((int)(bc.boat_direction - nc.wind_direction) % 360 < 180) {
-          nc.portOrStarboard = "Port";
+          nc.port_or_starboard = "Port";
         }
         else {
-          nc.portOrStarboard = "Starboard";
+          nc.port_or_starboard = "Starboard";
         }
       }
     }
 
-  if(nc.currentWP != 0 && bc.PointofSail!= "Reach" && aboveBounds(bc, nc)){
+  if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && aboveBounds(bc, nc)){
     Serial1.print("HIT UPPER BOUND, TACK RIGHT");
-    if(!bc.isTacking){
-      if (nc.portOrStarboard == "Port") {
-        nc.portOrStarboard = "Starboard";
+    if(!bc.is_tacking){
+      if (nc.port_or_starboard == "Port") {
+        nc.port_or_starboard = "Starboard";
       }
       else {
-        nc.portOrStarboard = "Port";
+        nc.port_or_starboard = "Port";
       }
     }
-    bc.isTacking = true;
+    bc.is_tacking = true;
   }
   //Boat hits lower bound, tack left
-  else if(nc.currentWP != 0 && bc.PointofSail!= "Reach" && belowBounds(bc, nc)){
+  else if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && belowBounds(bc, nc)){
     Serial1.print("HIT LOWER BOUND, TACK LEFT");
-    if(!bc.isTacking){
-      if (nc.portOrStarboard == "Port") {
-        nc.portOrStarboard = "Starboard";
+    if(!bc.is_tacking){
+      if (nc.port_or_starboard == "Port") {
+        nc.port_or_starboard = "Starboard";
       }
       else {
-        nc.portOrStarboard = "Port";
+        nc.port_or_starboard = "Port";
       }
     }
-    bc.isTacking = true;
+    bc.is_tacking = true;
   }
   bc.tail_angle = nc.wind_direction + nc.offset;
-  bc.sail_angle = bc.tail_angle + nc.intendedAngle;
+  bc.sail_angle = bc.tail_angle + nc.intended_angle;
 
   bc.tail_angle = (float)((int)bc.tail_angle%360);
   bc.tail_angle = bc.tail_angle + 360;
@@ -166,8 +166,8 @@ void nav() {
   bc.sail_angle = (float)((int)bc.sail_angle%360);
 
   //Convert sail and tail from wrt north to wrt boat
-  bc.sail_angle = bc.sail_angle - sensorData.boatDir;
-  bc.tail_angle = bc.tail_angle - sensorData.boatDir;
+  bc.sail_angle = bc.sail_angle - sensorData.boat_direction;
+  bc.tail_angle = bc.tail_angle - sensorData.boat_direction;
 
   // convert sail to 0-360
   bc.sail_angle = int(bc.sail_angle+360)%360;

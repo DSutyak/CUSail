@@ -27,12 +27,12 @@ typedef struct date {
 } date_t;
 
 typedef struct dataStructure {
-  float boatDir; //Boat direction w.r.t North
+  float boat_direction; //Boat direction w.r.t North
   float sailAngleBoat; //Sail angle for use of finding wind wrt boat
   float tailAngleBoat; //Tail angle for use of finding wind wrt boat
   float pitch;
   float roll;
-  float windDir; // Wind direction w.r.t North
+  float wind_dir; // Wind direction w.r.t North
   double x;
   double y;
   double lat;
