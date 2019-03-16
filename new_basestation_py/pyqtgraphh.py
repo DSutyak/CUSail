@@ -1,7 +1,8 @@
 from PyQt5 import QtGui  # (the example applies equally well to PySide)
 import pyqtgraph as pg
 import time as time
-
+global past_point
+past_point = (0,0)
 ## Always start by initializing Qt (only once per application)
 app = QtGui.QApplication([])
 
@@ -11,7 +12,7 @@ w = QtGui.QWidget()
 
 ## Create some widgets to be placed inside
 btn = QtGui.QPushButton('press me')
-text = QtGui.QLineEdit('enter text')
+text = QtGui.QLineEdit('0,0')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
 
@@ -20,7 +21,13 @@ plot.plot([1,2,3],[4,5,6])
 plot.plot([3,-2],[6,-2])
 
 def clicked():
-	listw.addItem(text.text())
+    global past_point
+    listw.addItem(text.text())
+    arr = text.text().split(',')
+    x = float(arr[0])
+    y = float(arr[1])
+    plot.plot([past_point[0], x], [past_point[1], y])
+    past_point = (x,y)
 
 btn.clicked.connect(clicked)
 
