@@ -1,5 +1,6 @@
 from PyQt5 import QtGui  # (the example applies equally well to PySide)
 import pyqtgraph as pg
+import time as time
 
 ## Always start by initializing Qt (only once per application)
 app = QtGui.QApplication([])
@@ -13,6 +14,15 @@ btn = QtGui.QPushButton('press me')
 text = QtGui.QLineEdit('enter text')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
+
+plot.plot([1,2,3],[4,5,6])
+#time.sleep(5)
+plot.plot([3,-2],[6,-2])
+
+def clicked():
+	listw.addItem(text.text())
+
+btn.clicked.connect(clicked)
 
 
 
