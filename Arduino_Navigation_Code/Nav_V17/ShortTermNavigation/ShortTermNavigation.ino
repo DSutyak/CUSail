@@ -36,5 +36,4 @@ void loop() {
   sGPS(); //Gather global coordinates
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
   nav(); //Run Short Term Navigation Algorithm to obtain servo commands
-
 }
