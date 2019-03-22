@@ -16,11 +16,7 @@ text = QtGui.QLineEdit('0,0')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
 
-plot.plot([1,2,3],[4,5,6])
-#time.sleep(5)
-plot.plot([3,-2],[6,-2])
-
-def clicked():
+def update():
     global past_point
     listw.addItem(text.text())
     arr = text.text().split(',')
@@ -29,9 +25,14 @@ def clicked():
     plot.plot([past_point[0], x], [past_point[1], y])
     past_point = (x,y)
 
+def clicked():
+	listw.addItem(text.text())
+	arr = text.text().split(',')
+	x = float(arr[0])
+	y = float(arr[1])
+	plot.plot([x], [y])
+
 btn.clicked.connect(clicked)
-
-
 
 ## Create a grid layout to manage the widgets size and position
 layout = QtGui.QGridLayout()
