@@ -15,19 +15,28 @@ btn = QtGui.QPushButton('Plot')
 text = QtGui.QLineEdit('Enter Buoy/Waypoint')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
-display1 = QtGui.QLabel('Wind Vector: <x,y,z>')
+display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
 display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
 def clicked():
     global past_point
-    listw.addItem(text.text())
-    arr = text.text().split(',')
-    x = float(arr[0])
-    y = float(arr[1])
-    plot.plot([past_point[0], x], [past_point[1], y])
-    past_point = (x,y)
+    entry = text.text().strip().replace(" ","")
+    try:
+        arr = entry.split(',')
+        if (not isinstance(float(arr[0]),float) or not isinstance(float(arr[1]),float)):
+            raise Exception
+            #("Could not convert string to float: '" + entry + "'")
+        listw.addItem(entry)
+        x = float(arr[0])
+        y = float(arr[1])
+        plot.plot([past_point[0], x], [past_point[1], y])
+        past_point = (x,y)
+    except Exception as e:
+        print("Could not convert string to float: '" + entry + "'")
+
+
 
 btn.clicked.connect(clicked)
 
