@@ -7,12 +7,11 @@
  * Map to XY plane with boat nav algo
 
 */
-#include "sensors.h"
-#include "navigation.h"
-#include "navigation_helper.h"
-#include "coordinates.cpp"
+#include "obstacle_detection.h"
 #include <Servo.h>
 #include <Wire.h>
+#include <list> 
+#include <iterator> //check if needed this
 
 Servo PanServo;  // create a servo object
 Servo TiltServo;
@@ -40,7 +39,7 @@ void loop(){
   Wire.write(0);
   Wire.endTransmission(); //Try moving this wire stuff to setup and see if it still works
 
-  sweep_get_data(Data1, Data2); //sweep sensor and record data in two arrays
+  sweep_get_data(45, 135, Data1, Data2); //sweep sensor and record data in two arrays
   compare(Data1, Data2); // compare two arrays
   
   Serial.println("Printing Array");
@@ -147,10 +146,11 @@ int diff_check(float a, float b) {
 
 //takes in an array of data and creates {x,y} coordinates for all points that aren't 130.0
 //assumes the boat has not moved far since the data array was created
-void create_xy_object_array(float data[360]) {
-  coord_xy objects[360]; //max # of objects detected is 360, objects is an array whose first elements are objects, the rest just 0
+//should be rewritten as a list with the correct number of elements
+void create_xy_object_array(float data[180]) {
+  coord_xy objects[360]; //max # of objects detected is 180, objects is an array whose first elements are objects, the rest just 0
   int j = 0;
-  for (int i = 0; i < 360; i++){
+  for (int i = 0; i < 180; i++){
     if (data[i] != 0 && data[i] != 360) {
       y = sensorData.y + data[i]*cos(2.*pi*i/180.);
       x = sensorData.x + data[i]*sin(2.*pi*i/180.);
@@ -159,3 +159,26 @@ void create_xy_object_array(float data[360]) {
     }
   }
 }
+
+
+//_______________________________________________________________________
+
+
+//inserts objects into sorted global object_list
+//uses sorting algo: 
+void add_to_object_list(coord_xy data[180]){
+  list <obstacle> obstacle_list;
+  for(int i = 0; i<180; i++){
+    Obstacle new_obj = new Obstacle;
+    new_obj.location = data[i];
+    new_obj.seen=1;
+    new_obj.confirmed = false;
+    
+    list <int> :: iterator it; 
+    for(it = obstacle_list.begin(); it != obstacle_list.end(); ++it) {
+      
+    }
+  }
+  
+}
+
