@@ -23,9 +23,9 @@ void printData(){
   Serial1.print("Roll: "); Serial1.println(sensorData.roll);
   Serial1.print("Pitch: "); Serial1.println(sensorData.pitch);
 
-  Serial1.print("Next Waypoint #");
+  Serial1.print("Next Waypoint #:");
   Serial1.print(nc.num_wp);
-  Serial1.print(": ");
+  Serial1.print("Next Waypoint Coordinates: ");
   Serial1.print(waypoint_array[nc.num_wp].x,10);
   Serial1.print(", ");
   Serial1.println(waypoint_array[nc.num_wp].y,10);
