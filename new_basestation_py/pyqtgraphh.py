@@ -15,6 +15,7 @@ btn = QtGui.QPushButton('Plot')
 text = QtGui.QLineEdit('Enter Buoy/Waypoint')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
+plot.setLimits(minXRange=500,maxXRange=500,minYRange=500,maxYRange=500)
 display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
 display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
@@ -33,6 +34,9 @@ def clicked():
         listw.addItem(entry)
         x = float(arr[0])
         y = float(arr[1])
+
+        #PlotWidget.plot(x,y)
+
         plot.plot([past_point[0], x], [past_point[1], y])
         past_point = (x,y)
     except Exception as e:
