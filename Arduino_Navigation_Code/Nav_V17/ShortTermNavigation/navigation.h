@@ -52,8 +52,8 @@ public:
   float starboard_boundary;
   bool is_tacking;
   String point_of_sail;
-  float angle_of_attack = 10;
-  constexpr float static optimal_angle = 60;
+  float angle_of_attack;
+  constexpr float static optimal_angle = 7;
 
   //Sets the angle of the main sail
   void set_sail_angle (float angle){
@@ -85,6 +85,7 @@ public:
     detection_radius = d;
     is_tacking = false;
     point_of_sail = "";
+    angle_of_attack = 0;
   }  //Sets the angle of the main sail
 };
 #endif
