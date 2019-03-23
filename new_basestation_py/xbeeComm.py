@@ -16,7 +16,7 @@ f = open("live_data.txt", 'w')
 #window.mainloop()
 
 header = "----------NAVIGATION----------"
-regex = "(?:'rf_data': b')((.|\n)*)'"
+regex = "(?:'rf_data': b')((.|\n)*)\\\\r'"
 
 data = ""
 while True:
