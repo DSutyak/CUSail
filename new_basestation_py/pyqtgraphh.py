@@ -21,12 +21,13 @@ btn2 = QtGui.QPushButton('Update')
 text = QtGui.QLineEdit('Enter Buoy/Waypoint')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
-display1 = QtGui.QLabel('Wind Vector: <x,y,z>')
+display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
 display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
 def update():
+<<<<<<< HEAD
 	f = open("live_data.txt")
 	raw_data = list(f)[-1]
 	data = json.loads(raw_data)
@@ -53,6 +54,18 @@ def clicked():
 	x = float(arr[0])
 	y = float(arr[1])
 	plot.plot([x], [y])
+	entry = text.text().strip().replace(" ","")
+    try:
+        arr = entry.split(',')
+        if (not isinstance(float(arr[0]),float) or not isinstance(float(arr[1]),float)):
+            raise Exception
+            #("Could not convert string to float: '" + entry + "'")
+        listw.addItem(entry)
+        x = float(arr[0])
+        y = float(arr[1])
+        plot.plot([x], [y])
+    except Exception as e:
+        print("Could not convert string to float: '" + entry + "'")
 
 btn.clicked.connect(clicked)
 btn2.clicked.connect(update)
