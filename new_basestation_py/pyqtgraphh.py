@@ -60,10 +60,9 @@ def clicked():
         x = float(arr[0])
         y = float(arr[1])
 
-        #PlotWidget.plot(x,y)
+        plot.plot([x+2, x-2], [y+2, y-2])
+        plot.plot([x+2, x-2], [y-2, y+2])
 
-        plot.plot([past_point[0], x], [past_point[1], y])
-        past_point = (x,y)
     except Exception as e:
         print("Could not convert string to float: '" + entry + "'")
 
