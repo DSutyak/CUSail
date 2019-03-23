@@ -20,6 +20,7 @@ display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
+
 def clicked():
     global past_point
     entry = text.text().strip().replace(" ","")
@@ -27,8 +28,8 @@ def clicked():
         arr = entry.split(',')
         if (not isinstance(float(arr[0]),float) or not isinstance(float(arr[1]),float)):
             raise Exception
-        if(entry.count(",") > 1):
-            raise Exception
+        #if(entry.count(",") > 1):
+            #raise Exception
         listw.addItem(entry)
         x = float(arr[0])
         y = float(arr[1])
