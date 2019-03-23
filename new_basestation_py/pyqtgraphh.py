@@ -20,7 +20,7 @@ display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
-def clicked():
+def update():
     global past_point
     entry = text.text().strip().replace(" ","")
     try:
@@ -38,8 +38,14 @@ def clicked():
 
 
 
-btn.clicked.connect(clicked)
+def clicked():
+	listw.addItem(text.text())
+	arr = text.text().split(',')
+	x = float(arr[0])
+	y = float(arr[1])
+	plot.plot([x], [y])
 
+btn.clicked.connect(clicked)
 
 ## Create a grid layout to manage the widgets size and position
 layout = QtGui.QGridLayout()

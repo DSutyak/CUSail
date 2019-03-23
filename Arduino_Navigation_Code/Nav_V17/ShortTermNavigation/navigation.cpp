@@ -110,7 +110,6 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 }
 
 void nav() {
-    printData();
     nc.wind_direction = sensorData.wind_dir;
     bc.boat_direction = sensorData.boat_direction;
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
@@ -185,6 +184,7 @@ void nav() {
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
 
+  printData();
 }
 
 /*void endurance(coord_xy buoyLocations[]){
