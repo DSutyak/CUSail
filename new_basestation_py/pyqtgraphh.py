@@ -20,14 +20,15 @@ display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
-def update():
+def clicked():
     global past_point
     entry = text.text().strip().replace(" ","")
     try:
         arr = entry.split(',')
         if (not isinstance(float(arr[0]),float) or not isinstance(float(arr[1]),float)):
             raise Exception
-            #("Could not convert string to float: '" + entry + "'")
+        if(entry.count(",") > 1):
+            raise Exception
         listw.addItem(entry)
         x = float(arr[0])
         y = float(arr[1])
@@ -38,14 +39,8 @@ def update():
 
 
 
-def clicked():
-	listw.addItem(text.text())
-	arr = text.text().split(',')
-	x = float(arr[0])
-	y = float(arr[1])
-	plot.plot([x], [y])
-
 btn.clicked.connect(clicked)
+
 
 ## Create a grid layout to manage the widgets size and position
 layout = QtGui.QGridLayout()
