@@ -1,23 +1,24 @@
-#include <Printers.h>
-#include <XBee.h>
-
 #include "sensors.h"
 #include "navigation.h"
-#include "print.h"
 
 /*-----------------------------------------------------------------
- CU Sail
-`Cornell University Autonomous Sailboat Team
+ CUSail
+`Cornell Autonomous Sailboat Team
+
+================
+VERSION 17
+================
+Authors: Kurt Huebner, Troy Smith
 
  ShortTermNavigation
-  The primary file that schedules tasks for SailVane: 
+  The primary file that schedules tasks for SailVane:
 
   0. Initialization
   1. Obtain Rotary Sensor data
   2. Obtain GPS data
   3. Obtain IMU data
   4. Obtain appropriate sail angle and tailvane angles
-  5. Set servos to obtained sail and tailvane angles 
+  5. Set servos to obtained sail and tailvane angles
   6. Go to 1.
 
  Code has been tested and run on an Arduino Due
@@ -25,20 +26,14 @@
 
 // Code within setup() runs once on receiving power
 void setup() {
-  
-  initSensors(); // Run setup code for all sensors
-  initNavigation(); // Set the number of waypoints and the current waypoint # to 0
-  initServos(); // attach the sail and tailvane servos
-  setWaypoints(); // create the course by means of a waypoint array
-  Serial.begin(9600);
+  initSensors();
+  initializer();
 }
 
 // Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
-void loop() {  
+void loop() {
   sRSensor(); //Gather wind directio w.r.t North
   sGPS(); //Gather global coordinates
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
-  nShort(); //Run Short Term Navigation Algorithm to obtain servo commands
-  nServos(); //Send acquired servo commands
-  updateTime(); //Update @milTime with miliseconds since program started
+  nav(); //Run Short Term Navigation Algorithm to obtain servo commands
 }

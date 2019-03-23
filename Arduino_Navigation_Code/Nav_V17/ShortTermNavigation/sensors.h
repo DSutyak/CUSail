@@ -13,11 +13,10 @@
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs
 --------------------------------------------------------------------*/
-#include "XBee.h"
 
 /*------------------------------ Structures ------------------------------*/
-extern XBee xbee;
-
+#ifndef date_h
+#define date_h
 typedef struct date {
   int year;
   unsigned char month;
@@ -28,18 +27,19 @@ typedef struct date {
 } date_t;
 
 typedef struct dataStructure {
-  float boatDir; //Boat direction w.r.t North
+  float boat_direction; //Boat direction w.r.t North
   float sailAngleBoat; //Sail angle for use of finding wind wrt boat
   float tailAngleBoat; //Tail angle for use of finding wind wrt boat
   float pitch;
   float roll;
-  float windDir; // Wind direction w.r.t North
+  float wind_dir; // Wind direction w.r.t North
   double x;
   double y;
   double lat;
   double longi;
   date_t dateTime; // Current date and time, of type date_t
 } data_t;
+#endif
 
 /*--------------------------- Predefined Variables ---------------------------*/
 #define RS_CSN          52
@@ -55,7 +55,6 @@ typedef struct dataStructure {
 extern data_t sensorData; //Defines the boat's state, in type data_t
 
 extern double objectVals[2];//vector for detected objects
-
 
 /*------------------------------ Functions ------------------------------*/
 

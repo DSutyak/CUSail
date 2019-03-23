@@ -1,17 +1,14 @@
-#include <Printers.h>
-#include <XBee.h>
-
 
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
-#include <PixyI2C.h>
 #include "navigation.h"
-#include "navigation_helper.h"  
+#include "navigation_helper.h"
+#include "Pixy/PixyI2C.h"
 
 //Begin Pixy
 PixyI2C pixy;
-XBee xbee;
+
 TinyGPSPlus gps;
 data_t sensorData;
 
@@ -84,33 +81,33 @@ void addObjects(void) {
 /* Returns servo command for sail servo for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
  */
-double sailMap(double sailAngle){
-  double newSailAngle;
-  if (sailAngle <= 90){
-    newSailAngle = map(sailAngle, 0, 90, 142, 125);
+double sailMap(double sail_angle){
+  double new_sail_angle;
+  if (sail_angle <= 90){
+    new_sail_angle = map(sail_angle, 0, 90, 142, 125);
   }
-  else if (sailAngle <= 180){
-    newSailAngle = map(sailAngle, 90, 180, 125, 108);
+  else if (sail_angle <= 180){
+    new_sail_angle = map(sail_angle, 90, 180, 125, 108);
   }
-  else if (sailAngle <= 270){
-    newSailAngle = map(sailAngle, 180, 270, 108, 91);
+  else if (sail_angle <= 270){
+    new_sail_angle = map(sail_angle, 180, 270, 108, 91);
   }
   else{
-   newSailAngle = map(sailAngle, 270, 360,91, 74);
+   new_sail_angle = map(sail_angle, 270, 360,91, 74);
   }
-  return newSailAngle;
+  return new_sail_angle;
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
-double tailMap(double sailAngle, double tailAngle){
+double tailMap(double sail_angle, double tail_angle){
 
-  if (sailAngle > 180){ //convert sail angle to -180.. 180
-    sailAngle -= 360;
+  if (sail_angle > 180){ //convert sail angle to -180.. 180
+    sail_angle -= 360;
   }
 
-  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+  double newTailAngle=tail_angle-sail_angle; //calculate position of tail with respect to sail
 
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
@@ -135,57 +132,53 @@ double tailMap(double sailAngle, double tailAngle){
 
 
 
-double sailMapBench( double sailAngle){
- double newSailAngle;
- if (sailAngle <= 90){
-   newSailAngle = map(sailAngle, 0, 90, 97, 102.3);
+double sailMapBench( double sail_angle){
+ double new_sail_angle;
+ if (sail_angle <= 90){
+   new_sail_angle = map(sail_angle, 0, 90, 97, 102.3);
  }
- else if (sailAngle <= 180){
-   newSailAngle = map(sailAngle, 90, 180, 102.3, 108);
+ else if (sail_angle <= 180){
+   new_sail_angle = map(sail_angle, 90, 180, 102.3, 108);
  }
- else if (sailAngle <= 270){
-   newSailAngle = map(sailAngle, 180, 270, 108, 113);
+ else if (sail_angle <= 270){
+   new_sail_angle = map(sail_angle, 180, 270, 108, 113);
  }
  else{
-  newSailAngle = map(sailAngle, 270, 360, 113, 118);
+  new_sail_angle = map(sail_angle, 270, 360, 113, 118);
  }
- return newSailAngle;
+ return new_sail_angle;
 }
 
-double tailMapBench( double sailAngle, double tailAngle){
- if (sailAngle > 180){ //convert sail angle to -180.. 180
-   sailAngle -= 360;
+double tailMapBench( double sail_angle, double tail_angle){
+ if (sail_angle > 180){ //convert sail angle to -180.. 180
+   sail_angle -= 360;
  }
 
- double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
+ double new_tail_angle=tail_angle-sail_angle; //calculate position of tail with respect to sail
 
  //make sure tail angle is in range -180.. 180
- if(newTailAngle<-180){
-   newTailAngle+=360;
+ if(new_tail_angle<-180){
+   new_tail_angle+=360;
  }
- else if(newTailAngle>180){
-   newTailAngle-=360;
+ else if(new_tail_angle>180){
+   new_tail_angle-=360;
  }
  //map to servo commands
- if (newTailAngle <= 0 ){
-   newTailAngle=map(newTailAngle,-30,0,13,45);
+ if (new_tail_angle <= 0 ){
+   new_tail_angle=map(new_tail_angle,-30,0,13,45);
  }
- else if (newTailAngle > 0 ){
-   newTailAngle=map(newTailAngle,0,30,45,70);
+ else if (new_tail_angle > 0 ){
+   new_tail_angle=map(new_tail_angle,0,30,45,70);
  }
- return newTailAngle;
+ return new_tail_angle;
 }
 
 /*Sensor setup*/
 void initSensors(void) {
-  xbee = XBee();
-
   Serial.begin(9600);
-  Serial1.begin(9600);
   Serial2.begin(9600);
+  Serial1.begin(9600);
   Serial3.begin(9600);
-
-  xbee.setSerial(Serial1);
 
   //Initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
@@ -212,12 +205,12 @@ void initSensors(void) {
   //Initialize pixycam
   pixy.init();
 
-  sensorData.boatDir = 0; //Boat direction w.r.t North
+  sensorData.boat_direction = 0; //Boat direction w.r.t North
   sensorData.sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
   sensorData.tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
   sensorData.pitch = 0;
   sensorData.roll = 0;
-  sensorData.windDir = 0; // Wind direction w.r.t North
+  sensorData.wind_dir = 0; // Wind direction w.r.t North
   sensorData.x = 0; // Longitude of current global position;
   sensorData.y = 0; // Longitude of current global position;
   sensorData.lat=0;
@@ -242,7 +235,6 @@ void lowAllLEDs(){
 
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
-  digitalWrite(greenLED, HIGH);
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
 
   //Send the Command Frame
@@ -258,7 +250,6 @@ void sRSensor(void) {
   digitalWrite(RS_CSN, HIGH);
   SPI.endTransaction();
   delay(1000);
-  digitalWrite(greenLED, LOW);
   //mask the MSB and 14th bit
   angle = (angle & (0x3FFF));
 
@@ -267,6 +258,7 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
+  
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);
@@ -275,7 +267,7 @@ void sRSensor(void) {
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
-  wind_wrtN = ((int)(wind_wrtN + sensorData.boatDir))%360;
+  wind_wrtN = ((int)(wind_wrtN + sensorData.boat_direction))%360;
 
   //filter wind
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
@@ -287,18 +279,14 @@ void sRSensor(void) {
 //  Serial1.print("Raw Wind WRT NORTH: ");
 //  Serial1.println(wind_wrtN);
 
-  sensorData.windDir = wind_wrtN;
+  sensorData.wind_dir = wind_wrtN;
   prevWindDirection = wind_wrtN;
-  delay(1000);
-  digitalWrite(greenLED, HIGH);
-}
+  }
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
 coord_xy point;
 void sGPS(void) {
-  delay(1000);
-  digitalWrite(greenLED, LOW);
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
       point = xyPoint( coord_t({gps.location.lat(),gps.location.lng()}));
@@ -312,8 +300,6 @@ void sGPS(void) {
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
     }
-  delay(1000);
-  digitalWrite(greenLED, HIGH);
 }
 
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
@@ -341,10 +327,11 @@ void sIMU(void) {
     delay(1);
     result = transferByte(0xFF);
 //    Serial1.println("IMU Stuck!");
+    digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
     }
-
   digitalWrite(redLED, LOW);
+  digitalWrite(greenLED, HIGH);
 
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
@@ -360,14 +347,14 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  float boatDir =  ((imu_data[1].fval)*(180/PI));
-  if (boatDir < 0) {
-    boatDir += 360;
+  float boat_direction =  ((imu_data[1].fval)*(180/PI));
+  if (boat_direction < 0) {
+    boat_direction += 360;
   }
 
-  sensorData.boatDir = boatDir;
+  sensorData.boat_direction = boat_direction;
 //  Serial1.print("BoatDIR raw:");
-//  Serial1.println(boatDir);
+//  Serial1.println(boat_direction);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }

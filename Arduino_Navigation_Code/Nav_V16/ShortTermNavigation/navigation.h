@@ -61,10 +61,13 @@ void setWaypoints(void);
 
 /*Determines whether boat is above upper boundary
 */
-bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2);
+bool aboveBounds(float upperWidth, coord_xy point1, coord_xy point2, int quadrant);
 /*Determines whether boat is below lower boundary
 */
-bool aboveBounds(float lowerWidth, coord_xy point1, coord_xy point2);
+bool belowBounds(float lowerWidth, coord_xy point1, coord_xy point2, int quadrant);
+
+/*Sets sail and tail angle given information from nShort */
+void nav(int quadrant, bool rightLeft);
 /*Short Term Navigation Algorithm
 * Uses sensorData.windDir, sensorData.boatDir to set sailAngle and tailAngle.
 * sailAngle and tailAngle are set in terms of servo command numbers, but are first
