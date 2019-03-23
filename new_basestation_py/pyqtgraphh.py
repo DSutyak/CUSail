@@ -1,8 +1,13 @@
 from PyQt5 import QtGui  # (the example applies equally well to PySide)
 import pyqtgraph as pg
 import time as time
+import json
+import pprint
 global past_point
 past_point = (0,0)
+
+pp = pprint.PrettyPrinter(indent=4)
+
 ## Always start by initializing Qt (only once per application)
 app = QtGui.QApplication([])
 
@@ -12,6 +17,7 @@ w = QtGui.QWidget()
 
 ## Create some widgets to be placed inside
 btn = QtGui.QPushButton('Plot')
+btn2 = QtGui.QPushButton('Update')
 text = QtGui.QLineEdit('Enter Buoy/Waypoint')
 listw = QtGui.QListWidget()
 plot = pg.PlotWidget()
@@ -21,6 +27,25 @@ display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
 
 
 
+def update():
+    f = open("live_data.txt")
+    raw_data = list(f)[-1]
+    data = json.loads(raw_data)
+    pp.pprint(data)
+    print("\n")
+    x = float(data['X position'][0:-2])
+    y = float(data['Y position'][0:-2])
+    print(x)
+    print("\n")
+    print(y)
+    print("\n")
+    global past_point
+    # listw.addItem(text.text())
+    # arr = text.text().split(',')
+    # x = float(arr[0])
+    # y = float(arr[1])
+    plot.plot([past_point[0], x], [past_point[1], y])
+    past_point = (x,y)
 
 def clicked():
     global past_point
@@ -45,8 +70,7 @@ def clicked():
 
 
 btn.clicked.connect(clicked)
-
-
+btn2.clicked.connect(update)
 ## Create a grid layout to manage the widgets size and position
 layout = QtGui.QGridLayout()
 w.setLayout(layout)
