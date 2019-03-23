@@ -101,7 +101,6 @@ public:
   coord_xy waypoint_array[];
   float angle_to_waypoint;
   float normal_distance;
-  bool is_tacking;
   float intended_angle;
   String port_or_starboard;
   float max_distance;
@@ -183,13 +182,13 @@ extern Navigation_Controller nc;
 /*----------Functions----------*/
 void initializer(void);
 
-//void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
+void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-//bool aboveBounds(float upperWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool aboveBounds(float upperWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
 /*Determines whether boat is below lower boundaryd
 */
-//bool belowBounds(float lowerWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool belowBounds(float lowerWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
 void nav();
