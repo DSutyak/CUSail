@@ -48,7 +48,6 @@ def update():
     past_point = (x,y)
 
 def clicked():
-    global past_point
     entry = text.text().strip().replace(" ","")
     try:
         arr = entry.split(',')
@@ -60,8 +59,8 @@ def clicked():
         x = float(arr[0])
         y = float(arr[1])
 
-        plot.plot([x+2, x-2], [y+2, y-2])
-        plot.plot([x+2, x-2], [y-2, y+2])
+        plot.plot([x+4, x-4], [y+4, y-4], pen = 'g')
+        plot.plot([x+4, x-4], [y-4, y+4], pen = 'g')
 
     except Exception as e:
         print("Could not convert string to float: '" + entry + "'")
