@@ -13,8 +13,11 @@
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs
 --------------------------------------------------------------------*/
+#include "XBee.h"
 
 /*------------------------------ Structures ------------------------------*/
+extern XBee xbee;
+
 typedef struct date {
   int year;
   unsigned char month;
@@ -52,6 +55,7 @@ typedef struct dataStructure {
 extern data_t sensorData; //Defines the boat's state, in type data_t
 
 extern double objectVals[2];//vector for detected objects
+
 
 /*------------------------------ Functions ------------------------------*/
 

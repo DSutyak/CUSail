@@ -14,21 +14,22 @@ Boat_Controller bc;
 coord_xy waypoint_array[];
 
 void initializer(){
+  pinMode(34, OUTPUT);
   coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
   coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
   coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
-
+// set max distance from origin
   float max_distance = 10000.0;
+//  init waypoints
   coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
   int num_wp = 3;
   setOrigin(coordinates[0]);
+  delay(1000);
   waypoint_array[num_wp];
   for(int i =0; i < sizeof(coordinates); i++) {
     waypoint_array[i] = xyPoint(coordinates[i]);
   }
-  float port_boundary = 10.0;
-  float starboard_boundary = 10.0;
-  nc.nav_init(max_distance, num_wp, waypoint_array, port_boundary, starboard_boundary);
+  nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, tailServoPin, sailServoPin);
 }
 
@@ -109,7 +110,6 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 }
 
 void nav() {
-
     nc.wind_direction = sensorData.wind_dir;
     bc.boat_direction = sensorData.boat_direction;
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
@@ -184,6 +184,7 @@ void nav() {
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
 
+  printData();
 }
 
 /*void endurance(coord_xy buoyLocations[]){

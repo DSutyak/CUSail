@@ -249,7 +249,7 @@ void sRSensor(void) {
   unsigned int angle = SPI.transfer16(0xC000);
   digitalWrite(RS_CSN, HIGH);
   SPI.endTransaction();
-
+  delay(1000);
   //mask the MSB and 14th bit
   angle = (angle & (0x3FFF));
 
@@ -258,6 +258,7 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
+  
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);
@@ -299,7 +300,6 @@ void sGPS(void) {
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
     }
-
 }
 
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
@@ -327,10 +327,11 @@ void sIMU(void) {
     delay(1);
     result = transferByte(0xFF);
 //    Serial1.println("IMU Stuck!");
+    digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
     }
-
   digitalWrite(redLED, LOW);
+  digitalWrite(greenLED, HIGH);
 
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {

@@ -1,14 +1,17 @@
+#include <Printers.h>
+#include <XBee.h>
+
 
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
 #include <PixyI2C.h>
 #include "navigation.h"
-#include "navigation_helper.h"
+#include "navigation_helper.h"  
 
 //Begin Pixy
 PixyI2C pixy;
-
+XBee xbee;
 TinyGPSPlus gps;
 data_t sensorData;
 
@@ -175,10 +178,14 @@ double tailMapBench( double sailAngle, double tailAngle){
 
 /*Sensor setup*/
 void initSensors(void) {
+  xbee = XBee();
+
   Serial.begin(9600);
-  Serial2.begin(9600);
   Serial1.begin(9600);
+  Serial2.begin(9600);
   Serial3.begin(9600);
+
+  xbee.setSerial(Serial1);
 
   //Initialize data structure
   sensorData = *(data_t*) malloc(sizeof(data_t));
@@ -235,6 +242,7 @@ void lowAllLEDs(){
 
 /*Sets value of sensorData.windDir to current wind direction w.r.t North*/
 void sRSensor(void) {
+  digitalWrite(greenLED, HIGH);
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE1));
 
   //Send the Command Frame
@@ -249,7 +257,8 @@ void sRSensor(void) {
   unsigned int angle = SPI.transfer16(0xC000);
   digitalWrite(RS_CSN, HIGH);
   SPI.endTransaction();
-
+  delay(1000);
+  digitalWrite(greenLED, LOW);
   //mask the MSB and 14th bit
   angle = (angle & (0x3FFF));
 
@@ -280,12 +289,16 @@ void sRSensor(void) {
 
   sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
-  }
+  delay(1000);
+  digitalWrite(greenLED, HIGH);
+}
 
 /*Sets value of sensorData.lati, sensorData.longi and sensorData.dateTime
 * to current lattitude, current longitude and current date/time respectively*/
 coord_xy point;
 void sGPS(void) {
+  delay(1000);
+  digitalWrite(greenLED, LOW);
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
       point = xyPoint( coord_t({gps.location.lat(),gps.location.lng()}));
@@ -299,7 +312,8 @@ void sGPS(void) {
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
     }
-
+  delay(1000);
+  digitalWrite(greenLED, HIGH);
 }
 
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll

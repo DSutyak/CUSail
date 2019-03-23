@@ -5,6 +5,11 @@
  CUSail
 `Cornell Autonomous Sailboat Team
 
+================
+VERSION 17
+================
+Authors: Kurt Huebner, Troy Smith
+
  ShortTermNavigation
   The primary file that schedules tasks for SailVane:
 
@@ -21,6 +26,7 @@
 
 // Code within setup() runs once on receiving power
 void setup() {
+  initSensors();
   initializer();
 }
 
@@ -30,5 +36,4 @@ void loop() {
   sGPS(); //Gather global coordinates
   sIMU(); //Gather boat direction w.r.t North, Roll and Pitch
   nav(); //Run Short Term Navigation Algorithm to obtain servo commands
-
 }

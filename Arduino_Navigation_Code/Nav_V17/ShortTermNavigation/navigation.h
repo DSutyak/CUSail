@@ -85,7 +85,6 @@ public:
     detection_radius = d;
     is_tacking = false;
     point_of_sail = "";
-    initSensors();
   }  //Sets the angle of the main sail
 };
 #endif
@@ -139,10 +138,10 @@ navigate a body of water.
   Navigation_Controller(){}
   void nav_init (float limit, int num, coord_xy waypoints[], float port, float starboard){
     int count = 0;
-    while (count < num){
-      waypoint_array[count] = waypoints[count];
-      count++;
-    }
+//    while (count < num){
+//      waypoint_array[count] = waypoints[count];
+//      count++;
+//    }
     angle_to_waypoint = 0.0;
     normal_distance = 0.0;
     intended_angle = 0.0;
