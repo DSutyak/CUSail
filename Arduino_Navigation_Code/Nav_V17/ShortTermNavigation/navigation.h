@@ -48,8 +48,6 @@ public:
   Servo tailServo;
   Servo sailServo;
   float detection_radius;
-  float port_boundary;
-  float starboard_boundary;
   bool is_tacking;
   String point_of_sail;
   float angle_of_attack = 10;
@@ -97,7 +95,6 @@ navigate a body of water.
 #define Navigation_Controller_h
 class Navigation_Controller {
 public:
-  coord_xy waypoint_array[];
   float angle_to_waypoint;
   float normal_distance;
   float intended_angle;
@@ -108,10 +105,8 @@ public:
   float dir_angle;
   float offset;
   float wind_direction;
-  float port_boundary;
-  float starboard_boundary;
-  float upper_width;
-  float lower_width;
+  float upper_width; //boundary on port side
+  float lower_width; //boundary on starboard side
 
 /*
 An object of class Navigation_Controller represents the abstract
@@ -152,8 +147,6 @@ navigate a body of water.
     dir_angle = 0.0;
     offset = 0.0;
     wind_direction = 0.0;
-    port_boundary = port;
-    starboard_boundary = starboard;
     upper_width = 10;
     lower_width = 10;
   }
