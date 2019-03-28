@@ -1,4 +1,3 @@
-
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"

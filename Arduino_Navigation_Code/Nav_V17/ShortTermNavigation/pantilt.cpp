@@ -1,7 +1,7 @@
 #include "sensors.h"
 #include <Servo.h>
 #include <Math.h>
-
+#include <SPI.h>
 
 
 
@@ -12,7 +12,7 @@ Servo tilt;
 //int pos_t = 180;
 //bool increasing = true;
 
-void setup() {
+void pantilt_setup() {
   Serial.begin(9600);
   pan.attach(4);
   tilt.attach(3);
