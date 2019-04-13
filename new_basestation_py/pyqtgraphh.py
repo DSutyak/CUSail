@@ -1,5 +1,6 @@
 import sys
-from PyQt5 import QtGui  # (the example applies equally well to PySide)
+from PyQt5 import QtGui
+from PyQt5.QtGui import * # (the example applies equally well to PySide)
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication, QWidget, QSpinBox
 # from PyQt5 import QtWidgets
@@ -14,7 +15,7 @@ past_point = (0,0)
 pp = pprint.PrettyPrinter(indent=4)
 
 ## Always start by initializing Qt (only once per application)
-app = QtGui.QApplication([])
+app = QtGui.QApplication(sys.argv)
 
 ## Define a top-level widget to hold everything
 w = QtGui.QWidget()
@@ -114,13 +115,12 @@ class CompassWidget(QWidget):
         painter.restore()
     
     def sizeHint(self):
-    
-        return QSize(150, 150)
+        return QSize(300, 300)
     
     def angle(self):
         return self._angle
     
-    @pyqtSlot(float)
+    # @pyqtSlot(float)
     def setAngle(self, angle):
     
         if angle != self._angle:
@@ -129,11 +129,6 @@ class CompassWidget(QWidget):
             self.update()
     
     angle = pyqtProperty(float, angle, setAngle)
-
-compass = CompassWidget()
-spinBox = QSpinBox()
-spinBox.setRange(0,359)
-spinBox.valueChanged.connect(compass.setAngle)
 
 def update():
     f = open("live_data.txt")
@@ -164,6 +159,8 @@ def update():
     # arr = text.text().split(',')
     # x = float(arr[0])
     # y = float(arr[1])
+    wind_compass.setAngle(wind_dir)
+    boat_compass.setAngle(boat_dir)
     plot.plot([past_point[0], x], [past_point[1], y])
     past_point = (x,y)
     display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
@@ -214,6 +211,9 @@ def buoy():
         print("Could not convert string to float: '" + entry + "'")
 
 
+wind_compass = CompassWidget()
+boat_compass = CompassWidget()
+# spinBox.valueChanged[float].connect(compass.setAngle)
 
 btn.clicked.connect(waypoint)
 btn2.clicked.connect(update)
@@ -233,8 +233,9 @@ layout.addWidget(listb, 4, 1)  # list widget goes in bottom-left
 layout.addWidget(display1, 6, 0)  # display1 widget goes in bottom-left
 layout.addWidget(display2, 6, 1)  # display2 widget goes in bottom-middle
 layout.addWidget(plot, 0, 3, 5, 1)  # plot goes on right side, spanning 3 rows
-layout.addWidget(compass, 5, 0)
-layout.addwidget(spinBox, 5, 0)
+layout.addWidget(wind_compass, 5, 0)
+layout.addWidget(boat_compass, 5, 1)
+# layout.addWidget(spinBox, 5, 0)
 ## Display the widget as a new window
 w.show()
 
