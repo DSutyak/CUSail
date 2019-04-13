@@ -27,7 +27,7 @@ listb = QtGui.QListWidget()
 plot = pg.PlotWidget()
 plot.setLimits(minXRange=500,maxXRange=500,minYRange=500,maxYRange=500)
 display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
-display2 = QtGui.QLabel('Tail Vector: <x,y,z>')
+display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 
 
 
@@ -39,10 +39,20 @@ def update():
     print("\n")
     x = float(data['X position'][0:-2])
     y = float(data['Y position'][0:-2])
-    print(x)
-    print("\n")
-    print(y)
-    print("\n")
+    lati = float(data['latitude'][0:-2])
+    longi = float(data['longitude'][0:-2])
+    wind_dir = float(data["Wind w.r.t North"][0:-2])
+    roll = float(data["Roll"][0:-2])
+    pitch = float(data["Pitch"][0:-2])
+    boat_dir = float(data["Boat direction"][0:-2])
+    waypoint_number = int(data["Next Waypoint #3"][0:-2])
+    waypoint_distance = float(data["Distance to Waypoint"][0:-2])
+    waypoint_angle = float(data["Angle to Waypoint"][0:-2])
+    
+    # print(x)
+    # print("\n")
+    # print(y)
+    # print("\n")
     global past_point
     # listw.addItem(text.text())
     # arr = text.text().split(',')
@@ -50,6 +60,10 @@ def update():
     # y = float(arr[1])
     plot.plot([past_point[0], x], [past_point[1], y])
     past_point = (x,y)
+    display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
+    display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
+    
+
 
 brush_list = [pg.mkColor(c) for c in "rgbcmykwrg"]
 #pen = random.choice(brush_list)
@@ -75,7 +89,11 @@ def waypoint():
 
 
 def buoy():
+<<<<<<< HEAD
     #pen = random.choice(brush_list)  --> for cool, fun color times
+=======
+    pen = random.choice(brush_list)
+>>>>>>> c257a8869b8cdfcb4222ca1931ae807a6ab8363b
     entry = text.text().strip().replace(" ","")
     try:
         arr = entry.split(',')
@@ -103,7 +121,11 @@ layout = QtGui.QGridLayout()
 w.setLayout(layout)
 
 ## Add widgets to the layout in their proper positions
+<<<<<<< HEAD
 ## goes row, col, rowspan, colspan
+=======
+
+>>>>>>> c257a8869b8cdfcb4222ca1931ae807a6ab8363b
 layout.addWidget(btn, 1, 0)  # button goes in mid-left is waypoints
 layout.addWidget(btn2, 0, 0, 1, 2)  # button2 goes in upper-left
 layout.addWidget(btn3, 1, 1)  # button3 goes in upper-left is buoy
