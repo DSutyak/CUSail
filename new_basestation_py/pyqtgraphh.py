@@ -7,6 +7,7 @@ import random
 global past_point
 past_point = (0,0)
 
+pg.setConfigOption('background', 'w')
 pp = pprint.PrettyPrinter(indent=4)
 
 ## Always start by initializing Qt (only once per application)
@@ -55,7 +56,6 @@ brush_list = [pg.mkColor(c) for c in "rgbcmykwrg"]
 
 def waypoint():
     pen = random.choice(brush_list)
-    global past_point
     entry = text.text().strip().replace(" ","")
     try:
         arr = entry.split(',')
@@ -75,8 +75,7 @@ def waypoint():
 
 
 def buoy():
-    pen = random.choice(brush_list)
-    global past_point
+    #pen = random.choice(brush_list)  --> for cool, fun color times
     entry = text.text().strip().replace(" ","")
     try:
         arr = entry.split(',')
@@ -104,8 +103,9 @@ layout = QtGui.QGridLayout()
 w.setLayout(layout)
 
 ## Add widgets to the layout in their proper positions
+## goes row, col, rowspan, colspan
 layout.addWidget(btn, 1, 0)  # button goes in mid-left is waypoints
-layout.addWidget(btn2, 0, 0)  # button2 goes in upper-left
+layout.addWidget(btn2, 0, 0, 1, 2)  # button2 goes in upper-left
 layout.addWidget(btn3, 1, 1)  # button3 goes in upper-left is buoy
 layout.addWidget(text, 2, 0, 1, 2)  # text edit goes in middle-left
 layout.addWidget(listw, 4, 0)  # list widget goes in bottom-left
