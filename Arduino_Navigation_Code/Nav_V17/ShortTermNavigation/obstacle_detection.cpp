@@ -64,15 +64,14 @@ void loop(){
      //sweeps pan_servo from sweep_start to sweep_finish deg (relative to North) and stores lidar data in data_sweep arrays have 360 elements
      //Precondition: sweep_start > 10 and sweep_finish < 170 and sweep_start < sweep_finish
   void sweep_get_data(int sweep_start, int sweep_finish, float data_sweep1[], float data_sweep2[]){
-    int pan_start = (sweep_start - sensorData.boat_direction + 360) % 360;
-    int pan_finish = (sweep_finish - sensorData.boat_direction + 360) % 360;
+    int pan_start = (int)(sweep_start - sensorData.boat_direction + 360) % 360;
+    int pan_finish = (int)(sweep_finish - sensorData.boat_direction + 360) % 360;
     for(int i = pan_start; i < pan_finish; i+= 3){
       PanServo.write(i);
       delay(500);
       data_sweep1[get_current_angle()] = get_lidar_data();
       }
       delay(500);
-      Pan_angle = pan_start;
       PanServo.write(pan_start);
       delay(1000);
     for(int i = pan_start; i < pan_finish; i+= 3){
@@ -150,10 +149,11 @@ int diff_check(float a, float b) {
 void create_xy_object_array(float data[180]) {
   coord_xy objects[360]; //max # of objects detected is 180, objects is an array whose first elements are objects, the rest just 0
   int j = 0;
+  float pi = 3.14159265359;
   for (int i = 0; i < 180; i++){
     if (data[i] != 0 && data[i] != 360) {
-      y = sensorData.y + data[i]*cos(2.*pi*i/180.);
-      x = sensorData.x + data[i]*sin(2.*pi*i/180.);
+      float y = sensorData.y + data[i]*cos(2.*pi*i/180.);
+      float x = sensorData.x + data[i]*sin(2.*pi*i/180.);
       objects[j] = coord_xy({x,y});
       j++;
     }
@@ -165,20 +165,23 @@ void create_xy_object_array(float data[180]) {
 
 
 //inserts objects into sorted global object_list
+//INCOMPLETE
 //uses sorting algo: 
 void add_to_object_list(coord_xy data[180]){
+  /*
   list <obstacle> obstacle_list;
   for(int i = 0; i<180; i++){
-    Obstacle new_obj = new Obstacle;
+    obstacle new_obj = new obstacle;
     new_obj.location = data[i];
     new_obj.seen=1;
     new_obj.confirmed = false;
     
     list <int> :: iterator it; 
     for(it = obstacle_list.begin(); it != obstacle_list.end(); ++it) {
-      
+      //iterate through list
+      1;
     }
   }
-  
+  */  
 }
 

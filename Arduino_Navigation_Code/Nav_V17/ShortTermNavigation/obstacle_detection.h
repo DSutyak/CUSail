@@ -1,5 +1,4 @@
 
-#include "obstacle_detection.h"
 #include "sensors.h"
 #include "navigation_helper.h"
 #include "coordinates.cpp"
@@ -29,9 +28,9 @@ int diff_check(float a, float b);
 //should be rewritten as a list with the correct number of elements
 void create_xy_object_array(float data[180]);
 
-#ifndef Obstacle_h
-#define Obstacle_h
-class Obstacle {
+#ifndef obstacle_h
+#define obstacle_h
+class obstacle {
 public:
   _coord_xy location;
   int seen; //the number of times we see it
@@ -43,6 +42,5 @@ public:
   void confirm() {
     confirmed = 1;
   }
-  
-}
+};
 #endif
