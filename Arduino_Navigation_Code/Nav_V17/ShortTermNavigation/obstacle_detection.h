@@ -3,6 +3,11 @@
 #include "navigation_helper.h"
 #include "coordinates.cpp"
 
+// updates recentObjects array with new data
+void scanLidar();
+
+//prints Data arrays with corresponding angles
+void printLidarData();
 
 //sweeps pan_servo from sweep_start to sweep_finish deg (relative to North) and stores lidar data in data_sweep arrays have 360 elements
      //Precondition: sweep_start > 10 and sweep_finish < 170 and sweep_start < sweep_finish

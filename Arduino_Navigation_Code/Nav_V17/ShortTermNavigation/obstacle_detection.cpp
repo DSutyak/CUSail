@@ -10,55 +10,41 @@
 #include "obstacle_detection.h"
 #include <Servo.h>
 #include <Wire.h>
-#include <list> 
+#include <list>     //likely won't use this - list in std library doesn't work in arduino
 #include <iterator> //check if needed this
 
-Servo PanServo;  // create a servo object
-Servo TiltServo;
 
-float IMU_angle; // - angle of plane of Pan_angle - worry about sensorData.roll & pitch later
-float boat_direction; //angle of boat w.r.t north = sensorData.boat_directionfloat Pan_angle; // - angle of pan servo
-//int Tilt_angle; //- angle of tilt servo - replaced with Tilt_servo.read()
-//int Pan_angle; //angle of pan servo - replaced with Pan_servo.read()
-int reading = 0; //for reading data
-//index corresponds to degree w.r.t north, element corresponds to distance
+int reading = 0; //for reading data from lidar sensor
+//Data array's index corresponds to degree w.r.t north, element corresponds to distance
 float Data1[360];
 float Data2[360];
 float Filtered_Data[360];
+coord_xy recentObjects[360]; //max # of objects detected is 180, recentObjects is an array whose first elements are objects, the rest just 0. 
+//contains all objects detected from a single sweep data array
 
+
+//SETUP to be moved to function initSensors() sensors.cpp
+Servo PanServo;  // create a servo object
+Servo TiltServo;
+/* 
 void setup() {
   PanServo.attach(4); // attaches the servo on pin 4 to the servo object
   PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
-  IMU_angle = 0.;
   Wire.begin();
   Serial.begin(9600); // open a serial connection to your computer
-}
-
-void loop(){
+  
   Wire.beginTransmission(0x66);
   Wire.write(0);
-  Wire.endTransmission(); //Try moving this wire stuff to setup and see if it still works
-
+  Wire.endTransmission(); // Tried moving this wire stuff to setup - if the sensor doesn't work this might have to go in the main lidar file
+}
+*/
+//TODO add scanLidar to header file
+// updates recentObjects array with new data
+void scanLidar() {
   sweep_get_data(45, 135, Data1, Data2); //sweep sensor and record data in two arrays
-  compare(Data1, Data2); // compare two arrays
-  
-  Serial.println("Printing Array");
-  for(int i = 0; i<360;i++){
-    if(Data1[i] != 0.0) {
-      Serial.print(Filtered_Data[i]);
-      Serial.print(" D1: ");
-      Serial.print(Data1[i]);
-      Serial.print(" D2: ");
-      Serial.print(Data2[i]);
-      Serial.print("  Angle: ");
-      Serial.println(i);
-    }
-  }
-  Serial.println("End printed Array");
-  delay(10000);
-  
-    // wait for the servo to get there
-    delay(15);
+  compare(Data1, Data2); // compare two arrays and store consistent data in global Filtered_Data
+  printLidarData();
+  create_xy_object_array(Filtered_Data); //update recentObjects array
  }
 
      //sweeps pan_servo from sweep_start to sweep_finish deg (relative to North) and stores lidar data in data_sweep arrays have 360 elements
@@ -87,9 +73,8 @@ void loop(){
  
  //get_current_angle returns the current angle (phi in spherical) that the sensor is pointing at
   int get_current_angle(){
-    //return (Pan_angle);
-    return PanServo.read();
-    //return (Pan_Servo.read() + sensorData.boat_Direction + 360)%360; //return angle w.r.t north
+    //return PanServo.read();
+    return (int)(PanServo.read() + sensorData.boat_direction + 360)%360; //return angle w.r.t north 
  }
 
  //returns float of distance in meters from sensor
@@ -107,7 +92,7 @@ void loop(){
   }
 
 //returns an array, length 360, with a distance in indices where data is confirmed
-//currently compares 3 closest degrees
+//currently compares 3 closest degrees ***This is a problem when the servo rotates by 3 degrees - only compares two closest data points***
 //uses diff_check(a b) 
 void compare(float data1[360], float data2[360]){  
   for (int i = 0; i<360; i++) {
@@ -136,25 +121,42 @@ void compare(float data1[360], float data2[360]){
 
 //returns 1 if passes "percent difference" check, 0 otherwise
 int diff_check(float a, float b) {
+  float max_percent_difference = 0.3;
    if (a == 130.0 || b == 130.0) {return 0;}
    float avg = (a+b)/2.0;
    float diff = abs(a-b);
-   if (diff/(avg+.001) < 0.3) {return 1;}
+   if (diff/(avg+.001) < max_percent_difference) {return 1;}
    return 0;
 }
+//TODO add to header file
+//prints Data arrays with corresponding angles
+void printLidarData(){
+    Serial.println("Printing Array");
+    for(int i = 0; i<360;i++){
+      if(Data1[i] != 0.0) {
+        Serial.print(Filtered_Data[i]);
+        Serial.print(" D1: ");
+        Serial.print(Data1[i]);
+        Serial.print(" D2: ");
+        Serial.print(Data2[i]);
+        Serial.print("  Angle: ");
+        Serial.println(i);
+      }
+    }
+    Serial.println("End printed Array");
+  }
 
 //takes in an array of data and creates {x,y} coordinates for all points that aren't 130.0
 //assumes the boat has not moved far since the data array was created
 //should be rewritten as a list with the correct number of elements
-void create_xy_object_array(float data[180]) {
-  coord_xy objects[360]; //max # of objects detected is 180, objects is an array whose first elements are objects, the rest just 0
+void create_xy_object_array(float data[360]) {
   int j = 0;
-  float pi = 3.14159265359;
-  for (int i = 0; i < 180; i++){
-    if (data[i] != 0 && data[i] != 360) {
+  float pi = 3.14159265359; //is there a math library to use?
+  for (int i = 0; i < 360; i++){
+    if (data[i] != 0.0 && data[i] != 130.0) { //only add object if dist isn't 0 or 130. The 0 check is redundant because FilteredData should already have the data removed
       float y = sensorData.y + data[i]*cos(2.*pi*i/180.);
       float x = sensorData.x + data[i]*sin(2.*pi*i/180.);
-      objects[j] = coord_xy({x,y});
+      recentObjects[j] = coord_xy({x,y});
       j++;
     }
   }
@@ -165,7 +167,7 @@ void create_xy_object_array(float data[180]) {
 
 
 //inserts objects into sorted global object_list
-//INCOMPLETE
+//INCOMPLETE - I don't know how to make this work :(
 //uses sorting algo: 
 void add_to_object_list(coord_xy data[180]){
   /*
