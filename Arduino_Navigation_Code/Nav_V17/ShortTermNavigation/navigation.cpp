@@ -90,11 +90,10 @@ void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
 
 
 /*
-Helper function used to determine whether the boat is aboveBounds or belowBounds.
+Helper functions used to determine whether the boat is aboveBounds or belowBounds.
 Arguments:
-  width is a float that sets the maximum allowable width for boat to sail within
-
-  point1 and point2 are coordinates in the xy plane
+  bc.location is the current GPS xy coordinate of the boat
+  waypoint_array[nc.current_wp+1] is the value of the next waypoint the boat must hit
 */
 
 /*function [aboveBounds] determines if the boat is above the greatest tacking bound (port) */
@@ -104,7 +103,7 @@ bool aboveBounds(Boat_Controller bc, Navigation_Controller nc){
   float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
   return (distance > nc.upper_width);
 }
-/*function [aboveBounds] determines if the boat is below the lowest tacking bound (starboard) */
+/*function [belowBounds] determines if the boat is below the lowest tacking bound (starboard) */
 bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
   float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
   float intercept = bc.location.y - slope * bc.location.x;
@@ -193,7 +192,8 @@ void nav() {
   printData();
 }
 
-/*void endurance(coord_xy buoyLocations[]){
+void endurance(Boat_Controller bc, Navigation_Controller nc){
+  //set waypoint array to locations just inside the buoy area
   if(nc.currentWP = buoyLocations.length){
     nc.currentWP = 0;
   }
@@ -204,7 +204,7 @@ void nav() {
 }
 // 5 Meters away from the Buoy inside the buoy location. Must hand calculate the
 // Buoy Location
-void station_keeping(coord_xy buoyLocations[]){
+/*void station_keeping(coord_xy buoyLocations[]){
   if(true){
     coord_xy next = nc.waypoint_array[(nc.currentWP + 1)%4];
     coord_xy current = bc.location;
