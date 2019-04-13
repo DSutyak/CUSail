@@ -31,6 +31,8 @@ void initializer(){
   }
   nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, tailServoPin, sailServoPin);
+  float angle_to_waypoint =
+    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[num_wp]);
 }
 
 
@@ -95,13 +97,14 @@ Arguments:
   point1 and point2 are coordinates in the xy plane
 */
 
+/*function [aboveBounds] determines if the boat is above the greatest tacking bound (port) */
 bool aboveBounds(Boat_Controller bc, Navigation_Controller nc){
   float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
   return (distance > nc.upper_width);
 }
-/*Method to determine whether the boat is below the lesser tacking bound, for use in nShort to determine when to tack */
+/*function [aboveBounds] determines if the boat is below the lowest tacking bound (starboard) */
 bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
   float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
   float intercept = bc.location.y - slope * bc.location.x;
@@ -112,10 +115,13 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 void nav() {
     nc.wind_direction = sensorData.wind_dir;
     bc.boat_direction = sensorData.boat_direction;
+    nc.dir_angle = convertto360(nc.angle_to_waypoint-nc.wind_direction);
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
     coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
-    nc.normal_distance = xyDist(nc.waypoint_array[nc.current_wp], bc.location);
+    nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
+    float angle_to_waypoint =
+     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.num_wp]);
     calcIntendedAngle(bc, nc);
     if (bc.detection_radius >= nc.normal_distance) {
       if (nc.current_wp != nc.num_wp) {
@@ -154,6 +160,73 @@ void nav() {
     }
     bc.is_tacking = true;
   }
+  // Boat is on a port tack (wind is hitting the sail from the left)
+  else if(bc.boat_direction < 180) {
+    if (nc.dir_angle<bc.optimal_angle && nc.dir_angle>0){
+      bc.point_of_sail = "Upwind";
+      nc.port_or_starboard = "Port";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>bc.optimal_angle && nc.dir_angle<(180-bc.optimal_angle)){
+      bc.point_of_sail = "Reach";
+      nc.port_or_starboard = "Port";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>bc.optimal_angle + 180 && nc.dir_angle<(360-bc.optimal_angle)){
+      bc.point_of_sail = "Reach";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>(360-bc.optimal_angle)){
+      bc.point_of_sail = "Upwind";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle < (180 + bc.optimal_angle) && nc.dir_angle > 180){
+      bc.point_of_sail = "Downwind";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else {
+      bc.point_of_sail = "Downwind";
+      nc.port_or_starboard = "Port";
+      bc.is_tacking = false;
+    }
+  }
+  // Boat is on a starboard tack (wind hitting the sail from the right)
+  else {
+    if (nc.dir_angle<bc.optimal_angle && nc.dir_angle>0){
+      bc.point_of_sail = "Upwind";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>bc.optimal_angle && nc.dir_angle<(180-bc.optimal_angle)){
+      bc.point_of_sail = "Reach";
+      nc.port_or_starboard = "Port";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>bc.optimal_angle + 180 && nc.dir_angle<(360-bc.optimal_angle)){
+      bc.point_of_sail = "Reach";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle>(360-bc.optimal_angle)){
+      bc.point_of_sail = "Upwind";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else if (nc.dir_angle < (180 + bc.optimal_angle) && nc.dir_angle > 180){
+      bc.point_of_sail = "Downwind";
+      nc.port_or_starboard = "Starboard";
+      bc.is_tacking = false;
+    }
+    else {
+      bc.point_of_sail = "Downwind";
+      nc.port_or_starboard = "Port";
+      bc.is_tacking = false;
+    }
+  }
+  nc.offset = bc.boat_direction - nc.intended_angle;
   bc.tail_angle = nc.wind_direction + nc.offset;
   bc.sail_angle = bc.tail_angle + nc.intended_angle;
 

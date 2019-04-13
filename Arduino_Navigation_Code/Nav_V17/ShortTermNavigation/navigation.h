@@ -48,12 +48,10 @@ public:
   Servo tailServo;
   Servo sailServo;
   float detection_radius;
-  float port_boundary;
-  float starboard_boundary;
   bool is_tacking;
   String point_of_sail;
-  float angle_of_attack = 10;
-  constexpr float static optimal_angle = 60;
+  float angle_of_attack;
+  constexpr float static optimal_angle = 7;
 
   //Sets the angle of the main sail
   void set_sail_angle (float angle){
@@ -85,6 +83,7 @@ public:
     detection_radius = d;
     is_tacking = false;
     point_of_sail = "";
+    angle_of_attack = 0;
   }  //Sets the angle of the main sail
 };
 #endif
@@ -97,10 +96,8 @@ navigate a body of water.
 #define Navigation_Controller_h
 class Navigation_Controller {
 public:
-  coord_xy waypoint_array[];
   float angle_to_waypoint;
   float normal_distance;
-  bool is_tacking;
   float intended_angle;
   String port_or_starboard;
   float max_distance;
@@ -109,10 +106,8 @@ public:
   float dir_angle;
   float offset;
   float wind_direction;
-  float port_boundary;
-  float starboard_boundary;
-  float upper_width;
-  float lower_width;
+  float upper_width; //boundary on port side
+  float lower_width; //boundary on starboard side
 
 /*
 An object of class Navigation_Controller represents the abstract
@@ -153,8 +148,6 @@ navigate a body of water.
     dir_angle = 0.0;
     offset = 0.0;
     wind_direction = 0.0;
-    port_boundary = port;
-    starboard_boundary = starboard;
     upper_width = 10;
     lower_width = 10;
   }
@@ -182,13 +175,13 @@ extern Navigation_Controller nc;
 /*----------Functions----------*/
 void initializer(void);
 
-//void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
+void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-//bool aboveBounds(float upperWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool aboveBounds(float upperWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
 /*Determines whether boat is below lower boundaryd
 */
-//bool belowBounds(float lowerWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool belowBounds(float lowerWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
 void nav();
