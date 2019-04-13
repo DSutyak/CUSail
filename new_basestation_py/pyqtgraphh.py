@@ -1,4 +1,8 @@
+import sys
 from PyQt5 import QtGui  # (the example applies equally well to PySide)
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QApplication, QWidget, QSpinBox
+# from PyQt5 import QtWidgets
 import pyqtgraph as pg
 import time as time
 import json
@@ -28,7 +32,108 @@ plot.setLimits(minXRange=500,maxXRange=500,minYRange=500,maxYRange=500)
 display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
 display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 
+class CompassWidget(QWidget):
 
+    angleChanged = pyqtSignal(float)
+    
+    def __init__(self, parent = None):
+    
+        QWidget.__init__(self, parent)
+        
+        self._angle = 0.0
+        self._margins = 10
+        self._pointText = {0: "N", 45: "NE", 90: "E", 135: "SE", 180: "S",
+                           225: "SW", 270: "W", 315: "NW"}
+    
+    def paintEvent(self, event):
+    
+        painter = QPainter()
+        painter.begin(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        painter.fillRect(event.rect(), self.palette().brush(QPalette.Window))
+        self.drawMarkings(painter)
+        self.drawNeedle(painter)
+        
+        painter.end()
+    
+    def drawMarkings(self, painter):
+    
+        painter.save()
+        painter.translate(self.width()/2, self.height()/2)
+        scale = min((self.width() - self._margins)/120.0,
+                    (self.height() - self._margins)/120.0)
+        painter.scale(scale, scale)
+        
+        font = QFont(self.font())
+        font.setPixelSize(10)
+        metrics = QFontMetricsF(font)
+        
+        painter.setFont(font)
+        painter.setPen(self.palette().color(QPalette.Shadow))
+        
+        i = 0
+        while i < 360:
+        
+            if i % 45 == 0:
+                painter.drawLine(0, -40, 0, -50)
+                painter.drawText(-metrics.width(self._pointText[i])/2.0, -52,
+                                 self._pointText[i])
+            else:
+                painter.drawLine(0, -45, 0, -50)
+            
+            painter.rotate(15)
+            i += 15
+        
+        painter.restore()
+    
+    def drawNeedle(self, painter):
+    
+        painter.save()
+        painter.translate(self.width()/2, self.height()/2)
+        painter.rotate(self._angle)
+        scale = min((self.width() - self._margins)/120.0,
+                    (self.height() - self._margins)/120.0)
+        painter.scale(scale, scale)
+        
+        painter.setPen(QPen(Qt.NoPen))
+        painter.setBrush(self.palette().brush(QPalette.Shadow))
+        
+        painter.drawPolygon(
+            QPolygon([QPoint(-10, 0), QPoint(0, -45), QPoint(10, 0),
+                      QPoint(0, 45), QPoint(-10, 0)])
+            )
+        
+        painter.setBrush(self.palette().brush(QPalette.Highlight))
+        
+        painter.drawPolygon(
+            QPolygon([QPoint(-5, -25), QPoint(0, -45), QPoint(5, -25),
+                      QPoint(0, -30), QPoint(-5, -25)])
+            )
+        
+        painter.restore()
+    
+    def sizeHint(self):
+    
+        return QSize(150, 150)
+    
+    def angle(self):
+        return self._angle
+    
+    @pyqtSlot(float)
+    def setAngle(self, angle):
+    
+        if angle != self._angle:
+            self._angle = angle
+            self.angleChanged.emit(angle)
+            self.update()
+    
+    angle = pyqtProperty(float, angle, setAngle)
+
+compass = CompassWidget()
+spinBox = QSpinBox()
+spinBox.setRange(0,359)
+spinBox.valueChanged.connect(compass.setAngle)
 
 def update():
     f = open("live_data.txt")
@@ -44,9 +149,11 @@ def update():
     roll = float(data["Roll"][0:-2])
     pitch = float(data["Pitch"][0:-2])
     boat_dir = float(data["Boat direction"][0:-2])
-    waypoint_number = int(data["Next Waypoint #3"][0:-2])
-    waypoint_distance = float(data["Distance to Waypoint"][0:-2])
-    waypoint_angle = float(data["Angle to Waypoint"][0:-2])
+    waypoint_number = int(data["Next Waypoint #"][0:-2])
+    waypoint_x = (data["Next Waypoint X"])
+    waypoint_y = (data["Next Waypoint Y"])
+    waypoint_distance = (data["Distance to Waypoint"][0:-2])
+    waypoint_angle = (data["Angle to Waypoint"][0:-2])
     
     # print(x)
     # print("\n")
@@ -123,10 +230,11 @@ layout.addWidget(btn3, 1, 1)  # button3 goes in upper-left is buoy
 layout.addWidget(text, 2, 0, 1, 2)  # text edit goes in middle-left
 layout.addWidget(listw, 4, 0)  # list widget goes in bottom-left
 layout.addWidget(listb, 4, 1)  # list widget goes in bottom-left
-layout.addWidget(display1, 5, 0)  # display1 widget goes in bottom-left
-layout.addWidget(display2, 5, 1)  # display2 widget goes in bottom-middle
-layout.addWidget(plot, 0, 2, 5, 1)  # plot goes on right side, spanning 3 rows
-
+layout.addWidget(display1, 6, 0)  # display1 widget goes in bottom-left
+layout.addWidget(display2, 6, 1)  # display2 widget goes in bottom-middle
+layout.addWidget(plot, 0, 3, 5, 1)  # plot goes on right side, spanning 3 rows
+layout.addWidget(compass, 5, 0)
+layout.addwidget(spinBox, 5, 0)
 ## Display the widget as a new window
 w.show()
 
