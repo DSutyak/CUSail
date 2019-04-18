@@ -30,7 +30,7 @@ listw = QtGui.QListWidget()
 listb = QtGui.QListWidget()
 plot = pg.PlotWidget()
 plot.setLimits(minXRange=500,maxXRange=500,minYRange=500,maxYRange=500)
-display1 = QtGui.QLabel('Wind Angle: <x,y,z>')
+display1 = QtGui.QLabel('Wind Direction')
 display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 
 class CompassWidget(QWidget):
@@ -163,7 +163,7 @@ def update():
     boat_compass.setAngle(boat_dir)
     plot.plot([past_point[0], x], [past_point[1], y])
     past_point = (x,y)
-    display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
+    # display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
     display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
     
 
