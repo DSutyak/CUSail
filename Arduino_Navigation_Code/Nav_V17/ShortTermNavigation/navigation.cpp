@@ -35,6 +35,33 @@ void initializer(){
     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[num_wp]);
 }
 
+/*
+void stationkeeping_initializer(){
+  pinMode(34, OUTPUT);
+  these are just placeholders, set these as the bouy locations
+  coord_t bouy1 = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
+  coord_t bouy2 = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
+  coord_t bouy3 = {42.444228, -76.483666}; //In front of Thurston Hall
+  coord_t bouy4 = {42.444228, -76.483666}; //In front of Thurston Hall
+  center = {(bouy1.latitude+bouy2.latitude+bouy3.latitude+bouy4.latitude)/4,
+  (bouy1.longitude+bouy2.longitude+bouy3.longitude+bouy4.longitude)/4};
+// set max distance from origin
+  float max_distance = 10000.0;
+//  init waypoints
+  coord_t coordinates[2] = {center, center};
+  int num_wp = 2;
+  setOrigin(coordinates[0]);
+  delay(1000);
+  waypoint_array[num_wp];
+  for(int i =0; i < sizeof(coordinates); i++) {
+    waypoint_array[i] = xyPoint(coordinates[i]);
+  }
+  nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
+  bc.boat_init(5.0, tailServoPin, sailServoPin);
+  float angle_to_waypoint =
+    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[num_wp]);
+}
+*/
 
 /*
 Helper function used to calculate intendedAngle.
@@ -112,7 +139,7 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 }
 
 void nav() {
-    nc.wind_direction = sensorData.wind_dir;
+    nc.wind_direction = 270.0;
     bc.boat_direction = sensorData.boat_direction;
     nc.dir_angle = convertto360(nc.angle_to_waypoint-nc.wind_direction);
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
@@ -132,6 +159,8 @@ void nav() {
           nc.port_or_starboard = "Starboard";
         }
       }
+      tailAngle = tailMap(sailAngle, tailAngle);
+      sailAngle = sailMap(sailAngle);
     }
 
   if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && aboveBounds(bc, nc)){
@@ -227,7 +256,7 @@ void nav() {
   }
   nc.offset = bc.boat_direction - nc.intended_angle;
   bc.tail_angle = nc.wind_direction + nc.offset;
-  bc.sail_angle = bc.tail_angle + nc.intended_angle;
+  bc.sail_angle = bc.tail_angle + bc.angle_of_attack;
 
   bc.tail_angle = (float)((int)bc.tail_angle%360);
   bc.tail_angle = bc.tail_angle + 360;
@@ -246,11 +275,15 @@ void nav() {
 
   // convert tail to -180-180
   bc.tail_angle = int(bc.tail_angle+360)%360;
-  if (bc.tail_angle> 180) {bc.tail_angle -= 360;}
+  if (bc.tail_angle> 180) {bc.tail_angle -= 180;}
 
   //Get servo commands from the calculated sail and tail angles
   if (bc.sail_angle < 0) {
     bc.sail_angle += 360;
+  }
+
+  if (bc.tail_angle < 90) {
+    bc.tail_angle += 90
   }
 
   bc.set_sail_angle(bc.sail_angle);
@@ -269,17 +302,8 @@ void endurance(Boat_Controller bc, Navigation_Controller nc){
   nav();
 
 }
-// 5 Meters away from the Buoy inside the buoy location. Must hand calculate the
-// Buoy Location
-/*void station_keeping(coord_xy buoyLocations[]){
-  if(true){
-    coord_xy next = nc.waypoint_array[(nc.currentWP + 1)%4];
-    coord_xy current = bc.location;
-  }
-  if(nc.currentWP = buoyLocations.length){
-    nc.currentWP = 0;
-  nc.maxDistance = 3;
-  nc.waypoint_array = buoyLocations;
+void station_keeping(coord_xy buoyLocations[]){
+
   nav()
 }
 
