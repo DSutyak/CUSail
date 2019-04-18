@@ -164,7 +164,7 @@ void nav() {
     }
 
   if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && aboveBounds(bc, nc)){
-    Serial1.print("HIT UPPER BOUND, TACK RIGHT");
+//    Serial1.print("HIT UPPER BOUND, TACK RIGHT");
     if(!bc.is_tacking){
       if (nc.port_or_starboard == "Port") {
         nc.port_or_starboard = "Starboard";
@@ -177,7 +177,7 @@ void nav() {
   }
   //Boat hits lower bound, tack left
   else if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && belowBounds(bc, nc)){
-    Serial1.print("HIT LOWER BOUND, TACK LEFT");
+//    Serial1.print("HIT LOWER BOUND, TACK LEFT");
     if(!bc.is_tacking){
       if (nc.port_or_starboard == "Port") {
         nc.port_or_starboard = "Starboard";
