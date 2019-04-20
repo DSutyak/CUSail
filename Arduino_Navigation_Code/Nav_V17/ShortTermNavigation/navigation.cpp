@@ -30,9 +30,9 @@ void initializer(){
     waypoint_array[i] = xyPoint(coordinates[i]);
   }
   nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
-  bc.boat_init(5.0, tailServoPin, sailServoPin);
+  bc.boat_init(5.0, sailServoPin, tailServoPin);
   nc.angle_to_waypoint =
-    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[num_wp]);
+    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_arrayn[nc.current_wp]);
 }
 
 /*
@@ -125,14 +125,14 @@ Arguments:
 
 /*function [aboveBounds] determines if the boat is above the greatest tacking bound (port) */
 bool aboveBounds(Boat_Controller bc, Navigation_Controller nc){
-  float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
+  float slope = xySlope(bc.location, waypoint_array[nc.current_wp]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = -1*(slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
   return (distance > nc.upper_width);
 }
 /*function [belowBounds] determines if the boat is below the lowest tacking bound (starboard) */
 bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
-  float slope = xySlope(bc.location, waypoint_array[nc.current_wp+1]);
+  float slope = xySlope(bc.location, waypoint_array[nc.current_wp]);
   float intercept = bc.location.y - slope * bc.location.x;
   float distance = (slope * bc.location.x - bc.location.y + intercept)/sqrtf(intercept*intercept+1);
   return (distance > nc.lower_width);
@@ -273,10 +273,10 @@ void nav() {
 
   // convert tail to -180-180
   bc.tail_angle = int(bc.tail_angle+360)%360;
-  if (bc.tail_angle> 180) {bc.tail_angle -= 180;}
+  while (bc.tail_angle> 180) {bc.tail_angle -= 180;}
 
   //Get servo commands from the calculated sail and tail angles
-  if (bc.sail_angle < 0) {
+  while (bc.sail_angle < 0) {
     bc.sail_angle += 360;
   }
 
