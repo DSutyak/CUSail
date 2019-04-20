@@ -7,7 +7,6 @@ import time
 
 serial_port = serial.Serial('COM5', 9600) #Marissa - COM3, Troy - COM5
 xbee = XBee(serial_port)
-pp = pprint.PrettyPrinter(indent=4)
 f = open("live_data.txt", 'w')
 
 # Initialize gui
@@ -21,7 +20,9 @@ regex = "(?:'rf_data': b')((.|\n)*)'"
 data = ""
 while True:
 	try:
+		print("Waiting...")
 		packet = str(xbee.wait_read_frame())
+		print("Packet Recieved!")
 		match = re.search(regex, packet)
 		if match:
 			line = match.group(1)
@@ -33,13 +34,13 @@ while True:
 				data_arr = data_to_send.split("\\n")
 				#data_assoc = []
 				data_assoc = {}
-
 				for datum in data_arr:
 					if (":" in datum):
-					    label, value = datum.split(":")
-					    data_assoc[label] = value
+						print(datum)
+						label, value = datum.split(":")
+						data_assoc[label] = value
 					
-				pp.pprint ("Parse data cycle to GUI")
+				print ("Parse data cycle to GUI")
 				# Update gui with data
 				print (json.dumps(data_assoc))
 				print ("\n\n")
@@ -47,7 +48,8 @@ while True:
 				#pp.pprint(data_arr)
 				data = data[header_end:len(data)]
 		else:
-			pp.pprint ("Regex failed to match")
+			print ("Regex failed to match")
+			print(packet)
 	except KeyboardInterrupt:
 		break
 

@@ -3,7 +3,9 @@ matplotlib.use('TkAgg')
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import matplotlib.animation as animation
 from tkinter import *
+import time
 
 class mclass:
     def __init__(self,  window):
@@ -14,12 +16,12 @@ class mclass:
         # self.box = Entry(window)
         self.boatmode = Canvas(window, width=200, height=50, bg="green")
         self.waypoints = Canvas (window, width=200, height=275, bg="red")
-        self.bouypoints = Canvas (window, width=200, height=275, bg="blue")
+        self.buoypoints = Canvas (window, width=200, height=275, bg="blue")
         self.info = Frame (window, bg="purple", height=100, width=800)
         # self.graph.grid(row=0, column=0)
         self.boatmode.grid(row=0,column=1)
         self.waypoints.grid(row=1, column=1)
-        self.bouypoints.grid(row=2, column=1)
+        self.buoypoints.grid(row=2, column=1)
         self.info.grid(row=3, column=0, columnspan=2)
 
         #draws a black x in each box (practicing making changes)
@@ -27,14 +29,14 @@ class mclass:
        # self.boatmode.create_line(200, 0, 0, 50)
        # self.waypoints.create_line(0, 0, 200, 275)
        # self.waypoints.create_line(200, 0, 0, 275)
-       # self.bouypoints.create_line(0, 0, 200, 275)
-       # self.bouypoints.create_line(200, 0, 0, 275)
+       # self.buoypoints.create_line(0, 0, 200, 275)
+       # self.buoypoints.create_line(200, 0, 0, 275)
 
 
         #text to display in right-hand side boxes
-        self.boatmode.create_text(70, 5, anchor= "nw", text="Boatmode")
+        self.boatmode.create_text(70, 5, anchor= "nw", text="Boat Mode")
         self.waypoints.create_text(70, 5, anchor= "nw", text="Waypoints")
-        self.bouypoints.create_text(70, 5, anchor= "nw", text="Bouypoints")
+        self.buoypoints.create_text(70, 5, anchor= "nw", text="Buoys")
 
         #waypoint entries
         e = Entry(window, text="Waypoints", width=10)
@@ -42,9 +44,9 @@ class mclass:
         print(e.get())
 
         #make buttons to add waypoints
-        def callback():
+        def waypoint_callback():
             print('clicked')
-        b=Button(window, text="Waypoints", command=callback)
+        b=Button(window, text="Waypoints", command=waypoint_callback)
         self.waypoints.create_window(10, 40, anchor="nw", window=b)
 
 
@@ -65,11 +67,17 @@ class mclass:
         self.canvas.draw()
 
     def update (self, data):
-        arr=[]
+        arr=data
+        self.canvas.plot(float(data['X Position']), float(data['Y Position']))
+
 
 window= Tk()
 start= mclass(window)
-window.mainloop()
+
+time.sleep(5)
+start.update({'X Position': 5, 'Y Position': 5})
+time.sleep(2)
+start.update({'X Position': 0, 'Y Position': 0})
 
 
 #want to rename the window so instead of saying tk it says "CUSail GUI or new_basestation"
