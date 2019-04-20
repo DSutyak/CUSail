@@ -140,7 +140,7 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 
 void nav() {
     nc.wind_direction = 270.0;
-    bc.boat_direction = sensorData.boat_direction;
+    bc.boat_direction = convertto360(sensorData.boat_direction);
     nc.dir_angle = convertto360(nc.angle_to_waypoint-nc.wind_direction);
     coord_t coord_lat_lon = {sensorData.x, sensorData.y};
     coord_xy currentPosition = xyPoint(coord_lat_lon);
@@ -151,7 +151,7 @@ void nav() {
     if (bc.detection_radius > nc.normal_distance) {
       if (nc.current_wp != nc.num_wp) {
         nc.current_wp++;
-        if ((int)(bc.boat_direction - nc.wind_direction) % 360 < 180) {
+        if ((int) convertto360(bc.boat_direction - nc.wind_direction) < 180) {
           nc.port_or_starboard = "Port";
         }
         else {
@@ -278,10 +278,6 @@ void nav() {
   //Get servo commands from the calculated sail and tail angles
   if (bc.sail_angle < 0) {
     bc.sail_angle += 360;
-  }
-
-  if (bc.tail_angle < 90) {
-    bc.tail_angle += 90;
   }
 
   sensorData.sailAngleBoat = bc.sail_angle;
