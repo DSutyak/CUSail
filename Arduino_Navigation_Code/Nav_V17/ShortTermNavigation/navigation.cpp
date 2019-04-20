@@ -22,14 +22,14 @@ void initializer(){
   float max_distance = 10000.0;
 //  init waypoints
   coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
-  int num_wp = 3;
+  nc.num_wp = 3;
   setOrigin(coordinates[0]);
   delay(1000);
-  waypoint_array[num_wp];
+  waypoint_array[nc.num_wp];
   for(int i =0; i < sizeof(coordinates); i++) {
     waypoint_array[i] = xyPoint(coordinates[i]);
   }
-  nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
+  nc.nav_init(max_distance, nc.num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, sailServoPin, tailServoPin);
   nc.angle_to_waypoint =
     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_arrayn[nc.current_wp]);
