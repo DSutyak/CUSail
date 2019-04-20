@@ -42,10 +42,12 @@ display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 #Create Image
 from PIL import Image
 
-files = os.listdir("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/")
-for file in files:
-    img = Image.open(os.path.join("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/", "sailboat_cartoon.jpg"))
-    img = img.rotate(90)
+#files = os.listdir("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/")
+    #for file in files:
+        #if file is "sailboat_cartoon.jpg":
+from PIL import Image
+img = Image.open(os.path.join("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/", "sailboat_cartoon.jpg"))
+img = img.rotate(90)
 
 #im = Image.open("sailboat_cartoon.jpg")
 #im = numpy.asarray(Image.open('sailboat_cartoon.jpg','rb'))
