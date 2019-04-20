@@ -30,7 +30,7 @@ void setup() {
   initializer();
 }
 
-// Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
+// Code within loop() runs after setup and runs constantly (in order) while the microcontroller is powered
 void loop() {
   sRSensor(); //Gather wind directio w.r.t North
   sGPS(); //Gather global coordinates

@@ -31,7 +31,7 @@ void initializer(){
   }
   nc.nav_init(max_distance, num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, tailServoPin, sailServoPin);
-  float angle_to_waypoint =
+  nc.angle_to_waypoint =
     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[num_wp]);
 }
 
@@ -146,9 +146,9 @@ void nav() {
     coord_xy currentPosition = xyPoint(coord_lat_lon);
     bc.location = currentPosition;
     nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
-    float angle_to_waypoint =
-     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.num_wp]);
-    if (bc.detection_radius >= nc.normal_distance) {
+    nc.angle_to_waypoint =
+     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.current_wp]);
+    if (bc.detection_radius > nc.normal_distance) {
       if (nc.current_wp != nc.num_wp) {
         nc.current_wp++;
         if ((int)(bc.boat_direction - nc.wind_direction) % 360 < 180) {
@@ -284,14 +284,14 @@ void nav() {
     bc.tail_angle += 90;
   }
 
+  sensorData.sailAngleBoat = bc.sail_angle;
+  sensorData.tailAngleBoat = bc.tail_angle;
+
   bc.tail_angle = tailMap(bc.sail_angle, bc.tail_angle);
   bc.sail_angle = sailMap(bc.sail_angle);
 
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
-
-  sensorData.sailAngleBoat = bc.sail_angle;
-  sensorData.tailAngleBoat = bc.tail_angle;
 
   printData();
 }

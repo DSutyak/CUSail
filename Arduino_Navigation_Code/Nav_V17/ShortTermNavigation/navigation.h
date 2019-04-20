@@ -75,11 +75,11 @@ public:
   */
   Boat_Controller(){}
   void boat_init (float d, int sailServoPin, int tailServoPin) {
+    tailServo.attach(tailServoPin);
+    sailServo.attach(sailServoPin);
     set_sail_angle(0.00);
     set_tail_angle(0.00);
     boat_direction = sensorData.boat_direction;
-    tailServo.attach(tailServoPin);
-    sailServo.attach(sailServoPin);
     detection_radius = d;
     is_tacking = false;
     point_of_sail = "";
