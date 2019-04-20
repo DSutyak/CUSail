@@ -258,7 +258,7 @@ void sRSensor(void) {
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
 
-  
+
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
 //  Serial1.println(reading);

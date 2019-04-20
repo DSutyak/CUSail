@@ -53,7 +53,7 @@ public:
   float angle_of_attack;
   constexpr float static optimal_angle = 7;
 
-  //Sets the angle of the main sail
+  //Sets the_a of the main sail
   void set_sail_angle (float angle){
     sailServo.write(angle);
   }

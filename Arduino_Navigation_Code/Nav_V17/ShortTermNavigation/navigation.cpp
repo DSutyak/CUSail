@@ -148,7 +148,6 @@ void nav() {
     nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
     float angle_to_waypoint =
      angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.num_wp]);
-    calcIntendedAngle(bc, nc);
     if (bc.detection_radius >= nc.normal_distance) {
       if (nc.current_wp != nc.num_wp) {
         nc.current_wp++;
@@ -159,8 +158,6 @@ void nav() {
           nc.port_or_starboard = "Starboard";
         }
       }
-      tailAngle = tailMap(sailAngle, tailAngle);
-      sailAngle = sailMap(sailAngle);
     }
 
   if(nc.current_wp != 0 && bc.point_of_sail!= "Reach" && aboveBounds(bc, nc)){
@@ -254,15 +251,16 @@ void nav() {
       bc.is_tacking = false;
     }
   }
+
+  calcIntendedAngle(bc, nc);
+
   nc.offset = bc.boat_direction - nc.intended_angle;
   bc.tail_angle = nc.wind_direction + nc.offset;
   bc.sail_angle = bc.tail_angle + bc.angle_of_attack;
 
-  bc.tail_angle = (float)((int)bc.tail_angle%360);
   bc.tail_angle = bc.tail_angle + 360;
   bc.tail_angle = (float)((int)bc.tail_angle%360);
 
-  bc.sail_angle = (float)((int)bc.sail_angle%360);
   bc.sail_angle = bc.sail_angle+360;
   bc.sail_angle = (float)((int)bc.sail_angle%360);
 
@@ -283,29 +281,35 @@ void nav() {
   }
 
   if (bc.tail_angle < 90) {
-    bc.tail_angle += 90
+    bc.tail_angle += 90;
   }
+
+  bc.tail_angle = tailMap(bc.sail_angle, bc.tail_angle);
+  bc.sail_angle = sailMap(bc.sail_angle);
 
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
 
+  sensorData.sailAngleBoat = bc.sail_angle;
+  sensorData.tailAngleBoat = bc.tail_angle;
+
   printData();
 }
 
-void endurance(Boat_Controller bc, Navigation_Controller nc){
-  //set waypoint array to locations just inside the buoy area
-  if(nc.currentWP = buoyLocations.length){
-    nc.currentWP = 0;
-  }
-  nc.maxDistance = 3;
-  nc.waypoint_array = buoyLocations;
-  nav();
-
-}
-void station_keeping(coord_xy buoyLocations[]){
-
-  nav()
-}
+// void endurance(Boat_Controller bc, Navigation_Controller nc){
+//   //set waypoint array to locations just inside the buoy area
+//   if(nc.currentWP = buoyLocations.length){
+//     nc.currentWP = 0;
+//   }
+//   nc.maxDistance = 3;
+//   nc.waypoint_array = buoyLocations;
+//   nav();
+//
+// }
+// void station_keeping(coord_xy buoyLocations[]){
+//
+//   nav()
+// }
 
 // Once again, always be 5 meters outside bouy, must be within 3 feet of buoy
 // to avoid hitting buoy
@@ -319,45 +323,45 @@ void station_keeping(coord_xy buoyLocations[]){
 // 6. Sail to waypoints ~5 meters in front of the double buoys
 // 7. Sail to waypoint directly between buoys. Must be within .75 meters
 // 8. Sail to waypoint behind buoys. Must be within .75 meters.
-bool waypointsSet = false
-void precision_nav(coord_xy buoyLocations[]){
-  if (not waypointsSet) {
-    coord_xy w1 =
-    coord_xy w2 =
-    coord_xy w3 =
-    coord_xy w4 =
-    coord_xy w5 =
-    coord_xy w6 =
-    coord_xy w7 = middlePoint(buoyLocation[0], buoyLocation[1])
-    coord_xy w8 =
-  }
-
-
-}
-
-
-// Ints corresponding to the different events
-int endurance = 1;
-int station_keeping = 2;
-int precision = 3;
-int payload = 4;
-int collison = 5;
-int search = 6;
-int current = 1;
-
-// Offset the buoy locations by hand. Translate to xy etc. buoy locations coord_xy
-// to be 5 meters inside the buoy
-coord_xy buoyLocations[] = {};
-float accSeconds = 0;
-
-void nShort(void){
-  switch (current){
-    case endurance: endurance(buoyLocations)
-    case station_keeping: station_keeping(buoyLocations)
-    case precision:
-    case payload:
-    case collision:
-    case search:
-  }
-}
-*/
+// bool waypointsSet = false
+// void precision_nav(coord_xy buoyLocations[]){
+//   if (not waypointsSet) {
+//     coord_xy w1 =
+//     coord_xy w2 =
+//     coord_xy w3 =
+//     coord_xy w4 =
+//     coord_xy w5 =
+//     coord_xy w6 =
+//     coord_xy w7 = middlePoint(buoyLocation[0], buoyLocation[1])
+//     coord_xy w8 =
+//   }
+//
+//
+// }
+//
+//
+// // Ints corresponding to the different events
+// int endurance = 1;
+// int station_keeping = 2;
+// int precision = 3;
+// int payload = 4;
+// int collison = 5;
+// int search = 6;
+// int current = 1;
+//
+// // Offset the buoy locations by hand. Translate to xy etc. buoy locations coord_xy
+// // to be 5 meters inside the buoy
+// coord_xy buoyLocations[] = {};
+// float accSeconds = 0;
+//
+// void nShort(void){
+//   switch (current){
+//     case endurance: endurance(buoyLocations)
+//     case station_keeping: station_keeping(buoyLocations)
+//     case precision:
+//     case payload:
+//     case collision:
+//     case search:
+//   }
+// }
+// */
