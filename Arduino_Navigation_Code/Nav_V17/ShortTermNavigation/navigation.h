@@ -53,7 +53,7 @@ public:
   float angle_of_attack;
   constexpr float static optimal_angle = 7;
 
-  //Sets the angle of the main sail
+  //Sets the_a of the main sail
   void set_sail_angle (float angle){
     sailServo.write(angle);
   }
@@ -75,11 +75,11 @@ public:
   */
   Boat_Controller(){}
   void boat_init (float d, int sailServoPin, int tailServoPin) {
+    tailServo.attach(tailServoPin);
+    sailServo.attach(sailServoPin);
     set_sail_angle(0.00);
     set_tail_angle(0.00);
     boat_direction = sensorData.boat_direction;
-    tailServo.attach(tailServoPin);
-    sailServo.attach(sailServoPin);
     detection_radius = d;
     is_tacking = false;
     point_of_sail = "";
