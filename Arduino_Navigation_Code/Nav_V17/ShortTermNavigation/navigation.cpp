@@ -32,7 +32,7 @@ void initializer(){
   nc.nav_init(max_distance, nc.num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, sailServoPin, tailServoPin);
   nc.angle_to_waypoint =
-    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_arrayn[nc.current_wp]);
+    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.current_wp]);
 }
 
 /*

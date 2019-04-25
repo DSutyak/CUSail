@@ -26,67 +26,8 @@ int reading = 0; //for reading data
 float Data1[360];
 float Data2[360];
 float Filtered_Data[360];
+float pi = 3.14159;
 
-void setup() {
-  PanServo.attach(4); // attaches the servo on pin 4 to the servo object
-  PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
-  IMU_angle = 0.;
-  Wire.begin();
-  Serial.begin(9600); // open a serial connection to your computer
-}
-
-void loop(){
-  Wire.beginTransmission(0x66);
-  Wire.write(0);
-  Wire.endTransmission(); //Try moving this wire stuff to setup and see if it still works
-
-  sweep_get_data(Data1, Data2); //sweep sensor and record data in two arrays
-  compare(Data1, Data2); // compare two arrays
-  
-  Serial.println("Printing Array");
-  for(int i = 0; i<360;i++){
-    if(Data1[i] != 0.0) {
-      Serial.print(Filtered_Data[i]);
-      Serial.print(" D1: ");
-      Serial.print(Data1[i]);
-      Serial.print(" D2: ");
-      Serial.print(Data2[i]);
-      Serial.print("  Angle: ");
-      Serial.println(i);
-    }
-  }
-  Serial.println("End printed Array");
-  delay(10000);
-  
-    // wait for the servo to get there
-    delay(15);
- }
-
-     //sweeps pan_servo from sweep_start to sweep_finish deg (relative to North) and stores lidar data in data_sweep arrays have 360 elements
-     //Precondition: sweep_start > 10 and sweep_finish < 170 and sweep_start < sweep_finish
-  void sweep_get_data(int sweep_start, int sweep_finish, float data_sweep1[], float data_sweep2[]){
-    int pan_start = (sweep_start - sensorData.boat_direction + 360) % 360;
-    int pan_finish = (sweep_finish - sensorData.boat_direction + 360) % 360;
-    for(int i = pan_start; i < pan_finish; i+= 3){
-      PanServo.write(i);
-      delay(500);
-      data_sweep1[get_current_angle()] = get_lidar_data();
-      }
-      delay(500);
-      Pan_angle = pan_start;
-      PanServo.write(pan_start);
-      delay(1000);
-    for(int i = pan_start; i < pan_finish; i+= 3){
-      PanServo.write(i);
-      delay(500);
-      data_sweep2[get_current_angle()] = get_lidar_data();
-      }
-      delay(500);
-     PanServo.write(pan_start);
-     delay(1000);
-   }
-    
- 
  //get_current_angle returns the current angle (phi in spherical) that the sensor is pointing at
   int get_current_angle(){
     //return (Pan_angle);
@@ -107,6 +48,54 @@ void loop(){
       Serial.println("Error: Sensor not available");
      }
   }
+
+//returns 1 if passes "percent difference" check, 0 otherwise
+int diff_check(float a, float b) {
+   if (a == 130.0 || b == 130.0) {return 0;}
+   float avg = (a+b)/2.0;
+   float diff = abs(a-b);
+   if (diff/(avg+.001) < 0.3) {return 1;}
+   return 0;
+}
+
+//takes in an array of data and creates {x,y} coordinates for all points that aren't 130.0
+//assumes the boat has not moved far since the data array was created
+void create_xy_object_array(float data[360]) {
+  coord_xy objects[360]; //max # of objects detected is 360, objects is an array whose first elements are objects, the rest just 0
+  int j = 0;
+  for (int i = 0; i < 360; i++){
+    if (data[i] != 0 && data[i] != 360) {
+      float y = sensorData.y + data[i]*cos(2.*pi*i/180.);
+      float x = sensorData.x + data[i]*sin(2.*pi*i/180.);
+      objects[j] = coord_xy({x,y});
+      j++;
+    }
+  }
+}
+
+     //sweeps pan_servo from sweep_start to sweep_finish deg (relative to North) and stores lidar data in data_sweep arrays have 360 elements
+     //Precondition: sweep_start > 10 and sweep_finish < 170 and sweep_start < sweep_finish
+  void sweep_get_data(int sweep_start, int sweep_finish, float data_sweep1[], float data_sweep2[]){
+    float pan_start = (sweep_start - (int)sensorData.boat_direction + 360) % 360;
+    float pan_finish = (sweep_finish - (int)sensorData.boat_direction + 360) % 360;
+    for(int i = pan_start; i < pan_finish; i+= 3){
+      PanServo.write(i);
+      delay(500);
+      data_sweep1[get_current_angle()] = get_lidar_data();
+      }
+      delay(500);
+      float pan_angle = pan_start;
+      PanServo.write(pan_start);
+      delay(1000);
+    for(int i = pan_start; i < pan_finish; i+= 3){
+      PanServo.write(i);
+      delay(500);
+      data_sweep2[get_current_angle()] = get_lidar_data();
+      }
+      delay(500);
+     PanServo.write(pan_start);
+     delay(1000);
+   }
 
 //returns an array, length 360, with a distance in indices where data is confirmed
 //currently compares 3 closest degrees
@@ -136,26 +125,38 @@ void compare(float data1[360], float data2[360]){
   }
 }
 
-//returns 1 if passes "percent difference" check, 0 otherwise
-int diff_check(float a, float b) {
-   if (a == 130.0 || b == 130.0) {return 0;}
-   float avg = (a+b)/2.0;
-   float diff = abs(a-b);
-   if (diff/(avg+.001) < 0.3) {return 1;}
-   return 0;
+void init_obstacle() {
+  PanServo.attach(4); // attaches the servo on pin 4 to the servo object
+  PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
+  IMU_angle = 0.;
+  Wire.begin();
+  Serial.begin(9600); // open a serial connection to your computer
 }
 
-//takes in an array of data and creates {x,y} coordinates for all points that aren't 130.0
-//assumes the boat has not moved far since the data array was created
-void create_xy_object_array(float data[360]) {
-  coord_xy objects[360]; //max # of objects detected is 360, objects is an array whose first elements are objects, the rest just 0
-  int j = 0;
-  for (int i = 0; i < 360; i++){
-    if (data[i] != 0 && data[i] != 360) {
-      y = sensorData.y + data[i]*cos(2.*pi*i/180.);
-      x = sensorData.x + data[i]*sin(2.*pi*i/180.);
-      objects[j] = coord_xy({x,y});
-      j++;
+void loop_obstacle(){
+  Wire.beginTransmission(0x66);
+  Wire.write(0);
+  Wire.endTransmission(); //Try moving this wire stuff to setup and see if it still works
+
+// TODO: Define Data1 and Data2 before attempting to use them
+//  sweep_get_data(Data1, Data2); //sweep sensor and record data in two arrays
+//  compare(Data1, Data2); // compare two arrays
+  
+  Serial.println("Printing Array");
+  for(int i = 0; i<360;i++){
+    if(Data1[i] != 0.0) {
+      Serial.print(Filtered_Data[i]);
+      Serial.print(" D1: ");
+      Serial.print(Data1[i]);
+      Serial.print(" D2: ");
+      Serial.print(Data2[i]);
+      Serial.print("  Angle: ");
+      Serial.println(i);
     }
   }
-}
+  Serial.println("End printed Array");
+  delay(10000);
+  
+    // wait for the servo to get there
+    delay(15);
+ }
