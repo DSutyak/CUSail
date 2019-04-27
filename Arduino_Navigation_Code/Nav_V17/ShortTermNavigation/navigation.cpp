@@ -255,23 +255,18 @@ void nav() {
   calcIntendedAngle(bc, nc);
 
   nc.offset = bc.boat_direction - nc.intended_angle;
-  bc.tail_angle = nc.wind_direction + nc.offset;
-  bc.sail_angle = bc.tail_angle + bc.angle_of_attack;
 
-  //Convert sail and tail from wrt north to wrt boat
-  bc.sail_angle = bc.sail_angle - sensorData.boat_direction;
-  bc.tail_angle = bc.tail_angle - sensorData.boat_direction;
+  float new_tail_angle = nc.wind_direction + nc.offset;
+  new_tail_angle = bc.tail_angle - sensorData.boat_direction;
 
-  
+  float new_sail_angle = new_tail_angle + bc.angle_of_attack;
+  new_sail_angle = bc.sail_angle - sensorData.boat_direction;
 
-  //Get servo commands from the calculated sail and tail angles
+  sensorData.sailAngleBoat = new_sail_angle;
+  sensorData.tailAngleBoat = new_tail_angle;
 
-
-  sensorData.sailAngleBoat = bc.sail_angle;
-  sensorData.tailAngleBoat = bc.tail_angle;
-
-  bc.tail_angle = tailMap(bc.sail_angle, bc.tail_angle);
-  bc.sail_angle = sailMap(bc.sail_angle);
+  bc.tail_angle = tailMap(new_sail_angle, new_tail_angle);
+  bc.sail_angle = sailMap(new_sail_angle);
 
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
