@@ -8,7 +8,7 @@
 ================
 VERSION 17
 ================
-Authors: Kurt Huebner, Troy Smith
+Authors: Kurt Huebner, Troy Smith, Beth Mieczkowski
 
  ShortTermNavigation
   The primary file that schedules tasks for SailVane:

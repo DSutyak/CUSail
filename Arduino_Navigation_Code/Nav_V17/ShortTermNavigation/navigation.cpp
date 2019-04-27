@@ -15,14 +15,16 @@ coord_xy waypoint_array[];
 
 void initializer(){
   pinMode(34, OUTPUT);
+  coord_t hollister = {42.444259, -76.484435}; //Hollister Hall
+  coord_t engQuadX = {42.444612, -76.483492}; //Center of Engineering Quad
   coord_t engQuadRight = {42.4444792, -76.483244}; //Middle of the right sector, looking North, of the engineering quad
   coord_t outsideDuffield = {42.444254, -76.482660}; //Outside West entrance to Duffield Hall, atop the stairs
   coord_t outsideThurston = {42.444228, -76.483666}; //In front of Thurston Hall
 // set max distance from origin
   float max_distance = 10000.0;
 //  init waypoints
-  coord_t coordinates[3] = {outsideDuffield, outsideThurston, engQuadRight};
-  nc.num_wp = 3;
+  coord_t coordinates[4] = {engQuadX, outsideThurston, hollister, engQuadRight};
+  nc.num_wp = 4;
   setOrigin(coordinates[0]);
   delay(1000);
   waypoint_array[nc.num_wp];
@@ -302,10 +304,26 @@ void nav() {
 //   nav();
 //
 // }
-// void station_keeping(coord_xy buoyLocations[]){
-//
-//   nav()
-// }
+ void station_keeping(coord_xy buoyLocations[]){
+     if (nc.num_wp == 0) {
+       bc.detection_radius = 30;
+       if(nc.normal_distance < bc.detection_radius) {
+         printData();
+         nc.num_wp += 1 ;
+        bc.location = {sensorData.x, sensorData.y};
+         nc.normal_distance = xyDist(waypoint_array[nc.num_wp], bc.location);
+    //     start_box_time=milTime;
+       }
+     }
+    // else if(time > 4.5 minutes) {
+    //   printData();
+    //   nc.num_wp += 1;
+    //   bc.location = {sensorData.x, sensorData.y};
+    //   nc.normal_distance = xyDist(waypoint_array[nc.num_wp], bc.location);
+    //   stationKeeping = 0;
+    // }
+   nav();
+ }
 
 // Once again, always be 5 meters outside bouy, must be within 3 feet of buoy
 // to avoid hitting buoy
