@@ -138,7 +138,7 @@ void loop_obstacle(){
   Wire.write(0);
   Wire.endTransmission(); //Try moving this wire stuff to setup and see if it still works
 
-// TODO: Define Data1 and Data2 before attempting to use them
+// TODO: Define Data1 and Data2 before attempting to use them, make sure that you are passing in ALL ARGUMENTS into sweep_get_data
 //  sweep_get_data(Data1, Data2); //sweep sensor and record data in two arrays
 //  compare(Data1, Data2); // compare two arrays
   
