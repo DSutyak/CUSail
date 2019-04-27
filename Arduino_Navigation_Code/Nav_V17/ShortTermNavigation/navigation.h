@@ -133,7 +133,7 @@ navigate a body of water.
   */
   Navigation_Controller(){}
   void nav_init (float limit, int num, coord_xy waypoints[], float port, float starboard){
-    int count = 0;
+    // int count = 0;
 //    while (count < num){
 //      waypoint_array[count] = waypoints[count];
 //      count++;

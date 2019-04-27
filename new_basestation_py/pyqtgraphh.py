@@ -9,7 +9,7 @@ import time as time
 import json
 import pprint
 import random
-import PIL
+# import PIL
 import numpy
 global past_point
 import os
@@ -40,12 +40,12 @@ display1 = QtGui.QLabel('Wind Direction: <x,y,z>')
 display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 
 #Create Image
-from PIL import Image
+# from PIL import Image
 
-files = os.listdir("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/")
-for file in files:
-    img = Image.open(os.path.join("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/", "sailboat_cartoon.jpg"))
-    img = img.rotate(90)
+# files = os.listdir("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/")
+# for file in files:
+    # img = Image.open(os.path.join("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/", "sailboat_cartoon.jpg"))
+    # img = img.rotate(90)
 
 #im = Image.open("sailboat_cartoon.jpg")
 #im = numpy.asarray(Image.open('sailboat_cartoon.jpg','rb'))
@@ -54,8 +54,8 @@ for file in files:
 
 #im = Image.open("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/sailboat_cartoon.jpg")
 #np_im = numpy.array(im)
-im2arr = numpy.array(img)
-image = pg.image(im2arr)
+# im2arr = numpy.array(img)
+# image = pg.image(im2arr)
 
 class CompassWidget(QWidget):
 
@@ -185,7 +185,8 @@ def update():
     # y = float(arr[1])
     wind_compass.setAngle(wind_dir)
     boat_compass.setAngle(boat_dir)
-    plot.plot([past_point[0], x], [past_point[1], y])
+    update_pen = ('k', width = 6)
+    plot.plot([past_point[0], x], [past_point[1], y], pen = update_pen)
     past_point = (x,y)
     # display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
     display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
@@ -196,6 +197,11 @@ brush_list = [pg.mkColor(c) for c in "rgbcmykwrg"]
 #pen = random.choice(brush_list)
 
 def waypoint():
+    if (len(listw) <= curr_wp.num):
+        plot(curr_wp)
+        listw.append(curr_wp)
+        listw.highlight(curr_wp)
+
     pen = random.choice(brush_list)
     entry = text.text().strip().replace(" ","")
     try:
@@ -261,7 +267,7 @@ layout.addWidget(display2, 6, 1)  # display2 widget goes in bottom-middle
 layout.addWidget(plot, 0, 3, 5, 1)  # plot goes on right side, spanning 3 rows
 layout.addWidget(wind_compass, 5, 0)
 layout.addWidget(boat_compass, 5, 1)
-layout.addWidget(image, 0, 3, 5, 1)
+# layout.addWidget(image, 0, 3, 5, 1)
 
 #layout.addWidget()
 # layout.addWidget(spinBox, 5, 0)

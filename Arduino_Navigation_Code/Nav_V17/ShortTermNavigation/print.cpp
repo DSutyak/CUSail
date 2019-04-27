@@ -24,11 +24,11 @@ void printData(){
   Serial1.print("Pitch: "); Serial1.println(sensorData.pitch);
 
   Serial1.print("Next Waypoint #:");
-  Serial1.println(nc.num_wp);
+  Serial1.println(nc.current_wp);
   Serial1.print("Next Waypoint X: ");
-  Serial1.println(waypoint_array[nc.num_wp].x,10);
+  Serial1.println(waypoint_array[nc.current_wp].x,10);
   Serial1.print("Next Waypoint Y: ");
-  Serial1.println(waypoint_array[nc.num_wp].y,10);
+  Serial1.println(waypoint_array[nc.current_wp].y,10);
 
   Serial1.print("Sail angle: ");   Serial1.println(bc.sail_angle);
   Serial1.print("Tail angle: ");   Serial1.println(bc.tail_angle);
