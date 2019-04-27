@@ -65,8 +65,8 @@ void create_xy_object_array(float data[360]) {
   int j = 0;
   for (int i = 0; i < 360; i++){
     if (data[i] != 0 && data[i] != 360) {
-      float y = sensorData.y + data[i]*cos(2.*pi*i/180.);
-      float x = sensorData.x + data[i]*sin(2.*pi*i/180.);
+      float y = sensorData.location.y + data[i]*cos(2.*pi*i/180.);
+      float x = sensorData.location.x + data[i]*sin(2.*pi*i/180.);
       objects[j] = coord_xy({x,y});
       j++;
     }

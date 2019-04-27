@@ -26,6 +26,14 @@ typedef struct date {
   unsigned char seconds;
 } date_t;
 
+#ifndef coord_xy_h
+#define coord_xy_h
+typedef struct coord_xy {
+  double x; // float x coord
+  double y; // float y coord
+} coord_xy;
+#endif
+
 typedef struct dataStructure {
   float boat_direction; //Boat direction w.r.t North
   float sailAngleBoat; //Sail angle for use of finding wind wrt boat
@@ -33,8 +41,7 @@ typedef struct dataStructure {
   float pitch;
   float roll;
   float wind_dir; // Wind direction w.r.t North
-  double x;
-  double y;
+  coord_xy location;
   double lat;
   double longi;
   date_t dateTime; // Current date and time, of type date_t

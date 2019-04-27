@@ -29,7 +29,7 @@ typedef struct coord_t {
 
 #ifndef coord_xy_h
 #define coord_xy_h
-typedef struct _coord_xy {
+typedef struct coord_xy {
   double x; // float x coord
   double y; // float y coord
 } coord_xy;
@@ -44,7 +44,7 @@ public:
   float sail_angle;
   float tail_angle;
   float boat_direction;
-  _coord_xy location;
+  coord_xy location;
   Servo tailServo;
   Servo sailServo;
   float detection_radius;
@@ -168,7 +168,7 @@ navigate a body of water.
 #define detectionRadius 15
 
 /*----------Global Variables-----------*/
-extern _coord_xy waypoint_array[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
+extern coord_xy waypoint_array[maxPossibleWaypoints]; //the array containing the waypoints with type coord_t
 extern Boat_Controller bc;
 extern Navigation_Controller nc;
 
@@ -178,10 +178,10 @@ void initializer(void);
 void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc);
 /*Determines whether boat is above upper boundary
 */
-bool aboveBounds(float upperWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool aboveBounds(float upperWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 /*Determines whether boat is below lower boundaryd
 */
-bool belowBounds(float lowerWidth, _coord_xy location, _coord_xy nextwp, String pointOfSail);
+bool belowBounds(float lowerWidth, coord_xy location, coord_xy nextwp, String pointOfSail);
 
 /*Sets sail and tail angle given information from nShort */
 void nav();

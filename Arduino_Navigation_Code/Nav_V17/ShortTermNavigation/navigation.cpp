@@ -34,7 +34,7 @@ void initializer(){
   nc.nav_init(max_distance, nc.num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, sailServoPin, tailServoPin);
   nc.angle_to_waypoint =
-    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.current_wp]);
+    angleToTarget(bc.location, waypoint_array[nc.current_wp]);
 }
 
 /*
@@ -77,40 +77,40 @@ Arguments:
 
 void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
   if (bc.point_of_sail != "Upwind" && bc.point_of_sail != "Reach" && bc.point_of_sail != "Downwind" ) {
-    Serial1.print("Invalid argument sent to nav");
+    //Serial1.print("Invalid argument sent to nav");
   }
   else if (bc.point_of_sail == "Upwind") {
     if (nc.port_or_starboard == "Port") {
-      Serial1.println("Quadrant: UPWIND PORT");
+      //Serial1.println("Quadrant: UPWIND PORT");
       nc.intended_angle = nc.wind_direction - bc.optimal_angle;
       bc.angle_of_attack = -15;
     }
     else {
-      Serial1.println("Quadrant: UPWIND STARBOARD");
+      //Serial1.println("Quadrant: UPWIND STARBOARD");
       nc.intended_angle= nc.wind_direction + bc.optimal_angle;
       bc.angle_of_attack = 15;
     }
   }
   else if (bc.point_of_sail == "Reach") {
     if (nc.port_or_starboard == "Port") {
-      Serial1.println("Quadrant: REACH PORT");
+      //Serial1.println("Quadrant: REACH PORT");
       nc.intended_angle = nc.angle_to_waypoint;
       bc.angle_of_attack = -15;
     }
     else {
-      Serial1.println("Quadrant: REACH STARBOARD");
+      //Serial1.println("Quadrant: REACH STARBOARD");
       nc.intended_angle = nc.angle_to_waypoint;
       bc.angle_of_attack = 15;
     }
   }
   else{
      if(nc.port_or_starboard == "Port") {
-       Serial1.println("Quadrant: DOWNWIND PORT");
+       //Serial1.println("Quadrant: DOWNWIND PORT");
        nc.intended_angle = nc.wind_direction + 180 + bc.optimal_angle;
        bc.angle_of_attack = -15;
      }
      else{
-       Serial1.println("Quadrant: DOWNWIND STARBOARD");
+       //Serial1.println("Quadrant: DOWNWIND STARBOARD");
        nc.intended_angle = nc.wind_direction + 180 - bc.optimal_angle;
        bc.angle_of_attack = 15;
      }
@@ -143,13 +143,11 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 void nav() {
     nc.wind_direction = 270.0;
     bc.boat_direction = convertto360(sensorData.boat_direction);
-    nc.dir_angle = convertto360(nc.angle_to_waypoint-nc.wind_direction);
-    coord_t coord_lat_lon = {sensorData.x, sensorData.y};
-    coord_xy currentPosition = xyPoint(coord_lat_lon);
-    bc.location = currentPosition;
+    bc.location = sensorData.location;
     nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
     nc.angle_to_waypoint =
-     angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.current_wp]);
+     angleToTarget(bc.location, waypoint_array[nc.current_wp]);
+    nc.dir_angle = convertto360(nc.angle_to_waypoint-nc.wind_direction);
     if (bc.detection_radius > nc.normal_distance) {
       if (nc.current_wp != nc.num_wp) {
         nc.current_wp++;
@@ -260,27 +258,14 @@ void nav() {
   bc.tail_angle = nc.wind_direction + nc.offset;
   bc.sail_angle = bc.tail_angle + bc.angle_of_attack;
 
-  bc.tail_angle = bc.tail_angle + 360;
-  bc.tail_angle = (float)((int)bc.tail_angle%360);
-
-  bc.sail_angle = bc.sail_angle+360;
-  bc.sail_angle = (float)((int)bc.sail_angle%360);
-
   //Convert sail and tail from wrt north to wrt boat
   bc.sail_angle = bc.sail_angle - sensorData.boat_direction;
   bc.tail_angle = bc.tail_angle - sensorData.boat_direction;
 
-  // convert sail to 0-360
-  bc.sail_angle = int(bc.sail_angle+360)%360;
-
-  // convert tail to -180-180
-  bc.tail_angle = int(bc.tail_angle+360)%360;
-  while (bc.tail_angle> 180) {bc.tail_angle -= 180;}
+  
 
   //Get servo commands from the calculated sail and tail angles
-  while (bc.sail_angle < 0) {
-    bc.sail_angle += 360;
-  }
+
 
   sensorData.sailAngleBoat = bc.sail_angle;
   sensorData.tailAngleBoat = bc.tail_angle;
@@ -310,7 +295,7 @@ void nav() {
        if(nc.normal_distance < bc.detection_radius) {
          printData();
          nc.num_wp += 1 ;
-        bc.location = {sensorData.x, sensorData.y};
+        bc.location = sensorData.location;
          nc.normal_distance = xyDist(waypoint_array[nc.num_wp], bc.location);
     //     start_box_time=milTime;
        }
