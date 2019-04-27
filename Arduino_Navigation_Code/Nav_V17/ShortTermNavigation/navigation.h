@@ -51,7 +51,7 @@ public:
   bool is_tacking;
   String point_of_sail;
   float angle_of_attack;
-  constexpr float static optimal_angle = 7;
+  constexpr float static optimal_angle = 15.0; //this is a placeholder value
 
   //Sets the_a of the main sail
   void set_sail_angle (float angle){
