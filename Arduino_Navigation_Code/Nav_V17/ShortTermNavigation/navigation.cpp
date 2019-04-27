@@ -257,10 +257,10 @@ void nav() {
   nc.offset = bc.boat_direction - nc.intended_angle;
 
   float new_tail_angle = nc.wind_direction + nc.offset;
-  new_tail_angle = bc.tail_angle - sensorData.boat_direction;
+  new_tail_angle = new_tail_angle - sensorData.boat_direction;
 
   float new_sail_angle = new_tail_angle + bc.angle_of_attack;
-  new_sail_angle = bc.sail_angle - sensorData.boat_direction;
+  new_sail_angle = new_sail_angle - sensorData.boat_direction;
 
   sensorData.sailAngleBoat = new_sail_angle;
   sensorData.tailAngleBoat = new_tail_angle;
