@@ -32,7 +32,7 @@ void initializer(){
   nc.nav_init(max_distance, nc.num_wp, waypoint_array, 10.0, 10.0);
   bc.boat_init(5.0, sailServoPin, tailServoPin);
   nc.angle_to_waypoint =
-    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_arrayn[nc.current_wp]);
+    angleToTarget(coord_xy({sensorData.x, sensorData.y}), waypoint_array[nc.current_wp]);
 }
 
 /*
@@ -302,10 +302,26 @@ void nav() {
 //   nav();
 //
 // }
-// void station_keeping(coord_xy buoyLocations[]){
-//
-//   nav()
-// }
+ void station_keeping(coord_xy buoyLocations[]){
+     if (nc.num_wp == 0) {
+       bc.detection_radius = 30;
+       if(nc.normal_distance < bc.detection_radius) {
+         printData();
+         nc.num_wp += 1 ;
+        bc.location = {sensorData.x, sensorData.y};
+         nc.normal_distance = xyDist(waypoint_array[nc.num_wp], bc.location);
+    //     start_box_time=milTime;
+       }
+     }
+    // else if(time > 4.5 minutes) {
+    //   printData();
+    //   nc.num_wp += 1;
+    //   bc.location = {sensorData.x, sensorData.y};
+    //   nc.normal_distance = xyDist(waypoint_array[nc.num_wp], bc.location);
+    //   stationKeeping = 0;
+    // }
+   nav();
+ }
 
 // Once again, always be 5 meters outside bouy, must be within 3 feet of buoy
 // to avoid hitting buoy
