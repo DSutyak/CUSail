@@ -141,8 +141,8 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 }
 
 void nav() {
-    nc.wind_direction = 270.0;
     bc.boat_direction = convertto360(sensorData.boat_direction);
+    nc.wind_direction = convertto360(270.0 - bc.boat_direction);
     bc.location = sensorData.location;
     nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
     nc.angle_to_waypoint =
