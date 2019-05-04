@@ -40,12 +40,14 @@ void scanLidar() {
   void sweep_get_data(int sweep_start, int sweep_finish, float data_sweep1[], float data_sweep2[]){
     int pan_start = (int)(sweep_start - sensorData.boat_direction + 360) % 360;
     int pan_finish = (int)(sweep_finish - sensorData.boat_direction + 360) % 360;
+
     for(int i = pan_start; i < pan_finish; i+= 3){
       PanServo.write(i);
       delay(500);
       data_sweep1[get_current_angle()] = get_lidar_data();
       }
       delay(500);
+
       PanServo.write(pan_start);
       delay(1000);
     for(int i = pan_start; i < pan_finish; i+= 3){
@@ -57,7 +59,7 @@ void scanLidar() {
      PanServo.write(pan_start);
      delay(1000);
    }
-    
+   
  
  //get_current_angle returns the current angle (phi in spherical) that the sensor is pointing at
   int get_current_angle(){
@@ -141,8 +143,8 @@ void create_xy_object_array(float data[360]) {
   float pi = 3.14159265359; //is there a math library to use?
   for (int i = 0; i < 360; i++){
     if (data[i] != 0.0 && data[i] != 130.0) { //only add object if dist isn't 0 or 130. The 0 check is redundant because FilteredData should already have the data removed
-      float y = sensorData.y + data[i]*cos(2.*pi*i/180.);
-      float x = sensorData.x + data[i]*sin(2.*pi*i/180.);
+      float y = sensorData.location.y + data[i]*cos(2.*pi*i/180.);
+      float x = sensorData.location.x + data[i]*sin(2.*pi*i/180.);
       recentObjects[j] = coord_xy({x,y});
       j++;
     }
@@ -178,4 +180,5 @@ void add_to_object_list(coord_xy data[180]){
     }
   }
 }
+
 

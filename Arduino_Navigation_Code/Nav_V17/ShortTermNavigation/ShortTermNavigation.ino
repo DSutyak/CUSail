@@ -8,7 +8,7 @@
 ================
 VERSION 17
 ================
-Authors: Kurt Huebner, Troy Smith
+Authors: Kurt Huebner, Troy Smith, Beth Mieczkowski
 
  ShortTermNavigation
   The primary file that schedules tasks for SailVane:
@@ -30,7 +30,7 @@ void setup() {
   initializer();
 }
 
-// Code within loop() runs after setup and runs constantly (in order) while the mircrocontroller is powered
+// Code within loop() runs after setup and runs constantly (in order) while the microcontroller is powered
 void loop() {
   sRSensor(); //Gather wind directio w.r.t North
   sGPS(); //Gather global coordinates

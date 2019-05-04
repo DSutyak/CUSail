@@ -13,12 +13,8 @@
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs
 --------------------------------------------------------------------*/
-#include <Servo.h>
-#include <Wire.h>
 
 /*------------------------------ Structures ------------------------------*/
-#ifndef date_h
-#define date_h
 typedef struct date {
   int year;
   unsigned char month;
@@ -28,27 +24,19 @@ typedef struct date {
   unsigned char seconds;
 } date_t;
 
-#ifndef coord_xy_h
-#define coord_xy_h
-typedef struct coord_xy {
-  double x; // float x coord
-  double y; // float y coord
-} coord_xy;
-#endif
-
 typedef struct dataStructure {
-  float boat_direction; //Boat direction w.r.t North
+  float boatDir; //Boat direction w.r.t North
   float sailAngleBoat; //Sail angle for use of finding wind wrt boat
   float tailAngleBoat; //Tail angle for use of finding wind wrt boat
   float pitch;
   float roll;
-  float wind_dir; // Wind direction w.r.t North
-  coord_xy location;
+  float windDir; // Wind direction w.r.t North
+  double x;
+  double y;
   double lat;
   double longi;
   date_t dateTime; // Current date and time, of type date_t
 } data_t;
-#endif
 
 /*--------------------------- Predefined Variables ---------------------------*/
 #define RS_CSN          52
@@ -65,8 +53,6 @@ extern data_t sensorData; //Defines the boat's state, in type data_t
 
 extern double objectVals[2];//vector for detected objects
 
-extern Servo PanServo;
-extern Servo TiltServo;
 /*------------------------------ Functions ------------------------------*/
 
 /*Sensor setup*/
@@ -86,10 +72,6 @@ void sGPS(void);
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
 * to current boat direction w.r.t North, current boat pitch and current boat roll*/
 void sIMU(void);
-
-/* 
- */
-void sLidar(void);
 
 /*Returns servo command tail servo for inputted sail angle and tail angle
 * Precondition: Sail Angle in 0.. 360, Tail Angle in -180.. 180, w.r.t BOAT*/

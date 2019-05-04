@@ -2,18 +2,15 @@
 #include "sensors.h"
 #include <SPI.h>
 #include "TinyGPS++.h"
+#include <PixyI2C.h>
 #include "navigation.h"
 #include "navigation_helper.h"
-#include "Pixy/PixyI2C.h"
 
 //Begin Pixy
 PixyI2C pixy;
 
 TinyGPSPlus gps;
 data_t sensorData;
-
-Servo PanServo;  // create a servo object for lidar sensor
-Servo TiltServo;
 
 float prevSinWind = sin(270);
 float prevCosWind = sin(270);
@@ -84,33 +81,33 @@ void addObjects(void) {
 /* Returns servo command for sail servo for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
  */
-double sailMap(double sail_angle){
-  double new_sail_angle;
-  if (sail_angle <= 90){
-    new_sail_angle = map(sail_angle, 0, 90, 142, 125);
+double sailMap(double sailAngle){
+  double newSailAngle;
+  if (sailAngle <= 90){
+    newSailAngle = map(sailAngle, 0, 90, 142, 125);
   }
-  else if (sail_angle <= 180){
-    new_sail_angle = map(sail_angle, 90, 180, 125, 108);
+  else if (sailAngle <= 180){
+    newSailAngle = map(sailAngle, 90, 180, 125, 108);
   }
-  else if (sail_angle <= 270){
-    new_sail_angle = map(sail_angle, 180, 270, 108, 91);
+  else if (sailAngle <= 270){
+    newSailAngle = map(sailAngle, 180, 270, 108, 91);
   }
   else{
-   new_sail_angle = map(sail_angle, 270, 360,91, 74);
+   newSailAngle = map(sailAngle, 270, 360,91, 74);
   }
-  return new_sail_angle;
+  return newSailAngle;
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
  */
-double tailMap(double sail_angle, double tail_angle){
+double tailMap(double sailAngle, double tailAngle){
 
-  if (sail_angle > 180){ //convert sail angle to -180.. 180
-    sail_angle -= 360;
+  if (sailAngle > 180){ //convert sail angle to -180.. 180
+    sailAngle -= 360;
   }
 
-  double newTailAngle=tail_angle-sail_angle; //calculate position of tail with respect to sail
+  double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
 
   //make sure tail angle is in range -180.. 180
   if(newTailAngle<-180){
@@ -135,45 +132,45 @@ double tailMap(double sail_angle, double tail_angle){
 
 
 
-double sailMapBench( double sail_angle){
- double new_sail_angle;
- if (sail_angle <= 90){
-   new_sail_angle = map(sail_angle, 0, 90, 97, 102.3);
+double sailMapBench( double sailAngle){
+ double newSailAngle;
+ if (sailAngle <= 90){
+   newSailAngle = map(sailAngle, 0, 90, 97, 102.3);
  }
- else if (sail_angle <= 180){
-   new_sail_angle = map(sail_angle, 90, 180, 102.3, 108);
+ else if (sailAngle <= 180){
+   newSailAngle = map(sailAngle, 90, 180, 102.3, 108);
  }
- else if (sail_angle <= 270){
-   new_sail_angle = map(sail_angle, 180, 270, 108, 113);
+ else if (sailAngle <= 270){
+   newSailAngle = map(sailAngle, 180, 270, 108, 113);
  }
  else{
-  new_sail_angle = map(sail_angle, 270, 360, 113, 118);
+  newSailAngle = map(sailAngle, 270, 360, 113, 118);
  }
- return new_sail_angle;
+ return newSailAngle;
 }
 
-double tailMapBench( double sail_angle, double tail_angle){
- if (sail_angle > 180){ //convert sail angle to -180.. 180
-   sail_angle -= 360;
+double tailMapBench( double sailAngle, double tailAngle){
+ if (sailAngle > 180){ //convert sail angle to -180.. 180
+   sailAngle -= 360;
  }
 
- double new_tail_angle=tail_angle-sail_angle; //calculate position of tail with respect to sail
+ double newTailAngle=tailAngle-sailAngle; //calculate position of tail with respect to sail
 
  //make sure tail angle is in range -180.. 180
- if(new_tail_angle<-180){
-   new_tail_angle+=360;
+ if(newTailAngle<-180){
+   newTailAngle+=360;
  }
- else if(new_tail_angle>180){
-   new_tail_angle-=360;
+ else if(newTailAngle>180){
+   newTailAngle-=360;
  }
  //map to servo commands
- if (new_tail_angle <= 0 ){
-   new_tail_angle=map(new_tail_angle,-30,0,13,45);
+ if (newTailAngle <= 0 ){
+   newTailAngle=map(newTailAngle,-30,0,13,45);
  }
- else if (new_tail_angle > 0 ){
-   new_tail_angle=map(new_tail_angle,0,30,45,70);
+ else if (newTailAngle > 0 ){
+   newTailAngle=map(newTailAngle,0,30,45,70);
  }
- return new_tail_angle;
+ return newTailAngle;
 }
 
 /*Sensor setup*/
@@ -208,13 +205,14 @@ void initSensors(void) {
   //Initialize pixycam
   pixy.init();
 
-  sensorData.boat_direction = 0; //Boat direction w.r.t North
+  sensorData.boatDir = 0; //Boat direction w.r.t North
   sensorData.sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
   sensorData.tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
   sensorData.pitch = 0;
   sensorData.roll = 0;
-  sensorData.wind_dir = 0; // Wind direction w.r.t North
-  sensorData.location = xyPoint(coord_t {0.0, 0.0});
+  sensorData.windDir = 0; // Wind direction w.r.t North
+  sensorData.x = 0; // Longitude of current global position;
+  sensorData.y = 0; // Longitude of current global position;
   sensorData.lat=0;
   sensorData.longi=0;
 }
@@ -251,7 +249,7 @@ void sRSensor(void) {
   unsigned int angle = SPI.transfer16(0xC000);
   digitalWrite(RS_CSN, HIGH);
   SPI.endTransaction();
-  delay(1000);
+
   //mask the MSB and 14th bit
   angle = (angle & (0x3FFF));
 
@@ -259,7 +257,6 @@ void sRSensor(void) {
   int reading = ( (unsigned long) angle)*360UL/16384UL;
   reading += angleCorrection;
   reading = (reading<0)?(reading+360):reading;
-
 
 //  Serial1.print("----------Rotary Sensor----------\n");
 //  Serial1.print("Current wind reading w.r.t Sail: ");
@@ -269,7 +266,7 @@ void sRSensor(void) {
 //  Serial1.print("sailAngle: ");
 //  Serial1.println(sensorData.sailAngleBoat);
   float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
-  wind_wrtN = ((int)(wind_wrtN + sensorData.boat_direction))%360;
+  wind_wrtN = ((int)(wind_wrtN + sensorData.boatDir))%360;
 
   //filter wind
   float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
@@ -281,7 +278,7 @@ void sRSensor(void) {
 //  Serial1.print("Raw Wind WRT NORTH: ");
 //  Serial1.println(wind_wrtN);
 
-  sensorData.wind_dir = wind_wrtN;
+  sensorData.windDir = wind_wrtN;
   prevWindDirection = wind_wrtN;
   }
 
@@ -292,7 +289,8 @@ void sGPS(void) {
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
       point = xyPoint( coord_t({gps.location.lat(),gps.location.lng()}));
-      sensorData.location = point;
+      sensorData.x=point.x;
+      sensorData.y=point.y;
 
       sensorData.lat= gps.location.lat();
       sensorData.longi= gps.location.lng();
@@ -301,6 +299,7 @@ void sGPS(void) {
       sensorData.dateTime.minute = gps.time.minute();
       sensorData.dateTime.seconds = gps.time.second();
     }
+
 }
 
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
@@ -328,11 +327,10 @@ void sIMU(void) {
     delay(1);
     result = transferByte(0xFF);
 //    Serial1.println("IMU Stuck!");
-    digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
     }
+
   digitalWrite(redLED, LOW);
-  digitalWrite(greenLED, HIGH);
 
   // Get the 12 bytes of return data from the device:
   for (int ii=0; ii<3; ii++) {
@@ -348,27 +346,14 @@ void sIMU(void) {
     endianSwap(imu_data[mm].b);
   }
 
-  float boat_direction =  ((imu_data[1].fval)*(180/PI));
-  if (boat_direction < 0) {
-    boat_direction += 360;
+  float boatDir =  ((imu_data[1].fval)*(180/PI));
+  if (boatDir < 0) {
+    boatDir += 360;
   }
 
-  sensorData.boat_direction = boat_direction;
+  sensorData.boatDir = boatDir;
 //  Serial1.print("BoatDIR raw:");
-//  Serial1.println(boat_direction);
+//  Serial1.println(boatDir);
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
-
-void sLidar(){ //TODO move pins to write spot
-  PanServo.attach(4); // attaches the servo on pin 4 to the servo object
-  PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
-  //TiltServo.write(0); //begin pointing horizontally
-  Wire.begin();
-  
-  Wire.beginTransmission(0x66);
-  Wire.write(0);
-  Wire.endTransmission(); // Tried moving this wire stuff to setup - if the sensor doesn't work this might have to go in the main lidar file
-}
-
-

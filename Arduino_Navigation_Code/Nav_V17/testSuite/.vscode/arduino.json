@@ -1,0 +1,4 @@
+{
+    "sketch": "ShortTermNavigation.ino",
+    "board": "arduino:avr:uno"
+}
