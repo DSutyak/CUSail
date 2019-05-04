@@ -10,8 +10,6 @@
 #include "obstacle_detection.h"
 #include <Servo.h>
 #include <Wire.h>
-#include <list>     //likely won't use this - list in std library doesn't work in arduino
-#include <iterator> //check if needed this
 
 
 int reading = 0; //for reading data from lidar sensor
@@ -21,6 +19,9 @@ float Data2[360];
 float Filtered_Data[360];
 coord_xy recentObjects[360]; //max # of objects detected is 180, recentObjects is an array whose first elements are objects, the rest just 0. 
 //contains all objects detected from a single sweep data array
+obstacle* object_list[360]; //contains all objects
+int object_list_index = 0; //index is position where no objects have been created in array
+
 
 
 //SETUP to be moved to function initSensors() sensors.cpp
@@ -128,7 +129,6 @@ int diff_check(float a, float b) {
    if (diff/(avg+.001) < max_percent_difference) {return 1;}
    return 0;
 }
-//TODO add to header file
 //prints Data arrays with corresponding angles
 void printLidarData(){
     Serial.println("Printing Array");
@@ -160,6 +160,9 @@ void create_xy_object_array(float data[360]) {
       j++;
     }
   }
+  for(int k = j;k < 180 ;k++){ //less than size of recentObjects
+    recentObjects[k] = coord_xy({0,0});
+  }
 }
 
 
@@ -167,23 +170,25 @@ void create_xy_object_array(float data[360]) {
 
 
 //inserts objects into sorted global object_list
-//INCOMPLETE - I don't know how to make this work :(
-//uses sorting algo: 
+//should use sorting algo 
 void add_to_object_list(coord_xy data[180]){
-  /*
-  list <obstacle> obstacle_list;
-  for(int i = 0; i<180; i++){
-    obstacle new_obj = new obstacle;
-    new_obj.location = data[i];
-    new_obj.seen=1;
-    new_obj.confirmed = false;
-    
-    list <int> :: iterator it; 
-    for(it = obstacle_list.begin(); it != obstacle_list.end(); ++it) {
-      //iterate through list
-      1;
+  int i = 0;
+  while (data[i].x != 0 && i < 180){
+    for(int j = 0; j< 360; j++) { //less than objectlist.length
+      if (diff_check(data[i].x, object_list[j]->location.x) && (diff_check(data[i].y, object_list[j]->location.y))){ //if true then object confirmed
+        object_list[j]->location = data[i]; //update location of confirmed object
+      } else {
+        obstacle* new_obj = new obstacle;
+        new_obj->location = data[i];
+        new_obj->seen=1;
+        new_obj->confirmed = false;
+        object_list[object_list_index] = new_obj;
+        object_list_index ++;
+        if(object_list_index >=360){
+          object_list_index = 0; ///need better way to wrap around when fills object_list
+        }
+      }
     }
   }
-  */  
 }
 
