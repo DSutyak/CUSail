@@ -5,7 +5,7 @@ import re
 import pprint
 import time
 
-serial_port = serial.Serial('COM5', 9600) #Marissa - COM3, Troy - COM5
+serial_port = serial.Serial('COM6', 9600) #Marissa - COM3, Troy - COM5
 xbee = XBee(serial_port)
 f = open("live_data.txt", 'w')
 

@@ -265,8 +265,8 @@ void nav() {
   sensorData.sailAngleBoat = new_sail_angle;
   sensorData.tailAngleBoat = new_tail_angle;
 
-  bc.tail_angle = tailMap(new_sail_angle, new_tail_angle);
-  bc.sail_angle = sailMap(new_sail_angle);
+  bc.tail_angle = tailMapBench(new_sail_angle, new_tail_angle);
+  bc.sail_angle = sailMapBench(new_sail_angle);
 
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
