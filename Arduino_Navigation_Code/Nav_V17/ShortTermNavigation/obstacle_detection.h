@@ -37,7 +37,7 @@ void create_xy_object_array(float data[180]);
 #define obstacle_h
 class obstacle {
 public:
-  _coord_xy location;
+ coord_xy location;
   int seen; //the number of times we see it
   bool confirmed;
 
