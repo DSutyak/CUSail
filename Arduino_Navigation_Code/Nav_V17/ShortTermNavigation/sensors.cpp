@@ -12,6 +12,9 @@ PixyI2C pixy;
 TinyGPSPlus gps;
 data_t sensorData;
 
+Servo PanServo;  // create a servo object for lidar sensor
+Servo TiltServo;
+
 float prevSinWind = sin(270);
 float prevCosWind = sin(270);
 
@@ -358,3 +361,16 @@ void sIMU(void) {
   sensorData.pitch  = (imu_data[0].fval)*(180/PI);
   sensorData.roll = (imu_data[2].fval)*(180/PI);
 }
+
+void sLidar(){ //TODO move pins to write spot
+  PanServo.attach(4); // attaches the servo on pin 4 to the servo object
+  PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
+  //TiltServo.write(0); //begin pointing horizontally
+  Wire.begin();
+  
+  Wire.beginTransmission(0x66);
+  Wire.write(0);
+  Wire.endTransmission(); // Tried moving this wire stuff to setup - if the sensor doesn't work this might have to go in the main lidar file
+}
+
+

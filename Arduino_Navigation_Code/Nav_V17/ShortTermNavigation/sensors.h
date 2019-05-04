@@ -13,6 +13,8 @@
  GPS: PAM-7Q GPS Module by Parallax
  IMU: 3 Space Embedded Evaluation Kit by Yost Labs
 --------------------------------------------------------------------*/
+#include <Servo.h>
+#include <Wire.h>
 
 /*------------------------------ Structures ------------------------------*/
 #ifndef date_h
@@ -56,6 +58,8 @@ extern data_t sensorData; //Defines the boat's state, in type data_t
 
 extern double objectVals[2];//vector for detected objects
 
+extern Servo PanServo;
+extern Servo TiltServo;
 /*------------------------------ Functions ------------------------------*/
 
 /*Sensor setup*/
@@ -75,6 +79,10 @@ void sGPS(void);
 /*Sets value of sensorData.boatDir, sensorData.pitch and sensorData.roll
 * to current boat direction w.r.t North, current boat pitch and current boat roll*/
 void sIMU(void);
+
+/* 
+ */
+void sLidar(void);
 
 /*Returns servo command tail servo for inputted sail angle and tail angle
 * Precondition: Sail Angle in 0.. 360, Tail Angle in -180.. 180, w.r.t BOAT*/

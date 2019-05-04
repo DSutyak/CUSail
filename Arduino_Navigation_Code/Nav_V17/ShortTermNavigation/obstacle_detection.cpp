@@ -5,10 +5,12 @@
  * Code To Add in the Future:
  * Incorporate IMU angles (first just add angle w.r.t North, then worry about yaw much later along with servo controls
  * Map to XY plane with boat nav algo
+ * 
+ * //SETUP has been moved to function initSensors() sensors.cpp
+
 
 */
 #include "obstacle_detection.h"
-#include <Servo.h>
 #include <Wire.h>
 
 
@@ -19,26 +21,11 @@ float Data2[360];
 float Filtered_Data[360];
 coord_xy recentObjects[360]; //max # of objects detected is 180, recentObjects is an array whose first elements are objects, the rest just 0. 
 //contains all objects detected from a single sweep data array
-obstacle* object_list[360]; //contains all objects
+obstacle* object_list[360]; //contains pointers to all objects
 int object_list_index = 0; //index is position where no objects have been created in array
 
 
 
-//SETUP to be moved to function initSensors() sensors.cpp
-Servo PanServo;  // create a servo object
-Servo TiltServo;
-/* 
-void setup() {
-  PanServo.attach(4); // attaches the servo on pin 4 to the servo object
-  PanServo.write(45); //begin pointing 45 deg to the left of boat's heading
-  Wire.begin();
-  Serial.begin(9600); // open a serial connection to your computer
-  
-  Wire.beginTransmission(0x66);
-  Wire.write(0);
-  Wire.endTransmission(); // Tried moving this wire stuff to setup - if the sensor doesn't work this might have to go in the main lidar file
-}
-*/
 //TODO add scanLidar to header file
 // updates recentObjects array with new data
 void scanLidar() {
