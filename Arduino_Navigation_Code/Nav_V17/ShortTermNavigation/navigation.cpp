@@ -23,8 +23,8 @@ void initializer(){
 // set max distance from origin
   float max_distance = 10000.0;
 //  init waypoints
-  coord_t coordinates[4] = {engQuadX, outsideThurston, hollister, engQuadRight};
-  nc.num_wp = 4;
+  coord_t coordinates[4] = {outsideThurston, hollister, engQuadX};
+  nc.num_wp = 3;
   setOrigin(coordinates[0]);
   delay(1000);
   waypoint_array[nc.num_wp];
@@ -80,7 +80,7 @@ void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
     //Serial1.print("Invalid argument sent to nav");
   }
   else if (bc.point_of_sail == "Upwind") {
-    if (nc.port_or_starboard == "Port") {
+    if (nc.port_or_starboard == "Starboard") {
       //Serial1.println("Quadrant: UPWIND PORT");
       nc.intended_angle = nc.wind_direction - bc.optimal_angle;
       bc.angle_of_attack = -15;
@@ -92,7 +92,7 @@ void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
     }
   }
   else if (bc.point_of_sail == "Reach") {
-    if (nc.port_or_starboard == "Port") {
+    if (nc.port_or_starboard == "Starboard") {
       //Serial1.println("Quadrant: REACH PORT");
       nc.intended_angle = nc.angle_to_waypoint;
       bc.angle_of_attack = -15;
@@ -104,7 +104,7 @@ void calcIntendedAngle(Boat_Controller bc, Navigation_Controller nc) {
     }
   }
   else{
-     if(nc.port_or_starboard == "Port") {
+     if(nc.port_or_starboard == "Starboard") {
        //Serial1.println("Quadrant: DOWNWIND PORT");
        nc.intended_angle = nc.wind_direction + 180 + bc.optimal_angle;
        bc.angle_of_attack = -15;
@@ -142,7 +142,7 @@ bool belowBounds(Boat_Controller bc, Navigation_Controller nc){
 
 void nav() {
     bc.boat_direction = convertto360(sensorData.boat_direction);
-    nc.wind_direction = convertto360(270.0 - bc.boat_direction);
+    nc.wind_direction = convertto360(sensorData.wind_dir+bc.boat_direction+bc.sail_angle);
     bc.location = sensorData.location;
     nc.normal_distance = xyDist(waypoint_array[nc.current_wp], bc.location);
     nc.angle_to_waypoint =
@@ -257,10 +257,10 @@ void nav() {
   nc.offset = bc.boat_direction - nc.intended_angle;
 
   float new_tail_angle = nc.wind_direction + nc.offset;
-  new_tail_angle = new_tail_angle - sensorData.boat_direction;
+  new_tail_angle = new_tail_angle - bc.boat_direction;
 
   float new_sail_angle = new_tail_angle + bc.angle_of_attack;
-  new_sail_angle = new_sail_angle - sensorData.boat_direction;
+  new_sail_angle = new_sail_angle - bc.boat_direction;
 
   sensorData.sailAngleBoat = new_sail_angle;
   sensorData.tailAngleBoat = new_tail_angle;
@@ -271,7 +271,7 @@ void nav() {
   bc.set_sail_angle(bc.sail_angle);
   bc.set_tail_angle(bc.tail_angle);
 
-  printData();
+  //printData();
 }
 
 // void endurance(Boat_Controller bc, Navigation_Controller nc){

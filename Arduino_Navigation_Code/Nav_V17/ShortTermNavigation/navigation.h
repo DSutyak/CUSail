@@ -55,6 +55,8 @@ public:
 
   //Sets the_a of the main sail
   void set_sail_angle (float angle){
+    Serial1.print("Sail Angle: ");
+    Serial1.println(angle, 10);
     sailServo.write(angle);
   }
 
