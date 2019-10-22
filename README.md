@@ -2,24 +2,12 @@
 #Cornell University Autonomous Sailboat Team
 #Navigation Project
 
-The enclosed files contain the following elments of the navigation system of SailVane
+This branch is for the navigation algorithm code being written for the PIC32 microcontroller.
+It requires the MPLAB X IDE and XC32 compiler to run.
 
--Arduino Individual Code: This folder contains sensor code for the boat's Rotary Sensor, IMU and GPS
+Notes:
+The link to modify the quad coordinates is: https://binged.it/2oi2yOR
 
--Simulators: This folder contains two kinds of MATLAB simulators made for testing the algorithm
-
--Short Term Navigation Algorithm: This folder contains code in C that eventually populates the
-				  function, nShort() in the Arduino Code
-
--Arduino Navigation Code: This folder contains code that is uploaded to the microcontroler, and is
-                          the culmination of the sensor code and the navigation algorithm
-
--Individual Functions for Arduino Code: Contains (mostly) helper functions used in the Arduino Code
-
-#Recent Updates (10/6/16)
-
--Added the most current version of the algorithm to the Short Term Navigation Algorithm folder
-
--Added the most current version of the arduino code to the Arduino Navigation Code folder
-
--The link to modify the quad coordinates is: https://binged.it/2oi2yOR
+Recent Modifications (10/21/19):
+- Created MPLAB project w/ necessary protothread library and legacy peripheral library
+- Test cases for sensors are in progress
