@@ -14,6 +14,10 @@ import PIL
 import numpy
 global past_point
 import os
+import serial
+from xbee import XBee
+import re
+import pprint
 past_point = (0,0)
 
 pg.setConfigOption('background', 'w')
@@ -25,7 +29,11 @@ app = QtGui.QApplication(sys.argv)
 ## Define a top-level widget to hold everything
 w = QtGui.QWidget()
 
+serial_port = serial.Serial('COM6', 9600) #Marissa - COM3, Troy - COM5
+xbee = XBee(serial_port)
 
+header = "----------NAVIGATION----------"
+regex = "(?:'rf_data': b')((.|\n)*)'"
 
 
 ## Create some widgets to be placed inside
@@ -156,24 +164,30 @@ class CompassWidget(QWidget):
     angle = pyqtProperty(float, angle, setAngle)
 
 def update():
-    f = open("live_data.txt")
-    raw_data = list(f)[-1]
-    data = json.loads(raw_data)
-    pp.pprint(data)
-    print("\n")
-    x = float(data['X position'][0:-2])
-    y = float(data['Y position'][0:-2])
-    lati = float(data['latitude'][0:-2])
-    longi = float(data['longitude'][0:-2])
-    wind_dir = float(data["Wind w.r.t North"][0:-2])
-    roll = float(data["Roll"][0:-2])
-    pitch = float(data["Pitch"][0:-2])
-    boat_dir = float(data["Boat direction"][0:-2])
-    waypoint_number = int(data["Next Waypoint #"][0:-2])
-    waypoint_x = (data["Next Waypoint X"])
-    waypoint_y = (data["Next Waypoint Y"])
-    waypoint_distance = (data["Distance to Waypoint"][0:-2])
-    waypoint_angle = (data["Angle to Waypoint"][0:-2])
+    #f = open("live_data.txt")
+    #raw_data = out#list(f)[-1]
+    #data = json.loads(raw_data)
+    #pp.pprint(data)
+    #print("\n")
+    # x = float(data['X position'][0:-2])
+    # y = float(data['Y position'][0:-2])
+    # lati = float(data['latitude'][0:-2])
+    # longi = float(data['longitude'][0:-2])
+
+    #lati = float(data['Latitude'][0:-2])
+    
+    lati = 0 + random.randint(0,100)
+    #longi = float(data['Longitude'][0:-2])
+    longi = 0 + random.randint(0,100)
+    # wind_dir = float(data["Wind w.r.t North"][0:-2])
+    # roll = float(data["Roll"][0:-2])
+    # pitch = float(data["Pitch"][0:-2])
+    # boat_dir = float(data["Boat direction"][0:-2])
+    # waypoint_number = int(data["Next Waypoint #"][0:-2])
+    # waypoint_x = (data["Next Waypoint X"])
+    # waypoint_y = (data["Next Waypoint Y"])
+    # waypoint_distance = (data["Distance to Waypoint"][0:-2])
+    # waypoint_angle = (data["Angle to Waypoint"][0:-2])
 
     # print(x)
     # print("\n")
@@ -182,14 +196,63 @@ def update():
     global past_point
     # listw.addItem(text.text())
     # arr = text.text().split(',')
-    # x = float(arr[0])
-    # y = float(arr[1])
-    wind_compass.setAngle(wind_dir)
-    boat_compass.setAngle(boat_dir)
-    plot.plot([past_point[0], x], [past_point[1], y])
-    past_point = (x,y)
+    #x = float(arr[0])
+    #y = float(arr[1])
+    # wind_compass.setAngle(wind_dir)
+    # boat_compass.setAngle(boat_dir)
+    #plot.plot([past_point[0], x], [past_point[1], y])
+    plot.plot([past_point[0],lati],[past_point[1],longi])
+    #past_point = (x,y)
+    past_point = (lati,longi)
+    w.update()
+    w.show()
     # display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
-    display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
+    #display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
+
+def run():
+    data = ""
+    try:
+        print("Waiting...")
+        packet = str(xbee.wait_read_frame())
+        print(packet)
+        print("Packet Recieved!")
+        match = re.search(regex, packet)
+        if match:
+            line = match.group(1)
+            print(line)
+            data += line
+            if (header in data):
+                header_start = data.find(header)
+                print(header_start)
+                header_end = header_start + len(header)
+                data_to_send = data[0:header_start]
+                print(data_to_send)
+                data_arr = data_to_send.split("\\n")
+                print(data_arr)
+                #data_assoc = []
+                data_assoc = {}
+                for datum in data_arr:
+                    if (":" in datum):
+                        #print(datum)
+                        label, value = datum.split(":")
+                        data_assoc[label] = value
+                    
+                print ("Parse data cycle to GUI")
+                # Update gui with data
+                #print (json.dumps(data_assoc))
+                print ("\n\n")
+                #f.write(json.dumps(data_assoc)+"\n")
+                out = json.dumps(data_assoc)+"\n"
+                #pp.pprint(data_arr)
+                #print(out)
+                data = data[header_end:len(data)]
+                print(out)
+                update()
+        else:
+            print ("Regex failed to match")
+            print(packet)
+    except KeyboardInterrupt:
+        print("bad")
 
 
 
@@ -241,7 +304,7 @@ boat_compass = CompassWidget()
 # spinBox.valueChanged[float].connect(compass.setAngle)
 
 btn.clicked.connect(waypoint)
-btn2.clicked.connect(update)
+#btn2.clicked.connect(update)
 btn3.clicked.connect(buoy)
 ## Create a grid layout to manage the widgets size and position
 layout = QtGui.QGridLayout()
@@ -268,6 +331,11 @@ layout.addWidget(boat_compass, 5, 1)
 # layout.addWidget(spinBox, 5, 0)
 ## Display the widget as a new window
 w.show()
+
+w.timer = QTimer()
+w.timer.setInterval(1000)
+w.timer.timeout.connect(run)
+w.timer.start();
 
 ## Start the Qt event loop
 app.exec_()
