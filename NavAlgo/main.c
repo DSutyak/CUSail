@@ -9,12 +9,23 @@
 
 // sensor libraries
 #include "sensors.h"
+#include "delay.h"
 
 // threads
 static struct pt pt_sensor;
 
 // sensor data
 extern data_t* sensorData;
+
+void delay_ms(unsigned int ms) {
+    delay_us(ms * 1000);
+}
+
+void delay_us(unsigned int us) {
+    us *= sys_clock / 1000000 / 2;
+    _CP0_SET_COUNT(0); // Set Core Timer count to 0
+    while (us > _CP0_GET_COUNT());
+}
 
 // thread to check sensor values every 2.5s
 static PT_THREAD (protothread_timer(struct pt *pt)) {

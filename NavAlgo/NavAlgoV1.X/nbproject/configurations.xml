@@ -7,6 +7,7 @@
       <itemPath>../config.h</itemPath>
       <itemPath>../pt_cornell_1_2_1.h</itemPath>
       <itemPath>../sensors.h</itemPath>
+      <itemPath>../delay.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,8 +18,12 @@
                    projectFiles="true">
       <itemPath>../main.c</itemPath>
       <itemPath>../sensors.c</itemPath>
+<<<<<<< Updated upstream
       <itemPath>../coordinates.c</itemPath>
       <itemPath>../navigation_helper.c</itemPath>
+=======
+      <itemPath>../delay.c</itemPath>
+>>>>>>> Stashed changes
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
