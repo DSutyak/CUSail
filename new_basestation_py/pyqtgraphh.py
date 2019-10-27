@@ -45,8 +45,8 @@ display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 #files = os.listdir("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/")
     #for file in files:
         #if file is "sailboat_cartoon.jpg":
-img = Image.open("sailboat_cartoon.jpg")
-img = img.rotate(90)
+# img = Image.open("sailboat_cartoon.jpg")
+# img = img.rotate(90)
 
 #im = Image.open("sailboat_cartoon.jpg")
 #im = numpy.asarray(Image.open('sailboat_cartoon.jpg','rb'))
@@ -55,8 +55,8 @@ img = img.rotate(90)
 
 #im = Image.open("/Users/mahikakudlugi/Desktop/CUSail/new_basestation_py/sailboat_cartoon.jpg")
 #np_im = numpy.array(im)
-im2arr = numpy.array(img)
-image = pg.image(im2arr)
+# im2arr = numpy.array(img)
+# image = pg.image(im2arr)
 
 class CompassWidget(QWidget):
 
@@ -262,7 +262,7 @@ layout.addWidget(display2, 6, 1)  # display2 widget goes in bottom-middle
 layout.addWidget(plot, 0, 3, 5, 1)  # plot goes on right side, spanning 3 rows
 layout.addWidget(wind_compass, 5, 0)
 layout.addWidget(boat_compass, 5, 1)
-layout.addWidget(image, 0, 3, 5, 1)
+# layout.addWidget(image, 0, 3, 5, 1)
 
 #layout.addWidget()
 # layout.addWidget(spinBox, 5, 0)
