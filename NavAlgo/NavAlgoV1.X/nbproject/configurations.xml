@@ -17,6 +17,8 @@
                    projectFiles="true">
       <itemPath>../main.c</itemPath>
       <itemPath>../sensors.c</itemPath>
+      <itemPath>../coordinates.c</itemPath>
+      <itemPath>../navigation_helper.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
