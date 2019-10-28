@@ -20,7 +20,7 @@ void initSensors(void) {
     // TODO set Pin Modes (for other communication protocols)
 
     //TODO Initialize SPI (Check this for clock rate)
-    OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_1_1|PRI_PRESCAL_1_1, SPI_ENABLE);
+    OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
     ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
     TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output for SS
     PORTBbits.RB3 = 1; // set SS high (active low)
