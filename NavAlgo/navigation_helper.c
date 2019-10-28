@@ -80,5 +80,5 @@ coord_xy middlePoint(coord_xy point1, coord_xy point2){
 
 // converts an angle to a 0-360 range
 float convertto360(float angle){
-  return (float)((((int)angle%360)+360)%360);
+    return (float)((((int)angle%360)+360)%360);
 }
