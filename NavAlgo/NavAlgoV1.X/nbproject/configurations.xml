@@ -9,6 +9,7 @@
       <itemPath>../sensors.h</itemPath>
       <itemPath>../delay.h</itemPath>
       <itemPath>../coordinates.h</itemPath>
+      <itemPath>../nmea/nmea.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -22,6 +23,7 @@
       <itemPath>../coordinates.c</itemPath>
       <itemPath>../navigation_helper.c</itemPath>
       <itemPath>../delay.c</itemPath>
+      <itemPath>../gps.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

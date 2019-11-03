@@ -9,6 +9,11 @@
 #include "xc.h"
 #include "delay.h"
 #include <math.h>
+#include "nmea/nmea.h"
+#include <string.h>
+
+// system clock rate (as defined in config.h)
+uint32_t clock_rate = 40000000;
 
 data_t* sensorData;
 
@@ -18,7 +23,10 @@ void initSensors(void) {
     sensorData = (data_t*) malloc(sizeof(data_t));
 
     // TODO set Pin Modes (for other communication protocols)
-
+    
+    // TODO Initialize GPS (Check this)
+    OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
+    
     //TODO Initialize SPI (Check this for clock rate)
     OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
     ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
@@ -34,8 +42,8 @@ void initSensors(void) {
     sensorData->roll = 0;
     sensorData->wind_dir = 0; // Wind direction w.r.t North
     sensorData->wind_speed = 0;
-    sensorData->x = 0; // Longitude of current global position;
-    sensorData->y = 0; // Longitude of current global position;
+    sensorData->x = 0; // X-coord of current global position;
+    sensorData->y = 0; // Y-coord of current global position;
     sensorData->lat=0;
     sensorData->longi=0;
 }
@@ -115,6 +123,7 @@ void readAnemometer(void) {
 }
 
 void readGPS(void) {
-    sensorData->lat++;
-    sensorData->longi++;
+    while (DataRdyUART1()) {
+        //TODO
+    }
 }

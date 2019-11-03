@@ -1,4 +1,19 @@
 build/default/production/_ext/1472/sensors.o:  \
 ../sensors.c  \
 ../sensors.h  \
- ../delay.h 
+ ../delay.h  \
+../nmea/nmea.h  \
+../nmea/./config.h  \
+../nmea/./units.h  \
+ ../nmea/./config.h  \
+../nmea/./gmath.h  \
+../nmea/./info.h  \
+../nmea/./time.h  \
+ ../nmea/./info.h  \
+../nmea/./sentence.h  \
+../nmea/./generate.h  \
+ ../nmea/./sentence.h  \
+../nmea/./generator.h  \
+../nmea/./parse.h  \
+ ../nmea/./parser.h  \
+../nmea/./context.h 
