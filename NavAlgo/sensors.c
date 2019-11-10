@@ -208,3 +208,31 @@ void readGPS(void) {
     sensorData->dateTime->minute = info->utc.min;
     sensorData->dateTime->seconds = info->utc.sec;
 }
+
+uint32_t readI2C(){
+    
+    
+    OpenI2C1( I2C_EN, BRG_VAL );
+    
+    StartI2C1();
+    IdleI2C1();
+    while( I2C1STATbits.ACKSTAT == 0 ) {
+        Nop(); 
+    }
+    MasterReadI2C();
+    StopI2C1();
+    IdleI2C();
+    
+    
+}    
+
+ 
+ 
+ 
+void readLiDAR(void) {
+    int brg_val;
+    char i2cData[10];
+    //Slave Address 0x00
+    int 9
+    for
+    uint32_t result = readI2C(0x00)
