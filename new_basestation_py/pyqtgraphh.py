@@ -33,8 +33,9 @@ serial_port = serial.Serial('COM6', 9600) #Marissa - COM3, Troy - COM5
 xbee = XBee(serial_port)
 
 header = "----------NAVIGATION----------"
+end = "----------END----------"
 regex = "(?:'rf_data': b')((.|\n)*)'"
-
+curPacket = ""
 
 ## Create some widgets to be placed inside
 btn = QtGui.QPushButton('Waypoint')
@@ -44,7 +45,7 @@ text = QtGui.QLineEdit('Enter Buoy/Waypoint')
 listw = QtGui.QListWidget()
 listb = QtGui.QListWidget()
 plot = pg.PlotWidget()
-plot.setLimits(minXRange=500,maxXRange=500,minYRange=500,maxYRange=500)
+plot.setLimits(minXRange=150,maxXRange=150,minYRange=150,maxYRange=150)
 display1 = QtGui.QLabel('Wind Direction: <x,y,z>')
 display2 = QtGui.QLabel('Roll, Pitch, Yaw: <x,y,z>')
 
@@ -163,94 +164,128 @@ class CompassWidget(QWidget):
 
     angle = pyqtProperty(float, angle, setAngle)
 
-def update():
-    #f = open("live_data.txt")
-    #raw_data = out#list(f)[-1]
-    #data = json.loads(raw_data)
-    #pp.pprint(data)
-    #print("\n")
-    # x = float(data['X position'][0:-2])
-    # y = float(data['Y position'][0:-2])
-    # lati = float(data['latitude'][0:-2])
-    # longi = float(data['longitude'][0:-2])
+def update(data):
+    try:
+        #f = open("live_data.txt")
+        #raw_data = out#list(f)[-1]
+        #data = json.loads(raw_data)
+        #pp.pprint(data)
+        #print("\n")
+        #print(data)
+        x = float(data['X position'][0:-2])
+        y = float(data['Y position'][0:-2])
+        # lati = float(data['latitude'][0:-2])
+        # longi = float(data['longitude'][0:-2])
 
-    #lati = float(data['Latitude'][0:-2])
-    
-    lati = 0 + random.randint(0,100)
-    #longi = float(data['Longitude'][0:-2])
-    longi = 0 + random.randint(0,100)
-    # wind_dir = float(data["Wind w.r.t North"][0:-2])
-    # roll = float(data["Roll"][0:-2])
-    # pitch = float(data["Pitch"][0:-2])
-    # boat_dir = float(data["Boat direction"][0:-2])
-    # waypoint_number = int(data["Next Waypoint #"][0:-2])
-    # waypoint_x = (data["Next Waypoint X"])
-    # waypoint_y = (data["Next Waypoint Y"])
-    # waypoint_distance = (data["Distance to Waypoint"][0:-2])
-    # waypoint_angle = (data["Angle to Waypoint"][0:-2])
+        #lati = float(data['Latitude'][0:-2])
+        
+        lati = 0 + random.randint(0,100)
+        #longi = float(data['Longitude'][0:-2])
+        longi = 0 + random.randint(0,100)
+        # wind_dir = float(data["Wind w.r.t North"][0:-2])
+        # roll = float(data["Roll"][0:-2])
+        # pitch = float(data["Pitch"][0:-2])
+        # boat_dir = float(data["Boat direction"][0:-2])
+        # waypoint_number = int(data["Next Waypoint #"][0:-2])
+        # waypoint_x = (data["Next Waypoint X"])
+        # waypoint_y = (data["Next Waypoint Y"])
+        # waypoint_distance = (data["Distance to Waypoint"][0:-2])
+        # waypoint_angle = (data["Angle to Waypoint"][0:-2])
 
-    # print(x)
-    # print("\n")
-    # print(y)
-    # print("\n")
-    global past_point
-    # listw.addItem(text.text())
-    # arr = text.text().split(',')
-    #x = float(arr[0])
-    #y = float(arr[1])
-    # wind_compass.setAngle(wind_dir)
-    # boat_compass.setAngle(boat_dir)
-    #plot.plot([past_point[0], x], [past_point[1], y])
-    plot.plot([past_point[0],lati],[past_point[1],longi])
-    #past_point = (x,y)
-    past_point = (lati,longi)
-    w.update()
-    w.show()
-    # display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
-    #display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
+        # print(x)
+        # print("\n")
+        # print(y)
+        # print("\n")
+        global past_point
+        # listw.addItem(text.text())
+        # arr = text.text().split(',')
+        #x = float(arr[0])
+        #y = float(arr[1])
+        # wind_compass.setAngle(wind_dir)
+        # boat_compass.setAngle(boat_dir)
+        #plot.plot([past_point[0], x], [past_point[1], y])
+        plot.plot([past_point[0],lati],[past_point[1],longi])
+        #past_point = (x,y)
+        past_point = (lati,longi)
+        w.update()
+        w.show()
+        # display1.setText("Wind Angle: " + data["Wind w.r.t North"][0:-2])
+        #display2.setText("Roll, Pitch, Yaw: <"+data["Roll"][0:-2]+","+data["Pitch"][0:-2]+","+data["Boat direction"][0:-2]+" >")
+    except:
+        print("Corrupt Data Dump")
+
+def correctData(dataIn):
+    wanted_keys = ["X position", "Y position"]
+    for key in wanted_keys:
+        if key not in dataIn:
+            return False
+    return True
+
 
 def run():
     data = ""
+    global curPacket
     try:
         print("Waiting...")
+        print ("\n")
         packet = str(xbee.wait_read_frame())
-        print(packet)
         print("Packet Recieved!")
+        print ("\n")
         match = re.search(regex, packet)
         if match:
+            print("got match")
+            print ("\n")
             line = match.group(1)
-            print(line)
+
             data += line
-            if (header in data):
-                header_start = data.find(header)
-                print(header_start)
+
+            curPacket += line
+
+            if (header in curPacket):
+                print("header in")
+                print("\n")
+                header_start = curPacket.find(header)
+
                 header_end = header_start + len(header)
-                data_to_send = data[0:header_start]
-                print(data_to_send)
-                data_arr = data_to_send.split("\\n")
-                print(data_arr)
-                #data_assoc = []
-                data_assoc = {}
-                for datum in data_arr:
-                    if (":" in datum):
-                        #print(datum)
-                        label, value = datum.split(":")
-                        data_assoc[label] = value
-                    
-                print ("Parse data cycle to GUI")
-                # Update gui with data
-                #print (json.dumps(data_assoc))
-                print ("\n\n")
-                #f.write(json.dumps(data_assoc)+"\n")
-                out = json.dumps(data_assoc)+"\n"
-                #pp.pprint(data_arr)
-                #print(out)
-                data = data[header_end:len(data)]
-                print(out)
-                update()
+
+                if(end in curPacket[header_end: -1]):
+                    print("both in")
+                    print("\n")
+                    end_start = curPacket[header_end:-1].find(end)
+                    wanted_data = curPacket[header_end:-1][0:end_start]
+
+                    curPacket = ""
+
+                    cleaned_data = wanted_data.replace("\\n","")
+ 
+                    wanted_arr = cleaned_data.split("\\r")
+
+                    data_assoc = {}
+                    for datum in wanted_arr:
+                        if (":" in datum):
+                            if(datum.count(":") == 1):
+                                #print(datum)
+                                label, value = datum.split(":")
+                                data_assoc[label] = value
+                        
+                    print ("Parse data cycle to GUI")
+                    # Update gui with data
+                    #print (json.dumps(data_assoc))
+                    print ("\n\n")
+                    #f.write(json.dumps(data_assoc)+"\n")
+                    #out = json.dumps(data_assoc)+"\n"
+                    #pp.pprint(data_arr)
+                    #print(out)
+                    #data = data[header_end:len(data)]
+                    #print(out)
+                    #print(data)
+                    print(data_assoc)
+                    if(correctData(data_assoc)):
+                        print(data_assoc)
+                        update(data_assoc)
         else:
             print ("Regex failed to match")
-            print(packet)
+            #print(packet)
     except KeyboardInterrupt:
         print("bad")
 
@@ -333,9 +368,10 @@ layout.addWidget(boat_compass, 5, 1)
 w.show()
 
 w.timer = QTimer()
-w.timer.setInterval(1000)
+w.timer.setInterval(100)
 w.timer.timeout.connect(run)
 w.timer.start();
 
 ## Start the Qt event loop
 app.exec_()
+
