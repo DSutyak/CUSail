@@ -82,3 +82,50 @@ coord_xy middlePoint(coord_xy point1, coord_xy point2){
 float convertto360(float angle){
     return (float)((((int)angle%360)+360)%360);
 }
+
+// finds closest way point to current location given array of way points
+coord_xy find_closest_waypoint (coord_xy c, coord_xy waypoints[]) {
+    double min_distance = xyDist(coord_xy, waypoints[0]);
+    coord_xy min_waypoint = waypoints[0];
+    for(int i = 1; i < sizeof(waypoints) / sizeof(coord_xy); i++) {
+        double dist = xyDist(c, waypoints[i]);
+        if(dist < min_distance) {
+            min_distance = dist;
+            min_waypoint = waypoints[i];
+        }
+    }
+    return min_waypoint;
+}
+
+char* find_point_of_sail (double angle) {
+    if (angle < 60)
+        return "Close Reach";
+    else if (angle < 120)
+        return "Beam Reach";
+    else if (angle < 160)
+        return "Broad Reach";
+    else if (angle < 220)
+        return "Dead Run";
+    else if (angle < 260)
+        return "Broad Reach";
+    else if (angle < 300)
+        return "Beam Reach";
+    else
+        return "Close Reach";
+}
+
+char* find_tack (double angle) {
+    if (angle < 180)
+        return "Port";
+    else
+        return "Starboard";
+}
+
+double calculate_vmg (double angleToTarget, double boatSpeed) {
+    return boatSpeed * cos(angleToTarget);
+}
+
+double true_wind (double windAngle, double windSpeed, double boatSpeed) {
+    return -acos(((windSpeed * cos(windAngle) - boatSpeed) / 
+            sqrt(windSpeed * windSpeed + boatSpeed * boatSpeed + 2 * windSpeed * boatSpeed * cos(windAngle))));
+}
