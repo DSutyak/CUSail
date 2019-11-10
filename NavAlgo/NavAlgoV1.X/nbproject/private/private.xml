@@ -5,11 +5,10 @@
         <group>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/sensors.c</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/navigation_helper.c</file>
-            <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/gps.c</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/sensors.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/main.c</file>
-            <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/config.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/coordinates.h</file>
+            <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/config.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/delay.c</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/delay.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/coordinates.c</file>

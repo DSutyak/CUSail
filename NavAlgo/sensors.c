@@ -123,7 +123,17 @@ void readAnemometer(void) {
 }
 
 void readGPS(void) {
+    int count = -1;
+    char* buffer[80];
     while (DataRdyUART1()) {
-        //TODO
+        buffer[count++] = ReadUART1();
     }
+    nmeaINFO info;
+    nmeaPARSER parser;
+
+    nmea_zero_INFO(&info);
+    nmea_parser_init(&parser);
+    
+    nmea_parse(&parser, buffer, (int)strlen(buffer), &info);
+    nmea_parser_destroy(&parser);
 }
