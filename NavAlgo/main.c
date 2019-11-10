@@ -10,12 +10,16 @@
 // sensor libraries
 #include "sensors.h"
 #include "delay.h"
+#include "navigation_helper.c"
+#include "coordinates.h"
 
 // threads
 static struct pt pt_sensor;
 
 // sensor data
 extern data_t* sensorData;
+
+coord_xy waypoints[];
 
 void delay_ms(unsigned int ms) {
     delay_us(ms * 1000);
@@ -56,3 +60,17 @@ void main(void) {
         PT_SCHEDULE(protothread_timer(&pt_sensor));
     }
   }
+
+double calculateSailAngle() {
+    coord_xy boatPosition = {sensorData->x, sensorData->y};
+    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints);
+    double boat_heading = sensorData->boat_direction;
+    double windDirection = sensorData->wind_dir; // should probably use true wind
+    double intendedAngle = angleToTarget(boatPosition, targetPosition);
+    double angleDifference = ((((windDirection - intendedAngle) % 360) + 360) % 360); // finds positive angle between wind and intended path
+    double hysteresis = 0; // replace this
+}
+
+int shouldUpdateAngles () {
+    return 1;
+}
