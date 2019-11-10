@@ -16,6 +16,9 @@
 // system clock rate (as defined in config.h)
 uint32_t clock_rate = 40000000;
 
+float angleCorrection = -26; //Big sail angle correction
+float averageWeighting = 0.0625;
+
 data_t* sensorData;
 
 /*sensor setup*/
@@ -27,6 +30,38 @@ void initSensors(void) {
     
     // TODO Initialize GPS (Check this)
     OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
+    
+    
+    //Analog stuff: params, initiating ADC
+    CloseADC10();	// ensure the ADC is off before setting the configuration
+
+	// define setup parameters for OpenADC10
+				// Turn module on | output in integer | trigger mode auto | enable  autosample
+	#define PARAM1  ADC_MODULE_ON | ADC_FORMAT_INTG | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON
+
+	// define setup parameters for OpenADC10
+			    // ADC ref external    | disable offset test    | enable scan mode | perform 2 samples | use one buffer | use MUXA mode
+       // note: to read X number of pins you must set ADC_SAMPLES_PER_INT_X
+	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_ON | ADC_SAMPLES_PER_INT_2 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
+
+	// define setup parameters for OpenADC10
+	// 				  use ADC internal clock | set sample time
+	#define PARAM3  ADC_CONV_CLK_INTERNAL_RC | ADC_SAMPLE_TIME_15
+
+	// define setup parameters for OpenADC10
+				// set AN4 and AN5
+	#define PARAM4	ENABLE_AN4_ANA | ENABLE_AN5_ANA
+
+	// define setup parameters for OpenADC10
+	// do not assign channels to scan
+	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN11 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+
+	// use ground as neg ref for A 
+	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF); // use ground as the negative reference
+	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using parameter define above
+	EnableADC10(); // Enable the ADC
+    
+    
     
     //TODO Initialize SPI (Check this for clock rate)
     OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
@@ -121,9 +156,32 @@ void readIMU(void) {
 
 /* TODO read from anemometer */
 void readAnemometer(void) {
+    
+    while ( ! mAD1GetIntFlag() ) { }
+
+    unsigned short int channel4;	// conversion result as read from result buffer
+    result = ReadADC10(0);
+    
+    int reading = ( (unsigned long) result)*360UL/16384UL;
+    reading += angleCorrection;
+    reading = (reading<0)?(reading+360):reading;
+    
+    float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
+    wind_wrtN = ((int)(wind_wrtN + sensorData.boat_direction))%360;
+
+    //filter wind
+    float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
+    float newCosWind = ( (cos(prevWindDirection*PI/180) + (averageWeighting)*cos(wind_wrtN*PI/180)) / (1 + averageWeighting) );
+    wind_wrtN = atan2(newSinWind, newCosWind);
+    wind_wrtN = wind_wrtN*180/M_PI;
+    wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN
     // replace these with useful commands
-    sensorData->wind_dir++;
-    sensorData->wind_speed++;
+    sensorData->wind_dir =  wind_wrtN;
+    
+    
+    
+    //sensorData->wind_speed = ;    
+    
 }
 
 void readGPS(void) {
