@@ -18,6 +18,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="NMEA" projectFiles="true">
+        <itemPath>../nmea/context.c</itemPath>
+        <itemPath>../nmea/generate.c</itemPath>
+        <itemPath>../nmea/generator.c</itemPath>
+        <itemPath>../nmea/gmath.c</itemPath>
+        <itemPath>../nmea/info.c</itemPath>
+        <itemPath>../nmea/parse.c</itemPath>
+        <itemPath>../nmea/parser.c</itemPath>
+        <itemPath>../nmea/sentence.c</itemPath>
+        <itemPath>../nmea/time.c</itemPath>
+        <itemPath>../nmea/tok.c</itemPath>
+      </logicalFolder>
       <itemPath>../main.c</itemPath>
       <itemPath>../sensors.c</itemPath>
       <itemPath>../coordinates.c</itemPath>

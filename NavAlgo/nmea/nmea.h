@@ -11,15 +11,16 @@
 #ifndef __NMEA_H__
 #define __NMEA_H__
 
-#include "./config.h"
-#include "./units.h"
-#include "./gmath.h"
-#include "./info.h"
-#include "./sentence.h"
-#include "./generate.h"
-#include "./generator.h"
-#include "./parse.h"
-#include "./parser.h"
-#include "./context.h"
+#include "config.h"
+#include "units.h"
+#include "gmath.h"
+#include "info.h"
+#include "sentence.h"
+#include "generate.h"
+#include "generator.h"
+#include "parse.h"
+#include "parser.h"
+#include "context.h"
+#include "time.h"
 
 #endif /* __NMEA_H__ */

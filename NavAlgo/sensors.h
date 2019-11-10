@@ -7,11 +7,11 @@
 #define date_h
 typedef struct date {
   int year;
-  unsigned char month;
-  unsigned char day;
-  unsigned char hour;
-  unsigned char minute;
-  unsigned char seconds;
+  int month;
+  int day;
+  int hour;
+  int minute;
+  int seconds;
 } date_t;
 
 typedef struct dataStructure {
@@ -26,7 +26,7 @@ typedef struct dataStructure {
   double y;
   double lat;
   double longi;
-  date_t dateTime; // Current date and time, of type date_t
+  date_t *dateTime; // Current date and time, of type date_t
 } data_t;
 #endif
 

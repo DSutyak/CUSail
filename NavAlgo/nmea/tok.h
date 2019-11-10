@@ -13,17 +13,18 @@
 
 #include "config.h"
 
-#ifdef  __cplusplus
-extern "C" {
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
-int     nmea_calc_crc(const char *buff, int buff_sz);
-int     nmea_atoi(const char *str, int str_sz, int radix);
-double  nmea_atof(const char *str, int str_sz);
-int     nmea_printf(char *buff, int buff_sz, const char *format, ...);
-int     nmea_scanf(const char *buff, int buff_sz, const char *format, ...);
+    int nmea_calc_crc(const char *buff, int buff_sz);
+    int nmea_atoi(const char *str, int str_sz, int radix);
+    double nmea_atof(const char *str, int str_sz);
+    int nmea_printf(char *buff, int buff_sz, const char *format, ...);
+    int nmea_scanf(const char *buff, int buff_sz, const char *format, ...);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

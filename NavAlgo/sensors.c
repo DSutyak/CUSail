@@ -12,6 +12,7 @@
 #include "nmea/nmea.h"
 #include <string.h>
 
+
 // system clock rate (as defined in config.h)
 uint32_t clock_rate = 40000000;
 
@@ -46,6 +47,9 @@ void initSensors(void) {
     sensorData->y = 0; // Y-coord of current global position;
     sensorData->lat=0;
     sensorData->longi=0;
+    
+    date_t *dateTime;
+    sensorData->dateTime = dateTime;
 }
 
 union u_types {
@@ -124,16 +128,25 @@ void readAnemometer(void) {
 
 void readGPS(void) {
     int count = -1;
-    char* buffer[80];
+    char buffer[80];
     while (DataRdyUART1()) {
         buffer[count++] = ReadUART1();
     }
-    nmeaINFO info;
-    nmeaPARSER parser;
+    nmeaINFO *info;
+    nmeaPARSER *parser;
 
-    nmea_zero_INFO(&info);
-    nmea_parser_init(&parser);
+    nmea_zero_INFO(info);
+    nmea_parser_init(parser);
     
-    nmea_parse(&parser, buffer, (int)strlen(buffer), &info);
-    nmea_parser_destroy(&parser);
+    nmea_parse(parser, buffer, (int)strlen(buffer), info);
+    nmea_parser_destroy(parser);
+    
+    sensorData->lat = info->lat;
+    sensorData->longi = info->lon;
+    sensorData->dateTime->year = info->utc.year;
+    sensorData->dateTime->month = info->utc.mon;
+    sensorData->dateTime->day = info->utc.day;
+    sensorData->dateTime->hour = info->utc.hour;
+    sensorData->dateTime->minute = info->utc.min;
+    sensorData->dateTime->seconds = info->utc.sec;
 }
