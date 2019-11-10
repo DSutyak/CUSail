@@ -225,14 +225,4 @@ uint32_t readI2C(){
     
     
 }    
-
- 
- 
- 
-void readLiDAR(void) {
-    int brg_val;
-    char i2cData[10];
-    //Slave Address 0x00
-    int 9
-    for
-    uint32_t result = readI2C(0x00)
+  
