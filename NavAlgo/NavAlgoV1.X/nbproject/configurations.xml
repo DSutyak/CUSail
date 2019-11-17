@@ -11,6 +11,7 @@
       <itemPath>../coordinates.h</itemPath>
       <itemPath>../nmea/nmea.h</itemPath>
       <itemPath>../servo.h</itemPath>
+      <itemPath>../navigation_helper.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

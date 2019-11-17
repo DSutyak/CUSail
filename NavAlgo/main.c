@@ -10,7 +10,7 @@
 // sensor libraries
 #include "sensors.h"
 #include "delay.h"
-#include "navigation_helper.c"
+#include "navigation_helper.h"
 #include "coordinates.h"
 
 // threads
@@ -42,6 +42,23 @@ static PT_THREAD (protothread_timer(struct pt *pt)) {
     PT_END(pt); // this will never execute
 }
 
+void blinkLED(void) {
+    ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital
+    TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output
+    PORTBbits.RB3 = 0; // set low
+    int high = 0;
+    while(1) {
+        if (high == 1) {
+            high = 0;
+            PORTBbits.RB3 = 0;
+            delay_ms(1000);
+        } else {
+            high = 1;
+            PORTBbits.RB3 = 1;
+            delay_ms(1000);
+        }
+    }
+}
 
 void main(void) { 
     initSensors();
@@ -67,7 +84,7 @@ double calculateSailAngle() {
     double boat_heading = sensorData->boat_direction;
     double windDirection = sensorData->wind_dir; // should probably use true wind
     double intendedAngle = angleToTarget(boatPosition, targetPosition);
-    double angleDifference = ((((windDirection - intendedAngle) % 360) + 360) % 360); // finds positive angle between wind and intended path
+    double angleDifference = ((((int)(windDirection - intendedAngle) % 360) + 360) % 360); // finds positive angle between wind and intended path
     double hysteresis = 0; // replace this
 }
 

@@ -84,10 +84,11 @@ float convertto360(float angle){
 }
 
 // finds closest way point to current location given array of way points
-coord_xy find_closest_waypoint (coord_xy c, coord_xy waypoints[]) {
-    double min_distance = xyDist(coord_xy, waypoints[0]);
+coord_xy find_closest_waypoint(coord_xy c, coord_xy waypoints[]) {
+    double min_distance = xyDist(c, waypoints[0]);
     coord_xy min_waypoint = waypoints[0];
-    for(int i = 1; i < sizeof(waypoints) / sizeof(coord_xy); i++) {
+    int i;
+    for(i = 1; i < sizeof(waypoints) / sizeof(coord_xy); i++) {
         double dist = xyDist(c, waypoints[i]);
         if(dist < min_distance) {
             min_distance = dist;

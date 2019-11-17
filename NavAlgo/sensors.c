@@ -11,6 +11,7 @@
 #include <math.h>
 #include "nmea/nmea.h"
 #include <string.h>
+#include <peripheral/legacy/i2c_legacy.h>
 
 
 // system clock rate (as defined in config.h)
@@ -160,21 +161,23 @@ void readAnemometer(void) {
     while ( ! mAD1GetIntFlag() ) { }
 
     unsigned short int channel4;	// conversion result as read from result buffer
-    result = ReadADC10(0);
+    int result = ReadADC10(0);
     
     int reading = ( (unsigned long) result)*360UL/16384UL;
     reading += angleCorrection;
     reading = (reading<0)?(reading+360):reading;
     
-    float wind_wrtN = ((int)(reading + sensorData.sailAngleBoat))%360;
-    wind_wrtN = ((int)(wind_wrtN + sensorData.boat_direction))%360;
+    float wind_wrtN = ((int)(reading + sensorData->sailAngleBoat))%360;
+    wind_wrtN = ((int)(wind_wrtN + sensorData->boat_direction))%360;
+    
+    int prevWindDirection = 0; // FIX THIS
 
     //filter wind
-    float newSinWind = ( (sin(prevWindDirection*PI/180) + (averageWeighting)*sin(wind_wrtN*PI/180)) / (1 + averageWeighting) );
-    float newCosWind = ( (cos(prevWindDirection*PI/180) + (averageWeighting)*cos(wind_wrtN*PI/180)) / (1 + averageWeighting) );
+    float newSinWind = ( (sin(prevWindDirection*M_PI/180) + (averageWeighting)*sin(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
+    float newCosWind = ( (cos(prevWindDirection*M_PI/180) + (averageWeighting)*cos(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
     wind_wrtN = atan2(newSinWind, newCosWind);
     wind_wrtN = wind_wrtN*180/M_PI;
-    wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN
+    wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
     // replace these with useful commands
     sensorData->wind_dir =  wind_wrtN;
     
@@ -210,7 +213,7 @@ void readGPS(void) {
 }
 
 uint32_t readI2C(){
-    
+    int BRG_VAL = 0; // FIX THIS
     
     OpenI2C1( I2C_EN, BRG_VAL );
     
@@ -219,9 +222,9 @@ uint32_t readI2C(){
     while( I2C1STATbits.ACKSTAT == 0 ) {
         Nop(); 
     }
-    MasterReadI2C();
+    MasterReadI2C1();
     StopI2C1();
-    IdleI2C();
+    IdleI2C1();
     
     
 }    
