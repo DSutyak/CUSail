@@ -182,33 +182,37 @@ void readAnemometerDir(void) {
     sensorData->wind_dir =  wind_wrtN;
     
 }
-void readAnemometerDir(void) {
+
+
+
+void readAnemometerSpeed(void) {
     
     while ( ! mAD1GetIntFlag() ) { }
-
-    //wind direction
-    unsigned short int channel4;	// conversion result as read from result buffer
-    int result = ReadADC10(0);
+    unsigned short int channel5;	// conversion result as read from result buffer
+    int result = ReadADC10(0); //Get a value between 0 and 1023 from the analog pin connected to the anemometer
     
     int reading = ( (unsigned long) result)*360UL/16384UL;
-    reading += angleCorrection;
-    reading = (reading<0)?(reading+360):reading;
     
-    float wind_wrtN = ((int)(reading + sensorData->sailAngleBoat))%360;
-    wind_wrtN = ((int)(wind_wrtN + sensorData->boat_direction))%360;
+    float voltageConversionConstant = .004882814; //This constant maps the value provided from the analog read function, which ranges from 0 to 1023, to actual voltage, which ranges from 0V to 5V
+    //^^^ is that right
     
-    int prevWindDirection = 0; // FIX THIS
+    int sensorDelay = 1000; //Delay between sensor readings, measured in milliseconds (ms)
+    float voltageMin = .4; // Mininum output voltage from anemometer in mV.
+    float windSpeedMin = 0; // Wind speed in meters/sec corresponding to minimum voltage
 
-    //filter wind
-    float newSinWind = ( (sin(prevWindDirection*M_PI/180) + (averageWeighting)*sin(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
-    float newCosWind = ( (cos(prevWindDirection*M_PI/180) + (averageWeighting)*cos(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
-    wind_wrtN = atan2(newSinWind, newCosWind);
-    wind_wrtN = wind_wrtN*180/M_PI;
-    wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
-    // replace these with useful commands
-    sensorData->wind_dir =  wind_wrtN;
-}
+    float voltageMax = 2.0; // Maximum output voltage from anemometer in mV.
+    float windSpeedMax = 32; // Wind speed in meters/sec corresponding to maximum voltage
+  
+    float sensorVoltage = result * voltageConversionConstant; //Convert sensor value to actual voltage
 
+    //Convert voltage value to wind speed using range of max and min voltages and wind speed for the anemometer
+    if (sensorVoltage <= voltageMin){
+        sensorData->wind_dir =  0;
+    }else {
+          sensorData->wind_dir = (sensorVoltage - voltageMin)*windSpeedMax/(voltageMax - voltageMin); //For voltages above minimum value, use the linear relationship to calculate wind speed.
+    }
+    
+ }
 
 void readGPS(void) {
     int count = -1;
