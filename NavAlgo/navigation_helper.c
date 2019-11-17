@@ -130,3 +130,14 @@ double true_wind (double windAngle, double windSpeed, double boatSpeed) {
     return -acos(((windSpeed * cos(windAngle) - boatSpeed) / 
             sqrt(windSpeed * windSpeed + boatSpeed * boatSpeed + 2 * windSpeed * boatSpeed * cos(windAngle))));
 }
+
+coord_xy diff (coord_xy T, coord_xy B) {
+    coord_xy pt;
+    pt.x = T.x - B.x;
+    pt.y = T.y - B.y;
+    return pt;
+}
+
+double fPolar (double windSpeed, double angle) {
+    return 0; // TODO: Polar diagram
+}

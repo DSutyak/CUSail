@@ -13,6 +13,8 @@
 #include "navigation_helper.h"
 #include "coordinates.h"
 
+#include <math.h>
+
 // threads
 static struct pt pt_sensor;
 
@@ -78,14 +80,64 @@ void main(void) {
     }
   }
 
-double calculateSailAngle() {
-    coord_xy boatPosition = {sensorData->x, sensorData->y};
-    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints);
-    double boat_heading = sensorData->boat_direction;
+double calculateAngle() {
+    // initializing variables for calculations
+    coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
+    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints); // initialize T
+    coord_xy boatTargetDifference = diff (boatPosition, targetPosition); // initialize t
+    double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
+    double boat_heading = sensorData->boat_direction; // initialize phi(b))
+    double beating_param = 100; // this can be adjusted
     double windDirection = sensorData->wind_dir; // should probably use true wind
     double intendedAngle = angleToTarget(boatPosition, targetPosition);
-    double angleDifference = ((((int)(windDirection - intendedAngle) % 360) + 360) % 360); // finds positive angle between wind and intended path
-    double hysteresis = 0; // replace this
+    double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360); // finds positive angle between wind and intended path
+    double hysteresis = 1 + (beating_param / t_mag); // initialize n
+    double inverseWindAngle = angleDifference; // TODO: initialize phi(-w)?
+    double alpha = 0.0; 
+    double v_maxR = 0.0;
+    double v_maxL = 0.0;
+    double phi_bmaxR = inverseWindAngle;
+    double phi_bmaxL = inverseWindAngle;
+    double v_hyp;
+    double v_tR;
+    double v_tL;
+    double phi_bnew;
+    double delta_alpha = 1.0; // can change this
+    while (alpha < 180) {
+        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
+        v_tR = v_hyp * cos(intendedAngle + alpha); // TODO: calculating v_tR?
+        if (v_tR > v_maxR) {
+            v_maxR = v_tR;
+            phi_bmaxR = inverseWindAngle + alpha;
+        }
+        alpha = alpha + delta_alpha;
+    }
+    while (alpha < 180) {
+        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
+        v_tL = v_hyp * cos(intendedAngle - alpha); // TODO: calculating v_tR?
+        if (v_tL > v_maxL) {
+            v_maxL = v_tL;
+            phi_bmaxL = inverseWindAngle - alpha;
+        }
+        alpha = alpha + delta_alpha;
+    }
+    if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
+        if(v_maxR * hysteresis < v_maxL) {
+            phi_bnew = phi_bmaxL;
+        }
+        else {
+            phi_bnew = phi_bmaxR;
+        }
+    }
+    else {
+        if(v_maxL * hysteresis < v_maxR) {
+            phi_bnew = phi_bmaxR;
+        }
+        else {
+            phi_bnew = phi_bmaxL;
+        }
+    }
+    return phi_bnew;
 }
 
 int shouldUpdateAngles () {

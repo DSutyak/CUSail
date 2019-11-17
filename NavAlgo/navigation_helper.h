@@ -39,4 +39,8 @@ double calculate_vmg (double angleToTarget, double boatSpeed);
 
 double true_wind (double windAngle, double windSpeed, double boatSpeed);
 
+coord_xy diff (coord_xy T, coord_xy B);
+
+double fPolar (double windSpeed, double angle);
+
 #endif
