@@ -35,3 +35,7 @@ extern data_t* sensorData; //Defines the boat's state, in type data_t
 void initSensors(void);
 
 void readIMU(void);
+
+void readAnemometerDir(void);
+
+void readAnemometerSpeed(void);

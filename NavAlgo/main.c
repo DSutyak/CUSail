@@ -45,9 +45,9 @@ static PT_THREAD (protothread_timer(struct pt *pt)) {
 }
 
 void blinkLED(void) {
-    ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital
-    TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output
-    PORTBbits.RB3 = 0; // set low
+    ANSELAbits.ANSA0 = 0; // enable RB3 (pin 7) as digital
+    TRISAbits.TRISA0 = 0; // enable RB3 (pin 7) as output
+    PORTAbits.RA0 = 0; // set low
     int high = 0;
     while(1) {
         if (high == 1) {
@@ -63,21 +63,22 @@ void blinkLED(void) {
 }
 
 void main(void) { 
-    initSensors();
-  
-    // turns OFF UART support and debugger pin, unless defines are set
-    PT_setup();
-
-    // setup system wide interrupts
-    INTEnableSystemMultiVectoredInt();
-
-    // initialize the threads
-    PT_INIT(&pt_sensor);
-  
-    // round-robin scheduler for threads
-    while (1){
-        PT_SCHEDULE(protothread_timer(&pt_sensor));
-    }
+    blinkLED();
+//    initSensors();
+//  
+//    // turns OFF UART support and debugger pin, unless defines are set
+//    PT_setup();
+//
+//    // setup system wide interrupts
+//    INTEnableSystemMultiVectoredInt();
+//
+//    // initialize the threads
+//    PT_INIT(&pt_sensor);
+//  
+//    // round-robin scheduler for threads
+//    while (1){
+//        PT_SCHEDULE(protothread_timer(&pt_sensor));
+//    }
   }
 
 double calculateAngle() {
