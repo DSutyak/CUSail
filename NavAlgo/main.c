@@ -33,15 +33,29 @@ void delay_us(unsigned int us) {
     while (us > _CP0_GET_COUNT());
 }
 
+volatile int high = 0;
+
 // thread to check sensor values every 2.5s
 static PT_THREAD (protothread_timer(struct pt *pt)) {
     PT_BEGIN(pt);
+    ANSELAbits.ANSA0 = 0; // enable RB3 (pin 7) as digital
+    TRISAbits.TRISA0 = 0; // enable RB3 (pin 7) as output
+    PORTAbits.RA0 = 0; // set low
     while(1) {
-        readIMU();
-        readAnemometer();
-        PT_YIELD_TIME_msec(2500); // yield time for 2.5 seconds
+        toggleLED();
+        PT_YIELD_TIME_msec(1000); // yield time for 2.5 seconds
     }
     PT_END(pt); // this will never execute
+}
+
+void toggleLED(void) {
+    if (high == 1) {
+        high = 0;
+        PORTAbits.RA0 = 0;
+    } else {
+        high = 1;
+        PORTAbits.RA0 = 1;
+    }
 }
 
 void blinkLED(void) {
@@ -52,33 +66,33 @@ void blinkLED(void) {
     while(1) {
         if (high == 1) {
             high = 0;
-            PORTBbits.RB3 = 0;
+            PORTAbits.RA0 = 0;
             delay_ms(1000);
         } else {
             high = 1;
-            PORTBbits.RB3 = 1;
+            PORTAbits.RA0 = 1;
             delay_ms(1000);
         }
     }
 }
 
 void main(void) { 
-    blinkLED();
+//    blinkLED();
 //    initSensors();
 //  
-//    // turns OFF UART support and debugger pin, unless defines are set
-//    PT_setup();
-//
-//    // setup system wide interrupts
-//    INTEnableSystemMultiVectoredInt();
-//
-//    // initialize the threads
-//    PT_INIT(&pt_sensor);
-//  
-//    // round-robin scheduler for threads
-//    while (1){
-//        PT_SCHEDULE(protothread_timer(&pt_sensor));
-//    }
+    // turns OFF UART support and debugger pin, unless defines are set
+    PT_setup();
+
+    // setup system wide interrupts
+    INTEnableSystemMultiVectoredInt();
+
+    // initialize the threads
+    PT_INIT(&pt_sensor);
+  
+    // round-robin scheduler for threads
+    while (1){
+        PT_SCHEDULE(protothread_timer(&pt_sensor));
+    }
   }
 
 double calculateAngle() {
