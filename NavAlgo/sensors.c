@@ -239,20 +239,36 @@ void readGPS(void) {
     sensorData->dateTime->seconds = info->utc.sec;
 }
 
-uint32_t readI2C(){
-    int BRG_VAL = 0; // FIX THIS
+void readI2C(){
+    uint8_t i2cbyte1
+    uint8_t i2cbyte2
+    char i2cData[0]
+    int DataSz 4
     
-    OpenI2C1( I2C_EN, BRG_VAL );
-    
+    OpenI2C1( I2C_ON, 400);
     StartI2C1();
-    IdleI2C1();
-    while( I2C1STATbits.ACKSTAT == 0 ) {
-        Nop(); 
-    }
-    MasterReadI2C1();
+    
+    
+    int Index = 0;
+    while(dataSz)
+        {
+        MasterWriteI2C1( i2cData[Index++] );
+        IdleI2C1();//Wait to complete
+        DataSz--;
+        if( I2C1STATbits.ACKSTAT )
+           break;
+    }    
+    
+    RestartI2C1();//Send the Stop condition
+    IdleI2C1();//Wait to complete
+    
+    MasterWriteI2C1( (SlaveAddress << 1) | 1 ); //transmit read command
+    IdleI2C1();//Wait to complete
+    
+    unsigned char i2cbyte = MasterReadI2C1();
     StopI2C1();
     IdleI2C1();
     
     
-}    
+} 
   
