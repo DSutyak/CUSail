@@ -147,7 +147,12 @@ coord_xy diff (coord_xy T, coord_xy B) {
     pt.y = T.y - B.y;
     return pt;
 }
-
+/*For angles between 43 and 151 degrees
+ the constant "1.397" was calculated by taking the average over the interval
+ * -pi/2 to pi/2 of the integral of the normalized polar function
+ defined in "Autonomous Sailboat Navigation for Short Course Racing"
+ We used their numbers, so these values are NOT empirically optimized for our boat*/
 double fPolar (double windSpeed, double angle) {
-    return 0; // TODO: Polar diagram
+    if (43 < angle < 151)
+         return windSpeed * 1.397 ; // TODO: Polar diagram
 }
