@@ -34,6 +34,7 @@ void delay_us(unsigned int us) {
 }
 
 volatile int high = 0;
+void toggleLED(void);
 
 // thread to check sensor values every 2.5s
 static PT_THREAD (protothread_timer(struct pt *pt)) {

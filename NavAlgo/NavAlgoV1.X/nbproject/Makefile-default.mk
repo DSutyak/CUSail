@@ -111,206 +111,206 @@ ${OBJECTDIR}/_ext/760772214/context.o: ../nmea/context.c  nbproject/Makefile-${C
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/context.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/context.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/context.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/context.o.d" -o ${OBJECTDIR}/_ext/760772214/context.o ../nmea/context.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/context.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/context.o.d" -o ${OBJECTDIR}/_ext/760772214/context.o ../nmea/context.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/generate.o: ../nmea/generate.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generate.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generate.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generate.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generate.o.d" -o ${OBJECTDIR}/_ext/760772214/generate.o ../nmea/generate.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generate.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generate.o.d" -o ${OBJECTDIR}/_ext/760772214/generate.o ../nmea/generate.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/generator.o: ../nmea/generator.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generator.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generator.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generator.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generator.o.d" -o ${OBJECTDIR}/_ext/760772214/generator.o ../nmea/generator.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generator.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generator.o.d" -o ${OBJECTDIR}/_ext/760772214/generator.o ../nmea/generator.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/gmath.o: ../nmea/gmath.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/gmath.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/gmath.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/gmath.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/gmath.o.d" -o ${OBJECTDIR}/_ext/760772214/gmath.o ../nmea/gmath.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/gmath.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/gmath.o.d" -o ${OBJECTDIR}/_ext/760772214/gmath.o ../nmea/gmath.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/info.o: ../nmea/info.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/info.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/info.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/info.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/info.o.d" -o ${OBJECTDIR}/_ext/760772214/info.o ../nmea/info.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/info.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/info.o.d" -o ${OBJECTDIR}/_ext/760772214/info.o ../nmea/info.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/parse.o: ../nmea/parse.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parse.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parse.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parse.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parse.o.d" -o ${OBJECTDIR}/_ext/760772214/parse.o ../nmea/parse.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parse.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parse.o.d" -o ${OBJECTDIR}/_ext/760772214/parse.o ../nmea/parse.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/parser.o: ../nmea/parser.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parser.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parser.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parser.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parser.o.d" -o ${OBJECTDIR}/_ext/760772214/parser.o ../nmea/parser.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parser.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parser.o.d" -o ${OBJECTDIR}/_ext/760772214/parser.o ../nmea/parser.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/sentence.o: ../nmea/sentence.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/sentence.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/sentence.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/sentence.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/sentence.o.d" -o ${OBJECTDIR}/_ext/760772214/sentence.o ../nmea/sentence.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/sentence.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/sentence.o.d" -o ${OBJECTDIR}/_ext/760772214/sentence.o ../nmea/sentence.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/time.o: ../nmea/time.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/time.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/time.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/time.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/time.o.d" -o ${OBJECTDIR}/_ext/760772214/time.o ../nmea/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/time.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/time.o.d" -o ${OBJECTDIR}/_ext/760772214/time.o ../nmea/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/tok.o: ../nmea/tok.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/tok.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/tok.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/tok.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/tok.o.d" -o ${OBJECTDIR}/_ext/760772214/tok.o ../nmea/tok.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/tok.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/tok.o.d" -o ${OBJECTDIR}/_ext/760772214/tok.o ../nmea/tok.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/sensors.o: ../sensors.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/sensors.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/sensors.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/sensors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/sensors.o.d" -o ${OBJECTDIR}/_ext/1472/sensors.o ../sensors.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/sensors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/sensors.o.d" -o ${OBJECTDIR}/_ext/1472/sensors.o ../sensors.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/coordinates.o: ../coordinates.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/coordinates.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/coordinates.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/coordinates.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/coordinates.o.d" -o ${OBJECTDIR}/_ext/1472/coordinates.o ../coordinates.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/coordinates.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/coordinates.o.d" -o ${OBJECTDIR}/_ext/1472/coordinates.o ../coordinates.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/navigation_helper.o: ../navigation_helper.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/navigation_helper.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/navigation_helper.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" -o ${OBJECTDIR}/_ext/1472/navigation_helper.o ../navigation_helper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" -o ${OBJECTDIR}/_ext/1472/navigation_helper.o ../navigation_helper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/delay.o: ../delay.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/delay.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/delay.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/delay.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/delay.o.d" -o ${OBJECTDIR}/_ext/1472/delay.o ../delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/delay.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/delay.o.d" -o ${OBJECTDIR}/_ext/1472/delay.o ../delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/gps.o: ../gps.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/gps.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/gps.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/gps.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/gps.o.d" -o ${OBJECTDIR}/_ext/1472/gps.o ../gps.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/gps.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/gps.o.d" -o ${OBJECTDIR}/_ext/1472/gps.o ../gps.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/servo.o: ../servo.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 else
 ${OBJECTDIR}/_ext/760772214/context.o: ../nmea/context.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/context.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/context.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/context.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/context.o.d" -o ${OBJECTDIR}/_ext/760772214/context.o ../nmea/context.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/context.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/context.o.d" -o ${OBJECTDIR}/_ext/760772214/context.o ../nmea/context.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/generate.o: ../nmea/generate.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generate.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generate.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generate.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generate.o.d" -o ${OBJECTDIR}/_ext/760772214/generate.o ../nmea/generate.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generate.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generate.o.d" -o ${OBJECTDIR}/_ext/760772214/generate.o ../nmea/generate.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/generator.o: ../nmea/generator.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generator.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/generator.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generator.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generator.o.d" -o ${OBJECTDIR}/_ext/760772214/generator.o ../nmea/generator.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/generator.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/generator.o.d" -o ${OBJECTDIR}/_ext/760772214/generator.o ../nmea/generator.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/gmath.o: ../nmea/gmath.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/gmath.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/gmath.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/gmath.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/gmath.o.d" -o ${OBJECTDIR}/_ext/760772214/gmath.o ../nmea/gmath.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/gmath.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/gmath.o.d" -o ${OBJECTDIR}/_ext/760772214/gmath.o ../nmea/gmath.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/info.o: ../nmea/info.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/info.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/info.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/info.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/info.o.d" -o ${OBJECTDIR}/_ext/760772214/info.o ../nmea/info.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/info.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/info.o.d" -o ${OBJECTDIR}/_ext/760772214/info.o ../nmea/info.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/parse.o: ../nmea/parse.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parse.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parse.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parse.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parse.o.d" -o ${OBJECTDIR}/_ext/760772214/parse.o ../nmea/parse.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parse.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parse.o.d" -o ${OBJECTDIR}/_ext/760772214/parse.o ../nmea/parse.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/parser.o: ../nmea/parser.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parser.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/parser.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parser.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parser.o.d" -o ${OBJECTDIR}/_ext/760772214/parser.o ../nmea/parser.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/parser.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/parser.o.d" -o ${OBJECTDIR}/_ext/760772214/parser.o ../nmea/parser.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/sentence.o: ../nmea/sentence.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/sentence.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/sentence.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/sentence.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/sentence.o.d" -o ${OBJECTDIR}/_ext/760772214/sentence.o ../nmea/sentence.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/sentence.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/sentence.o.d" -o ${OBJECTDIR}/_ext/760772214/sentence.o ../nmea/sentence.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/time.o: ../nmea/time.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/time.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/time.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/time.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/time.o.d" -o ${OBJECTDIR}/_ext/760772214/time.o ../nmea/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/time.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/time.o.d" -o ${OBJECTDIR}/_ext/760772214/time.o ../nmea/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/760772214/tok.o: ../nmea/tok.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/760772214" 
 	@${RM} ${OBJECTDIR}/_ext/760772214/tok.o.d 
 	@${RM} ${OBJECTDIR}/_ext/760772214/tok.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/tok.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/tok.o.d" -o ${OBJECTDIR}/_ext/760772214/tok.o ../nmea/tok.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/760772214/tok.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/760772214/tok.o.d" -o ${OBJECTDIR}/_ext/760772214/tok.o ../nmea/tok.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/main.o.d" -o ${OBJECTDIR}/_ext/1472/main.o ../main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/sensors.o: ../sensors.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/sensors.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/sensors.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/sensors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/sensors.o.d" -o ${OBJECTDIR}/_ext/1472/sensors.o ../sensors.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/sensors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/sensors.o.d" -o ${OBJECTDIR}/_ext/1472/sensors.o ../sensors.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/coordinates.o: ../coordinates.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/coordinates.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/coordinates.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/coordinates.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/coordinates.o.d" -o ${OBJECTDIR}/_ext/1472/coordinates.o ../coordinates.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/coordinates.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/coordinates.o.d" -o ${OBJECTDIR}/_ext/1472/coordinates.o ../coordinates.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/navigation_helper.o: ../navigation_helper.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/navigation_helper.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/navigation_helper.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" -o ${OBJECTDIR}/_ext/1472/navigation_helper.o ../navigation_helper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/navigation_helper.o.d" -o ${OBJECTDIR}/_ext/1472/navigation_helper.o ../navigation_helper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/delay.o: ../delay.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/delay.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/delay.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/delay.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/delay.o.d" -o ${OBJECTDIR}/_ext/1472/delay.o ../delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/delay.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/delay.o.d" -o ${OBJECTDIR}/_ext/1472/delay.o ../delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/gps.o: ../gps.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/gps.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/gps.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/gps.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/gps.o.d" -o ${OBJECTDIR}/_ext/1472/gps.o ../gps.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/gps.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/gps.o.d" -o ${OBJECTDIR}/_ext/1472/gps.o ../gps.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 ${OBJECTDIR}/_ext/1472/servo.o: ../servo.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1 
 	
 endif
 
@@ -325,12 +325,12 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -g -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  -O1  $(COMPARISON_BUILD)   -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC00490:0x1FC00BEF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,-D=__DEBUG_D,--defsym=__MPLAB_DEBUGGER_PK3=1,--defsym=_min_heap_size=200,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml -mdfp=${DFP_DIR}
+	${MP_CC} $(MP_EXTRA_LD_PRE) -g -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  -O1  $(COMPARISON_BUILD)   -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC00490:0x1FC00BEF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,-D=__DEBUG_D,--defsym=__MPLAB_DEBUGGER_PK3=1,--defsym=_min_heap_size=200,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml
 	
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  -O1  $(COMPARISON_BUILD)  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=_min_heap_size=200,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml -mdfp=${DFP_DIR}
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  -O1  $(COMPARISON_BUILD)  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=_min_heap_size=200,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml
 	${MP_CC_DIR}\\xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/NavAlgoV1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
 endif
 

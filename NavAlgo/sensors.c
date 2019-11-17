@@ -240,10 +240,11 @@ void readGPS(void) {
 }
 
 void readI2C(){
-    uint8_t i2cbyte1
-    uint8_t i2cbyte2
-    char i2cData[0]
-    int DataSz 4
+    uint8_t i2cbyte1;
+    uint8_t i2cbyte2;
+    char i2cData[0];
+    int dataSz = 4;
+    int SlaveAddress; // TODO SET THIS
     
     OpenI2C1( I2C_ON, 400);
     StartI2C1();
@@ -254,7 +255,7 @@ void readI2C(){
         {
         MasterWriteI2C1( i2cData[Index++] );
         IdleI2C1();//Wait to complete
-        DataSz--;
+        dataSz--;
         if( I2C1STATbits.ACKSTAT )
            break;
     }    
