@@ -120,16 +120,17 @@ double calculateAngle() {
     double delta_alpha = 1.0; // can change this
     while (alpha < 180) {
         v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
-        v_tR = v_hyp * cos(intendedAngle + alpha); // TODO: calculating v_tR?
+        v_tR = v_hyp * cos(inverseWindAngle + alpha); // Is this right
         if (v_tR > v_maxR) {
             v_maxR = v_tR;
             phi_bmaxR = inverseWindAngle + alpha;
         }
         alpha = alpha + delta_alpha;
     }
+    alpha = 0;
     while (alpha < 180) {
         v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
-        v_tL = v_hyp * cos(intendedAngle - alpha); // TODO: calculating v_tR?
+        v_tL = v_hyp * cos(inverseWindAngle - alpha); // Is this right part 2
         if (v_tL > v_maxL) {
             v_maxL = v_tL;
             phi_bmaxL = inverseWindAngle - alpha;
