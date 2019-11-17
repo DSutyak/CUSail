@@ -7,7 +7,7 @@ double latOffset;
 double longOffset;
 double longScale;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
-
+const int radEarth = 6371000;
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
     origin.latitude = (double) 0;
@@ -26,6 +26,16 @@ coord_xy xyPoint(coord_t latlong){
     pt.x = x;
     pt.y = y;
     return pt;
+}
+/*This function calculate (x,y) as defined in the paper "Autonomous Sailboat Navigation for Short Course Racing"*/
+coord_xy xyPoint2(coord_t latlong){
+    double x = radEarth * cos(latlong.latitude - latOffset) * M_PI/180 * (latlong.longitude - longOffset);
+    double y = radEarth * M_PI/180 * (latlong.latitude - latOffset);
+    
+    coord_xy pt2;
+    pt2.x = x;
+    pt2.y = y;
+    return pt2;
 }
 
 /*finds the distance between two xy points*/
