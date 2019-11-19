@@ -20,49 +20,52 @@ uint32_t clock_rate = 40000000;
 float angleCorrection = -26; //Big sail angle correction
 float averageWeighting = 0.0625;
 
+float prevSinWind = sin(270);
+float prevCosWind = cos(270);
+float prevWindDirection = 270;
+
 data_t* sensorData;
 
 /*sensor setup*/
 void initSensors(void) {
     //Initialize data structure
     sensorData = (data_t*) malloc(sizeof(data_t));
-
-    // TODO set Pin Modes (for other communication protocols)
     
     // TODO Initialize GPS (Check this)
     OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
     
+    /* Initialize Analog Inputs for Anemometer Pins (need 2 pins) */
+    ANSELA = 0; ANSELB = 0;
     
-    //Analog stuff: params, initiating ADC
     CloseADC10();	// ensure the ADC is off before setting the configuration
 
 	// define setup parameters for OpenADC10
-				// Turn module on | output in integer | trigger mode auto | enable  autosample
-	#define PARAM1  ADC_MODULE_ON | ADC_FORMAT_INTG | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON
+	// Turn module on | ouput in integer | trigger mode auto | enable autosample
+    // ADC_CLK_AUTO -- Internal counter ends sampling and starts conversion (Auto convert)
+    // ADC_AUTO_SAMPLING_ON -- Sampling begins immediately after last conversion completes; SAMP bit is automatically set
+    // ADC_AUTO_SAMPLING_OFF -- Sampling begins with AcquireADC10();
+    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON //
 
-	// define setup parameters for OpenADC10
-			    // ADC ref external    | disable offset test    | enable scan mode | perform 2 samples | use one buffer | use MUXA mode
-       // note: to read X number of pins you must set ADC_SAMPLES_PER_INT_X
-	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_ON | ADC_SAMPLES_PER_INT_2 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
+	// ADC ref external  | disable offset test | disable scan mode | do 1 sample | use single buf | alternate mode off
+	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_OFF | ADC_SAMPLES_PER_INT_1 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
+	
+    // use peripherial bus clock | set sample time | set ADC clock divider
+    // ADC_CONV_CLK_Tcy2 means divide CLK_PB by 2 (max speed)
+    // ADC_SAMPLE_TIME_5 seems to work with a source resistance < 1kohm
+    #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_5 | ADC_CONV_CLK_Tcy2 //ADC_SAMPLE_TIME_15| ADC_CONV_CLK_Tcy2
 
-	// define setup parameters for OpenADC10
-	// 				  use ADC internal clock | set sample time
-	#define PARAM3  ADC_CONV_CLK_INTERNAL_RC | ADC_SAMPLE_TIME_15
+	// set AN11 and  as analog inputs
+	#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN10_ANA // pin 24 (RB13) and pin 25
 
-	// define setup parameters for OpenADC10
-				// set AN4 and AN5
-	#define PARAM4	ENABLE_AN4_ANA | ENABLE_AN5_ANA
-
-	// define setup parameters for OpenADC10
 	// do not assign channels to scan
-	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN11 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | \\
+    SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
 
-	// use ground as neg ref for A 
-	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF); // use ground as the negative reference
-	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using parameter define above
-	EnableADC10(); // Enable the ADC
-    
-    
+	// use ground as neg ref for A | use AN11, AN10 for input A     
+	// configure to sample AN11, AN10
+	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 | ADC_CH0_POS_SAMPLEA_AN10 ); // configure to sample AN11, AN10
+	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using the parameters defined above
+
     
     //TODO Initialize SPI (Check this for clock rate)
     OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
@@ -155,64 +158,37 @@ void readIMU(void) {
     sensorData->roll = (imu_data[2].fval)*(180/M_PI);
 }
 
-/* TODO read from anemometer */
-void readAnemometerDir(void) {
-    
-    while ( ! mAD1GetIntFlag() ) { }
+int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
+    return ((toHigh - toLow) * (value - fromLow)/(fromHigh-fromLow)) + toLow;
+}
 
-    unsigned short int channel4;	// conversion result as read from result buffer
-    int result = ReadADC10(0);
+// read both wind direction and wind speed
+void readAnemometer(void) {
+    int adc_10 = ReadADC10(0); // wind direction?
+    int adc_11 = ReadADC10(1); // wind speed?
     
-    int reading = ( (unsigned long) result)*360UL/16384UL;
-    reading += angleCorrection;
-    reading = (reading<0)?(reading+360):reading;
+    int angle = mapInt(adc_10, 0, 1023, 0, 360);
+    angle = angle % 360;
     
-    float wind_wrtN = ((int)(reading + sensorData->sailAngleBoat))%360;
+    //get angle with respect to North
+    float wind_wrtN = ((int)(angle + sensorData->sailAngleBoat))%360;
     wind_wrtN = ((int)(wind_wrtN + sensorData->boat_direction))%360;
     
-    int prevWindDirection = 0; // FIX THIS
-
     //filter wind
     float newSinWind = ( (sin(prevWindDirection*M_PI/180) + (averageWeighting)*sin(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
     float newCosWind = ( (cos(prevWindDirection*M_PI/180) + (averageWeighting)*cos(wind_wrtN*M_PI/180)) / (1 + averageWeighting) );
     wind_wrtN = atan2(newSinWind, newCosWind);
     wind_wrtN = wind_wrtN*180/M_PI;
     wind_wrtN = (wind_wrtN<0)?wind_wrtN+360:wind_wrtN;
-    // replace these with useful commands
-    sensorData->wind_dir =  wind_wrtN;
     
+    sensorData->wind_dir = wind_wrtN;
+    prevWindDirection = wind_wrtN;
+    
+    int speed = mapInt(adc_11, 0, 1023, 1, 322); // speed in km/h
+    speed = speed * 1000 / 3600; // speed in m/s
+    
+    sensorData->wind_speed = speed;
 }
-
-
-
-void readAnemometerSpeed(void) {
-    
-    while ( ! mAD1GetIntFlag() ) { }
-    unsigned short int channel5;	// conversion result as read from result buffer
-    int result = ReadADC10(0); //Get a value between 0 and 1023 from the analog pin connected to the anemometer
-    
-    int reading = ( (unsigned long) result)*360UL/16384UL;
-    
-    float voltageConversionConstant = .004882814; //This constant maps the value provided from the analog read function, which ranges from 0 to 1023, to actual voltage, which ranges from 0V to 5V
-    //^^^ is that right
-    
-    int sensorDelay = 1000; //Delay between sensor readings, measured in milliseconds (ms)
-    float voltageMin = .4; // Mininum output voltage from anemometer in mV.
-    float windSpeedMin = 0; // Wind speed in meters/sec corresponding to minimum voltage
-
-    float voltageMax = 2.0; // Maximum output voltage from anemometer in mV.
-    float windSpeedMax = 32; // Wind speed in meters/sec corresponding to maximum voltage
-  
-    float sensorVoltage = result * voltageConversionConstant; //Convert sensor value to actual voltage
-
-    //Convert voltage value to wind speed using range of max and min voltages and wind speed for the anemometer
-    if (sensorVoltage <= voltageMin){
-        sensorData->wind_dir =  0;
-    }else {
-          sensorData->wind_dir = (sensorVoltage - voltageMin)*windSpeedMax/(voltageMax - voltageMin); //For voltages above minimum value, use the linear relationship to calculate wind speed.
-    }
-    
- }
 
 void readGPS(void) {
     int count = -1;
