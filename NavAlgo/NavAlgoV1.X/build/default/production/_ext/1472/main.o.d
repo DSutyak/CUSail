@@ -5,4 +5,5 @@ build/default/production/_ext/1472/main.o:  \
 ../sensors.h  \
 ../delay.h  \
 ../navigation_helper.h  \
- ../coordinates.h 
+ ../coordinates.h  \
+../servo.h 

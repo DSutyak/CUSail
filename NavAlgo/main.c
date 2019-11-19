@@ -12,6 +12,7 @@
 #include "delay.h"
 #include "navigation_helper.h"
 #include "coordinates.h"
+#include "servo.h"
 
 #include <math.h>
 
