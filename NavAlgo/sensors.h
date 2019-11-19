@@ -40,4 +40,6 @@ void readIMU(void);
 
 void readAnemometer(void);
 
+int msTime(void);
+
 #endif

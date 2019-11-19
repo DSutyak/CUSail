@@ -14,7 +14,7 @@
 #include <peripheral/legacy/i2c_legacy.h>
 
 
-// system clock rate (as defined in config.h)
+// system clock rate (as defined in config.h) is 40MHz
 uint32_t clock_rate = 40000000;
 
 float angleCorrection = -26; //Big sail angle correction
@@ -27,7 +27,7 @@ float prevWindDirection = 270;
 data_t* sensorData;
 
 /*sensor setup*/
-void initSensors(void) {
+void initSensors(void) {    
     //Initialize data structure
     sensorData = (data_t*) malloc(sizeof(data_t));
     
@@ -184,6 +184,7 @@ void readAnemometer(void) {
     sensorData->wind_dir = wind_wrtN;
     prevWindDirection = wind_wrtN;
     
+    // update wind speed
     int speed = mapInt(adc_11, 0, 1023, 1, 322); // speed in km/h
     speed = speed * 1000 / 3600; // speed in m/s
     
@@ -241,4 +242,9 @@ void readI2C(){
     
     
 } 
+
+/* return the time in milliseconds */
+int msTime(void) {
+    return sensorData->msec + sensorData->sec * 1000 + sensorData->min * 60 * 1000 + sensorData->hour * 60 * 60 * 1000;
+}
   
