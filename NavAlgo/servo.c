@@ -5,6 +5,7 @@
 
 #include <plib.h>
 #include "servo.h"
+#include "sensors.h"
 
 #define MIN_SERVO_DUTY 3000 // 0.3 ms (TODO experiment with this)
 #define MAX_SERVO_DUTY 25000 // 2.5 ms (TODO experiment with this)
@@ -100,7 +101,24 @@ void setTiltServoAngle(double angle) {
     dutyCycles[3] = map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY);
 }
 
+/* Every 5ms, update duty cycles for each servo and update timer */
 void __ISR( _TIMER_2_VECTOR, ipl7) T2Interrupt( void) {
+    // update the timer
+    sensorData->msec += 5;
+    if (sensorData->msec > 1000) {
+        sensorData->msec -= 1000;
+        sensorData->sec += 1;
+    }
+    if (sensorData->sec > 60) {
+        sensorData->sec -= 60;
+        sensorData->min += 1;
+    }
+    if (sensorData->min > 60) {
+        sensorData->min -= 60;
+        sensorData->hour += 1;
+    }
+    
+    // update the servos
     if (++updateServo >= 4) updateServo = 0;    // 20mS cycle --> 4 interrupts
     
     // Set all PWM pins low

@@ -58,8 +58,7 @@ void initSensors(void) {
 	#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN10_ANA // pin 24 (RB13) and pin 25
 
 	// do not assign channels to scan
-	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | \\
-    SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
 
 	// use ground as neg ref for A | use AN11, AN10 for input A     
 	// configure to sample AN11, AN10
@@ -86,9 +85,10 @@ void initSensors(void) {
     sensorData->y = 0; // Y-coord of current global position;
     sensorData->lat=0;
     sensorData->longi=0;
-    
-    date_t *dateTime;
-    sensorData->dateTime = dateTime;
+    sensorData->msec = 0;
+    sensorData->sec = 0;
+    sensorData->min = 0;
+    sensorData->hour = 0;
 }
 
 union u_types {
@@ -207,12 +207,6 @@ void readGPS(void) {
     
     sensorData->lat = info->lat;
     sensorData->longi = info->lon;
-    sensorData->dateTime->year = info->utc.year;
-    sensorData->dateTime->month = info->utc.mon;
-    sensorData->dateTime->day = info->utc.day;
-    sensorData->dateTime->hour = info->utc.hour;
-    sensorData->dateTime->minute = info->utc.min;
-    sensorData->dateTime->seconds = info->utc.sec;
 }
 
 void readI2C(){
@@ -227,8 +221,7 @@ void readI2C(){
     
     
     int Index = 0;
-    while(dataSz)
-        {
+    while(dataSz) {
         MasterWriteI2C1( i2cData[Index++] );
         IdleI2C1();//Wait to complete
         dataSz--;

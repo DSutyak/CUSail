@@ -3,8 +3,8 @@
 /* ************************************************************************** */
 
 // structs for storing the sensor data
-#ifndef date_h
-#define date_h
+#ifndef sensor_h
+#define sensor_h
 typedef struct date {
   int year;
   int month;
@@ -26,9 +26,11 @@ typedef struct dataStructure {
   double y;
   double lat;
   double longi;
-  date_t *dateTime; // Current date and time, of type date_t
+  int msec;
+  int sec;
+  int min;
+  int hour;
 } data_t;
-#endif
 
 extern data_t* sensorData; //Defines the boat's state, in type data_t
 
@@ -36,6 +38,6 @@ void initSensors(void);
 
 void readIMU(void);
 
-void readAnemometerDir(void);
+void readAnemometer(void);
 
-void readAnemometerSpeed(void);
+#endif
