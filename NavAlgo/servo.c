@@ -1,17 +1,14 @@
 /* ************************************************************************** */
-/** Servo library - based on the Northwestern Servo Control Library
- ** http://hades.mech.northwestern.edu/index.php/PIC32MX:_Servo_Control
+/** Servo library
 /* ************************************************************************** */
 
 #include <plib.h>
 #include "servo.h"
 #include "sensors.h"
 
+#define PWM_PERIOD 10000 // Number of timer ticks per PWM period
 #define MIN_SERVO_DUTY 3000 // 0.3 ms (TODO experiment with this)
-#define MAX_SERVO_DUTY 25000 // 2.5 ms (TODO experiment with this)
-
-int dutyCycles[4];
-int updateServo = 0;
+#define MAX_SERVO_DUTY 8000 // 0.8 ms (TODO experiment with this)
 
 void init_servos(void) {
     OpenOC1( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
@@ -19,23 +16,16 @@ void init_servos(void) {
     OpenOC3( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Pan Servo
     OpenOC4( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tilt Servo
     
-    // init Timer2 mode and period (PR2)
-    // Fpb = SYS_FREQ = 40Mhz
-    // Timer Prescale = 4
-    // PR2 = 0xC34F = 49,999
-    // interrupts every 5 ms
-    // 5 ms = (PR2 + 1) * TMR Prescale / Fpb = (49999 + 1) * 4 / 40000000
     CloseTimer2();
-    OpenTimer2( T2_ON | T2_PS_1_4 | T2_SOURCE_INT, 0xC34F);
-    ConfigIntTimer2(T2_INT_ON | T2_INT_PRIOR_7);
-    mT2SetIntPriority(7);    // set Timer2 Interrupt Priority
-    mT2ClearIntFlag();       // clear interrupt flag
-    mT2IntEnable(1);      // enable timer2 interrupts
+    OpenTimer2( T2_ON | T2_PS_1_1 | T2_SOURCE_INT, PWM_PERIOD);
     
-    int i;
-    for (i = 0; i < 4; i++) {
-        dutyCycles[i] = (MAX_SERVO_DUTY - MIN_SERVO_DUTY) / 2; // set neutral
-    }
+    //TODO: set PPS to configure pins
+    
+    // init each servo to neutral
+    SetDCOC1PWM((MAX_SERVO_DUTY - MIN_SERVO_DUTY) / 2);
+    SetDCOC2PWM((MAX_SERVO_DUTY - MIN_SERVO_DUTY) / 2);
+    SetDCOC3PWM((MAX_SERVO_DUTY - MIN_SERVO_DUTY) / 2);
+    SetDCOC4PWM((MAX_SERVO_DUTY - MIN_SERVO_DUTY) / 2);
 }
 
 double map(double value, double fromLow, double fromHigh, double toLow, double toHigh) {
@@ -67,7 +57,7 @@ void setTailServoAngle(double sail_angle, double tail_angle) {
         newTailAngle=map(newTailAngle,0,30,100,60);
     }
     
-    dutyCycles[0] = map(newTailAngle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY);
+    SetDCOC1PWM((int) map(newTailAngle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
 }
 
 /* Updates servo position for inputted sail angle
@@ -84,65 +74,20 @@ void setSailServoAngle(double angle) {
     } else {
         new_angle = map(angle, 270, 360, 91, 74);
     }
-    dutyCycles[1] = map(new_angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY);
+    
+    SetDCOC2PWM((int) map(new_angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
 }
 
 /* Updates servo position for inputted pan servo angle
  * Precondition: Sail Angle in 0.. 180
  */
 void setPanServoAngle(double angle) {
-    dutyCycles[2] = map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY);
+    SetDCOC3PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
 }
 
 /* Updates servo position for inputted tilt servo angle
  * Precondition: Sail Angle in 0.. 180
  */
 void setTiltServoAngle(double angle) {
-    dutyCycles[3] = map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY);
-}
-
-/* Every 5ms, update duty cycles for each servo and update timer */
-void __ISR( _TIMER_2_VECTOR, ipl7) T2Interrupt( void) {
-    // update the timer
-    sensorData->msec += 5;
-    if (sensorData->msec > 1000) {
-        sensorData->msec -= 1000;
-        sensorData->sec += 1;
-    }
-    if (sensorData->sec > 60) {
-        sensorData->sec -= 60;
-        sensorData->min += 1;
-    }
-    if (sensorData->min > 60) {
-        sensorData->min -= 60;
-        sensorData->hour += 1;
-    }
-    
-    // update the servos
-    if (++updateServo >= 4) updateServo = 0;    // 20mS cycle --> 4 interrupts
-    
-    // Set all PWM pins low
-    SetDCOC1PWM(0);
-    SetDCOC2PWM(0);
-    SetDCOC3PWM(0);
-    SetDCOC4PWM(0);
-    
-    // Determine selected servo and set PWM   
-    switch(updateServo) {
-        case 0:
-            SetDCOC1PWM(dutyCycles[updateServo]);
-            break;
-        case 1:
-            SetDCOC2PWM(dutyCycles[updateServo]);
-            break;
-        case 2:
-            SetDCOC3PWM(dutyCycles[updateServo]);
-            break;
-        case 3:
-            SetDCOC4PWM(dutyCycles[updateServo]);
-            break;
-    }
-    
-    // clear interrupt flag and exit
-    mT2ClearIntFlag();
+    SetDCOC4PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
 }

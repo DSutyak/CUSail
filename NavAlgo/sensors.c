@@ -44,7 +44,7 @@ void initSensors(void) {
     // ADC_CLK_AUTO -- Internal counter ends sampling and starts conversion (Auto convert)
     // ADC_AUTO_SAMPLING_ON -- Sampling begins immediately after last conversion completes; SAMP bit is automatically set
     // ADC_AUTO_SAMPLING_OFF -- Sampling begins with AcquireADC10();
-    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON //
+    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_OFF //switch to ON for multiple
 
 	// ADC ref external  | disable offset test | disable scan mode | do 1 sample | use single buf | alternate mode off
 	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_OFF | ADC_SAMPLES_PER_INT_1 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
@@ -54,12 +54,14 @@ void initSensors(void) {
     // ADC_SAMPLE_TIME_5 seems to work with a source resistance < 1kohm
     #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_5 | ADC_CONV_CLK_Tcy2 //ADC_SAMPLE_TIME_15| ADC_CONV_CLK_Tcy2
 
-	// set AN11 and  as analog inputs
-	#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN10_ANA // pin 24 (RB13) and pin 25
+	// set AN11 as analog inputs
+	//#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN10_ANA // pin 24 (RB13) and pin 25
+    #define PARAM4	ENABLE_AN11_ANA // pin 24 (RB13)
 
 	// do not assign channels to scan
 	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
-
+    #define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+    
 	// use ground as neg ref for A | use AN11, AN10 for input A     
 	// configure to sample AN11, AN10
 	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 | ADC_CH0_POS_SAMPLEA_AN10 ); // configure to sample AN11, AN10
@@ -165,7 +167,7 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 // read both wind direction and wind speed
 void readAnemometer(void) {
     int adc_10 = ReadADC10(0); // wind direction?
-    int adc_11 = ReadADC10(1); // wind speed?
+    //int adc_11 = ReadADC10(1); // wind speed?
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
@@ -185,10 +187,10 @@ void readAnemometer(void) {
     prevWindDirection = wind_wrtN;
     
     // update wind speed
-    int speed = mapInt(adc_11, 0, 1023, 1, 322); // speed in km/h
-    speed = speed * 1000 / 3600; // speed in m/s
+    //int speed = mapInt(adc_11, 0, 1023, 1, 322); // speed in km/h
+    //speed = speed * 1000 / 3600; // speed in m/s
     
-    sensorData->wind_speed = speed;
+    //sensorData->wind_speed = speed;
 }
 
 void readGPS(void) {

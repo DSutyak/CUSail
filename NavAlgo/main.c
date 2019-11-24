@@ -87,6 +87,18 @@ void main(void) {
 
     // setup system wide interrupts
     INTEnableSystemMultiVectoredInt();
+    
+    // setup timer 3 to update time every ms
+    // Fpb = SYS_FREQ = 40Mhz
+    // Timer Prescale = 4
+    // PR3 = 0x270F = 9,999
+    // 1 ms = (PR3 + 1) * TMR Prescale / Fpb = (9999 + 1) * 4 / 40000000
+    CloseTimer3();
+    OpenTimer3( T3_ON | T3_PS_1_4 | T3_SOURCE_INT, 0x270F);
+    ConfigIntTimer3(T3_INT_ON | T3_INT_PRIOR_7);
+    mT3SetIntPriority(7);
+    mT3ClearIntFlag();
+    mT3IntEnable(1);
 
     // initialize the threads
     PT_INIT(&pt_sensor);
@@ -160,4 +172,22 @@ double calculateAngle() {
 
 int shouldUpdateAngles () {
     return 1;
+}
+
+/* Every 1ms, update timer */
+void __ISR( _TIMER_3_VECTOR, ipl7) T3Interrupt(void) {
+    sensorData->msec += 1;
+    if (sensorData->msec > 1000) {
+        sensorData->msec -= 1000;
+        sensorData->sec += 1;
+    }
+    if (sensorData->sec > 60) {
+        sensorData->sec -= 60;
+        sensorData->min += 1;
+    }
+    if (sensorData->min > 60) {
+        sensorData->min -= 60;
+        sensorData->hour += 1;
+    }
+    mT3ClearIntFlag();
 }
