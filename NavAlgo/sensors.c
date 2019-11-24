@@ -6,6 +6,7 @@
 
 #include "plib.h" // peripheral library
 #include "sensors.h"
+#include "servo.h"
 #include "xc.h"
 #include "delay.h"
 #include <math.h>
@@ -25,6 +26,11 @@ float prevCosWind = cos(270);
 float prevWindDirection = 270;
 
 data_t* sensorData;
+
+// LiDAR stuff
+int lidarData[180];
+int panAngle;
+int tiltAngle;
 
 /*sensor setup*/
 void initSensors(void) {    
@@ -59,7 +65,7 @@ void initSensors(void) {
     #define PARAM4	ENABLE_AN11_ANA // pin 24 (RB13)
 
 	// do not assign channels to scan
-	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+	//#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
     #define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
     
 	// use ground as neg ref for A | use AN11, AN10 for input A     
@@ -73,7 +79,15 @@ void initSensors(void) {
     ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
     TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output for SS
     PORTBbits.RB3 = 1; // set SS high (active low)
-    // maybe configure interrupts here (could be useful)
+    
+    // LiDAR (I2C)
+    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
+	OpenI2C1( I2C_ON, 2081);
+    
+    panAngle = 0;
+    setPanServoAngle(panAngle);
+    tiltAngle = 90;
+    setTiltServoAngle(tiltAngle);
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
@@ -212,38 +226,36 @@ void readGPS(void) {
     sensorData->longi = info->lon;
 }
 
-void readI2C(){
-    uint8_t i2cbyte1;
-    uint8_t i2cbyte2;
-    char i2cData[0];
-    int dataSz = 4;
-    int SlaveAddress; // TODO SET THIS
+void readLIDAR() {
+    // TODO set pan and tilt
+    unsigned char data[2];
+    unsigned char *readData;
+    readData = data;
     
-    OpenI2C1( I2C_ON, 400);
     StartI2C1();
+	IdleI2C1();
     
-    
-    int Index = 0;
-    while(dataSz) {
-        MasterWriteI2C1( i2cData[Index++] );
-        IdleI2C1();//Wait to complete
-        dataSz--;
-        if( I2C1STATbits.ACKSTAT )
-           break;
-    }    
-    
-    RestartI2C1();//Send the Stop condition
-    IdleI2C1();//Wait to complete
-    
-    MasterWriteI2C1( (SlaveAddress << 1) | 1 ); //transmit read command
-    IdleI2C1();//Wait to complete
-    
-    unsigned char i2cbyte = MasterReadI2C1();
-    StopI2C1();
+    MasterWriteI2C1(0x66 | 0);
+    IdleI2C1();
+    MasterWriteI2C1(0);
     IdleI2C1();
     
+    RestartI2C1();
+    delay_us(10);
+    IdleI2C1();
+    MasterWriteI2C1(0x66 | 1 ); //transmit read command
+	IdleI2C1();
+    MastergetsI2C1(2, readData, 20);
+    IdleI2C1();
     
-} 
+    StopI2C1();
+	IdleI2C1();
+    
+    // distance in cm
+    float distance = (float)((int) data[0] * 256 + (int) data[1])/100;
+    
+    //TODO do something with the distance
+}
 
 /* return the time in milliseconds */
 int msTime(void) {

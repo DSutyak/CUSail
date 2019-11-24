@@ -40,6 +40,10 @@ void readIMU(void);
 
 void readAnemometer(void);
 
+void readGPS(void);
+
+void readLIDAR(void);
+
 int msTime(void);
 
 #endif

@@ -81,6 +81,7 @@ void blinkLED(void) {
 void main(void) { 
 //    blinkLED();
 //    initSensors();
+//    initServos();
 //  
     // turns OFF UART support and debugger pin, unless defines are set
     PT_setup();
