@@ -176,7 +176,7 @@ int shouldUpdateAngles () {
 }
 
 /* Every 1ms, update timer */
-void __ISR( _TIMER_3_VECTOR, ipl7) T3Interrupt(void) {
+void __ISR( _TIMER_3_VECTOR, IPL7AUTO) T3Interrupt(void) {
     sensorData->msec += 1;
     if (sensorData->msec > 1000) {
         sensorData->msec -= 1000;

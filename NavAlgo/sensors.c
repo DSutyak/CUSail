@@ -25,6 +25,12 @@ float prevSinWind = sin(270);
 float prevCosWind = cos(270);
 float prevWindDirection = 270;
 
+// time of the last pulse on the hall effect sensor
+int prevPulseMS = -1;
+int prevPulseS = 0;
+int prevPulseMin = 0;
+int prevPulseHr = 0;
+
 data_t* sensorData;
 
 // LiDAR stuff
@@ -60,17 +66,15 @@ void initSensors(void) {
     // ADC_SAMPLE_TIME_5 seems to work with a source resistance < 1kohm
     #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_5 | ADC_CONV_CLK_Tcy2 //ADC_SAMPLE_TIME_15| ADC_CONV_CLK_Tcy2
 
-	// set AN11 as analog inputs
-	//#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN10_ANA // pin 24 (RB13) and pin 25
+	// set AN11 as analog input
     #define PARAM4	ENABLE_AN11_ANA // pin 24 (RB13)
 
 	// do not assign channels to scan
-	//#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
     #define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
     
-	// use ground as neg ref for A | use AN11, AN10 for input A     
-	// configure to sample AN11, AN10
-	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 | ADC_CH0_POS_SAMPLEA_AN10 ); // configure to sample AN11, AN10
+	// use ground as neg ref for A | use AN11 for input A     
+	// configure to sample AN11
+	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 ); // configure to sample AN11
 	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using the parameters defined above
 
     
@@ -105,6 +109,13 @@ void initSensors(void) {
     sensorData->sec = 0;
     sensorData->min = 0;
     sensorData->hour = 0;
+    
+    // interrupt for hall effect sensor
+    mINT0IntEnable(0);
+    mINT0SetEdgeMode(1); // rising edge
+    mINT0SetIntPriority(7);
+    mINT0ClearIntFlag();
+    mINT0IntEnable(1);
 }
 
 union u_types {
@@ -181,7 +192,6 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 // read both wind direction and wind speed
 void readAnemometer(void) {
     int adc_10 = ReadADC10(0); // wind direction?
-    //int adc_11 = ReadADC10(1); // wind speed?
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
@@ -199,12 +209,6 @@ void readAnemometer(void) {
     
     sensorData->wind_dir = wind_wrtN;
     prevWindDirection = wind_wrtN;
-    
-    // update wind speed
-    //int speed = mapInt(adc_11, 0, 1023, 1, 322); // speed in km/h
-    //speed = speed * 1000 / 3600; // speed in m/s
-    
-    //sensorData->wind_speed = speed;
 }
 
 void readGPS(void) {
@@ -254,11 +258,34 @@ void readLIDAR() {
     // distance in cm
     float distance = (float)((int) data[0] * 256 + (int) data[1])/100;
     
-    //TODO do something with the distance
+    //TODO do something with the distance/make a map
 }
 
 /* return the time in milliseconds */
-int msTime(void) {
+long msTime(void) {
     return sensorData->msec + sensorData->sec * 1000 + sensorData->min * 60 * 1000 + sensorData->hour * 60 * 60 * 1000;
+}
+
+/* on a rising edge, count that a pulse occurred, approx wind speed */
+void __ISR( _EXTERNAL_0_VECTOR, IPL7SFR) INT0Interrupt(void) {
+    if (prevPulseMS != -1) {
+        long currentTime = msTime();
+        long prevTime = prevPulseMS + prevPulseS * 1000 + prevPulseMin * 60 * 1000 + prevPulseHr * 60 * 60 * 1000;
+    
+        float deltaT = (currentTime - prevTime) / 1000.0; // time difference in seconds
+    
+        float speed = 2 * 2.25 / deltaT; // get time in mph
+        speed *= 0.44704; // convert to m/s
+    
+        sensorData->wind_speed = speed;
+    }
+    
+    // update the previous pulse
+    prevPulseMS = sensorData->msec;
+    prevPulseS = sensorData->sec;
+    prevPulseMin = sensorData->min;
+    prevPulseHr = sensorData->hour;
+    
+    mINT0ClearIntFlag();
 }
   

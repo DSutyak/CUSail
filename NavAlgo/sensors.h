@@ -44,6 +44,6 @@ void readGPS(void);
 
 void readLIDAR(void);
 
-int msTime(void);
+long msTime(void);
 
 #endif
