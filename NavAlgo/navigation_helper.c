@@ -153,7 +153,7 @@ coord_xy diff (coord_xy T, coord_xy B) {
  defined in "Autonomous Sailboat Navigation for Short Course Racing"
  We used their numbers, so these values are NOT empirically optimized for our boat*/
 double fPolar (double windSpeed, double angle) {
-    if (43 < angle < 151)
+    if (43 < angle < 151 || 209 < angle < 317)
          return windSpeed * 1.397 ; // TODO: Polar diagram
     else 
         return 0;

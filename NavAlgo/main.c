@@ -102,7 +102,7 @@ void main(void) {
     mT3IntEnable(1);
 
     // initialize the threads
-    PT_INIT(&pt_sensor);
+    PT_INIT(&pt_sensor); 
   
     // round-robin scheduler for threads
     while (1){
@@ -119,10 +119,10 @@ double calculateAngle() {
     // initializing variables for calculations
     coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
     coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints); // initialize T
-    coord_xy boatTargetDifference = diff (boatPosition, targetPosition); // initialize t
+    coord_xy boatTargetDifference = diff (targetPosition, boatPosition); // initialize t
     double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
     double boat_heading = sensorData->boat_direction; // initialize phi(b))
-    double beating_param = 100; // this can be adjusted
+    double beating_param = 10; // this can be adjusted
     double windDirection = sensorData->wind_dir; // should probably use true wind
     double intendedAngle = angleToTarget(boatPosition, targetPosition);
     double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360); // finds positive angle between wind and intended path
@@ -137,23 +137,23 @@ double calculateAngle() {
     double v_tR;
     double v_tL;
     double phi_bnew;
-    double delta_alpha = 1.0; // can change this
+    double delta_alpha = 5.0; // can change this
     while (alpha < 180) {
         v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
-        v_tR = v_hyp * cos(inverseWindAngle + alpha); // Is this right
+        v_tR = abs(v_hyp * cos((double)(((int)(inverseWindAngle + alpha))%360))); // Is this right
         if (v_tR > v_maxR) {
             v_maxR = v_tR;
-            phi_bmaxR = inverseWindAngle + alpha;
+            phi_bmaxR = (double)(((int)(inverseWindAngle + alpha))%360);
         }
         alpha = alpha + delta_alpha;
     }
     alpha = 0;
     while (alpha < 180) {
         v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
-        v_tL = v_hyp * cos(inverseWindAngle - alpha); // Is this right part 2
+        v_tL = abs(v_hyp * cos((double)(((((int)(inverseWindAngle - alpha))%360)+360)%360))); // Is this right part 2
         if (v_tL > v_maxL) {
             v_maxL = v_tL;
-            phi_bmaxL = inverseWindAngle - alpha;
+            phi_bmaxL = (double)(((((int)(inverseWindAngle - alpha))%360)+360)%360);
         }
         alpha = alpha + delta_alpha;
     }
@@ -173,7 +173,8 @@ double calculateAngle() {
             phi_bnew = phi_bmaxL;
         }
     }
-    return phi_bnew;
+    // phi_bnew is angle w.r.t. wind, so needs to be converted to w.r.t. north
+    return (double)((((int)(phi_bnew + sensorData->wind_dir) % 360) + 360) % 360);
 }
 
 /*
@@ -182,7 +183,7 @@ double calculateAngle() {
  * TODO: check logic, test
  */
 void setServoAngles(double angleToSail) {
-    
+  
     // calculate angle of attack for sail angle
     double angleOfAttack;
     if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
