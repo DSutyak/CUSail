@@ -6,9 +6,8 @@
 #include "servo.h"
 #include "sensors.h"
 
-#define PWM_PERIOD 10000 // Number of timer ticks per PWM period
-#define MIN_SERVO_DUTY 3000 // 0.3 ms (TODO experiment with this)
-#define MAX_SERVO_DUTY 8000 // 0.8 ms (TODO experiment with this)
+#define MIN_SERVO_DUTY 10000 // 1 ms (TODO experiment with this)
+#define MAX_SERVO_DUTY 20000 // 2 ms (TODO experiment with this)
 
 void init_servos(void) {
     OpenOC1( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
@@ -16,8 +15,12 @@ void init_servos(void) {
     OpenOC3( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Pan Servo
     OpenOC4( OC_ON | OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tilt Servo
     
+    // Fpb = SYS_FREQ = 40Mhz
+    // Timer Prescale = 4
+    // PR2 = 0x30D3F = 199,999
+    // 20 ms = (PR2 + 1) * TMR Prescale / Fpb = (199,999 + 1) * 4 / 40,000,000
     CloseTimer2();
-    OpenTimer2( T2_ON | T2_PS_1_1 | T2_SOURCE_INT, PWM_PERIOD);
+    OpenTimer2( T2_ON | T2_PS_1_4 | T2_SOURCE_INT, 0x30D3F);
     
     //TODO: set PPS to configure pins
     
