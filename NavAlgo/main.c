@@ -110,6 +110,11 @@ void main(void) {
     }
   }
 
+/*
+ * calculateAngle() calculates the optimal boat direction towards the nearest waypoint 
+ * given wind speed, wind direction, position, direction, waypoint positions
+ * TODO: check logic, test (a lot), integrate obstacle detection
+ */
 double calculateAngle() {
     // initializing variables for calculations
     coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
@@ -171,8 +176,43 @@ double calculateAngle() {
     return phi_bnew;
 }
 
-int shouldUpdateAngles () {
-    return 1;
+/*
+ * setServoAngles sets the servo angles according to angleToSail. This is mostly
+ * copied from previous algorithm.
+ * TODO: check logic, test
+ */
+void setServoAngles(double angleToSail) {
+    
+    // calculate angle of attack for sail angle
+    double angleOfAttack;
+    if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
+        angleOfAttack = -15;
+    else
+        angleOfAttack = 15;
+    
+    double offset = sensorData->boat_direction - angleToSail;
+    double tail_angle = sensorData->wind_dir + offset;
+    double sail_angle = tail_angle + angleOfAttack;
+
+    tail_angle = (double)((((int)tail_angle%360)+360)%360);
+    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+
+    //Convert sail and tail from wrt north to wrt boat
+    sail_angle = sail_angle - sensorData->boat_direction;
+    tail_angle = tail_angle - sensorData->boat_direction;
+
+    // convert sail to 0-360
+    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+
+    // convert tail to -180-180
+    tail_angle = (double)((((int)tail_angle%360)+360)%360);
+    while (tail_angle> 180) {tail_angle -= 180;}
+
+    sensorData->sailAngleBoat = sail_angle;
+    sensorData->tailAngleBoat = tail_angle;
+
+    setSailServoAngle(sail_angle);
+    setTailServoAngle(sail_angle, tail_angle);
 }
 
 /* Every 1ms, update timer */

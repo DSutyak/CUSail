@@ -155,4 +155,6 @@ coord_xy diff (coord_xy T, coord_xy B) {
 double fPolar (double windSpeed, double angle) {
     if (43 < angle < 151)
          return windSpeed * 1.397 ; // TODO: Polar diagram
+    else 
+        return 0;
 }
