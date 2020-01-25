@@ -11,7 +11,7 @@
 #include <peripheral/legacy/i2c_legacy.h>
 //#include <i2c.h>
 
-#define _MI2C1IF 
+
 
 #ifdef _MI2CIF
 #define StartI2C_       StartI2C
