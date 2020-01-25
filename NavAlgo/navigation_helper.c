@@ -2,12 +2,16 @@
 #include "sensors.h"
 #include "coordinates.h"
 
+coord_xy waypoints[];
+
 coord_t origin;
 double latOffset;
 double longOffset;
 double longScale;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
+
+
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
     origin.latitude = (double) 0;
@@ -157,4 +161,110 @@ double fPolar (double windSpeed, double angle) {
          return windSpeed * 1.397 ; // TODO: Polar diagram
     else 
         return 0;
+}
+
+/*
+ * calculateAngle() calculates the optimal boat direction towards the nearest waypoint 
+ * given wind speed, wind direction, position, direction, waypoint positions
+ * TODO: check logic, test (a lot), integrate obstacle detection
+ */
+double calculateAngle() {
+    // initializing variables for calculations
+    coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
+    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints); // initialize T
+    coord_xy boatTargetDifference = diff (targetPosition, boatPosition); // initialize t
+    double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
+    double boat_heading = sensorData->boat_direction; // initialize phi(b))
+    double beating_param = 10; // this can be adjusted
+    double windDirection = sensorData->wind_dir; // should probably use true wind
+    double intendedAngle = angleToTarget(boatPosition, targetPosition);
+    double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360); // finds positive angle between wind and intended path
+    double hysteresis = 1 + (beating_param / t_mag); // initialize n
+    double inverseWindAngle = angleDifference; // TODO: initialize phi(-w)?
+    double alpha = 0.0; 
+    double v_maxR = 0.0;
+    double v_maxL = 0.0;
+    double phi_bmaxR = inverseWindAngle;
+    double phi_bmaxL = inverseWindAngle;
+    double v_hyp;
+    double v_tR;
+    double v_tL;
+    double phi_bnew;
+    double delta_alpha = 5.0; // can change this
+    while (alpha < 180) {
+        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
+        v_tR = abs(v_hyp * cos((double)(((int)(inverseWindAngle + alpha))%360))); // Is this right
+        if (v_tR > v_maxR) {
+            v_maxR = v_tR;
+            phi_bmaxR = (double)(((int)(inverseWindAngle + alpha))%360);
+        }
+        alpha = alpha + delta_alpha;
+    }
+    alpha = 0;
+    while (alpha < 180) {
+        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
+        v_tL = abs(v_hyp * cos((double)(((((int)(inverseWindAngle - alpha))%360)+360)%360))); // Is this right part 2
+        if (v_tL > v_maxL) {
+            v_maxL = v_tL;
+            phi_bmaxL = (double)(((((int)(inverseWindAngle - alpha))%360)+360)%360);
+        }
+        alpha = alpha + delta_alpha;
+    }
+    if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
+        if(v_maxR * hysteresis < v_maxL) {
+            phi_bnew = phi_bmaxL;
+        }
+        else {
+            phi_bnew = phi_bmaxR;
+        }
+    }
+    else {
+        if(v_maxL * hysteresis < v_maxR) {
+            phi_bnew = phi_bmaxR;
+        }
+        else {
+            phi_bnew = phi_bmaxL;
+        }
+    }
+    // phi_bnew is angle w.r.t. wind, so needs to be converted to w.r.t. north
+    return (double)((((int)(phi_bnew + sensorData->wind_dir) % 360) + 360) % 360);
+}
+
+/*
+ * setServoAngles sets the servo angles according to angleToSail. This is mostly
+ * copied from previous algorithm.
+ * TODO: check logic, test
+ */
+void setServoAngles(double angleToSail) {
+  
+    // calculate angle of attack for sail angle
+    double angleOfAttack;
+    if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
+        angleOfAttack = -15;
+    else
+        angleOfAttack = 15;
+    
+    double offset = sensorData->boat_direction - angleToSail;
+    double tail_angle = sensorData->wind_dir + offset;
+    double sail_angle = tail_angle + angleOfAttack;
+
+    tail_angle = (double)((((int)tail_angle%360)+360)%360);
+    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+
+    //Convert sail and tail from wrt north to wrt boat
+    sail_angle = sail_angle - sensorData->boat_direction;
+    tail_angle = tail_angle - sensorData->boat_direction;
+
+    // convert sail to 0-360
+    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+
+    // convert tail to -180-180
+    tail_angle = (double)((((int)tail_angle%360)+360)%360);
+    while (tail_angle> 180) {tail_angle -= 180;}
+
+    sensorData->sailAngleBoat = sail_angle;
+    sensorData->tailAngleBoat = tail_angle;
+
+    setSailServoAngle(sail_angle);
+    setTailServoAngle(sail_angle, tail_angle);
 }

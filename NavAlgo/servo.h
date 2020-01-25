@@ -15,6 +15,8 @@ void setPanServoAngle(double angle);
 
 void setTiltServoAngle(double angle);
 
+void testServo(int angle);
+
 #endif /* _SERVO_H */
 
 /* *****************************************************************************

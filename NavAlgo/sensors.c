@@ -4,7 +4,7 @@
 #define _SUPPRESS_PLIB_WARNING // removes outdated plib warning
 #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
 
-#include "plib.h" // peripheral library
+#include <plib.h> // peripheral library
 #include "sensors.h"
 #include "servo.h"
 #include "xc.h"
@@ -38,16 +38,19 @@ int lidarData[180];
 int panAngle;
 int tiltAngle;
 
+// TESTING
+volatile int numPulses = 0;
+
 /*sensor setup*/
 void initSensors(void) {    
     //Initialize data structure
     sensorData = (data_t*) malloc(sizeof(data_t));
     
     // TODO Initialize GPS (Check this)
-    OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
+    //OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
     
     /* Initialize Analog Inputs for Anemometer Pins (need 2 pins) */
-    ANSELA = 0; ANSELB = 0;
+    ANSELA = 0; ANSELB = 0; TRISA = 0xff; // set A as input
     
     CloseADC10();	// ensure the ADC is off before setting the configuration
 
@@ -76,22 +79,24 @@ void initSensors(void) {
 	// configure to sample AN11
 	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 ); // configure to sample AN11
 	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using the parameters defined above
-
+    
+    EnableADC10(); // Enable the ADC
     
     //TODO Initialize SPI (Check this for clock rate)
-    OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
+    //SpiChnOpen(SPI_CHANNEL1, SPI_OPEN_ON | SPI_OPEN_MODE16 | SPI_OPEN_MSTEN | SPI_OPEN_CKE_REV , 8);
+    //OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
     ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
     TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output for SS
     PORTBbits.RB3 = 1; // set SS high (active low)
-    
-    // LiDAR (I2C)
-    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
-	OpenI2C1( I2C_ON, 2081);
-    
-    panAngle = 0;
-    setPanServoAngle(panAngle);
-    tiltAngle = 90;
-    setTiltServoAngle(tiltAngle);
+//    
+//    // LiDAR (I2C)
+//    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
+//	OpenI2C1( I2C_ON, 2081);
+//    
+//    panAngle = 0;
+//    setPanServoAngle(panAngle);
+//    tiltAngle = 90;
+//    setTiltServoAngle(tiltAngle);
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
@@ -192,9 +197,11 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 // read both wind direction and wind speed
 void readAnemometer(void) {
     int adc_10 = ReadADC10(0); // wind direction?
+    AcquireADC10();
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
+    //sensorData->wind_dir = angle;
     
     //get angle with respect to North
     float wind_wrtN = ((int)(angle + sensorData->sailAngleBoat))%360;
@@ -267,7 +274,8 @@ long msTime(void) {
 }
 
 /* on a rising edge, count that a pulse occurred, approx wind speed */
-void __ISR( _EXTERNAL_0_VECTOR, IPL7SFR) INT0Interrupt(void) {
+void __ISR( _EXTERNAL_0_VECTOR, IPL7AUTO) INT0Interrupt(void) {
+    numPulses++;
     if (prevPulseMS != -1) {
         long currentTime = msTime();
         long prevTime = prevPulseMS + prevPulseS * 1000 + prevPulseMin * 60 * 1000 + prevPulseHr * 60 * 60 * 1000;
@@ -288,4 +296,22 @@ void __ISR( _EXTERNAL_0_VECTOR, IPL7SFR) INT0Interrupt(void) {
     
     mINT0ClearIntFlag();
 }
-  
+
+// Timer for up time
+void __ISR( _TIMER_1_VECTOR, IPL7AUTO) T1Interrupt(void) {
+    sensorData->msec++;
+    if (sensorData->msec >= 1000) {
+        sensorData->msec = 0;
+        sensorData->sec++;
+    }
+    if (sensorData->sec >= 60) {
+        sensorData->sec = 0;
+        sensorData->min++;
+    }
+    if (sensorData->min >= 60) {
+        sensorData->min = 0;
+        sensorData->hour++;
+    }
+    
+    mT1ClearIntFlag();
+}

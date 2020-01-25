@@ -21,7 +21,7 @@ typedef struct dataStructure {
   float pitch; // (IMU)
   float roll; // (IMU)
   float wind_dir; // Wind direction w.r.t North
-  float wind_speed;
+  volatile float wind_speed;
   double x;
   double y;
   double lat;

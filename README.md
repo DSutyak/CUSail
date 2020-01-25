@@ -8,6 +8,6 @@ It requires the MPLAB X IDE and XC32 compiler to run.
 Notes:
 The link to modify the quad coordinates is: https://binged.it/2oi2yOR
 
-Recent Modifications (10/21/19):
-- Created MPLAB project w/ necessary protothread library and legacy peripheral library
-- Test cases for sensors are in progress
+Recent Modifications (1/24/20):
+- Reorganized code for readability
+- Testing in progress for sensor integration

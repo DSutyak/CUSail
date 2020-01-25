@@ -43,4 +43,8 @@ coord_xy diff (coord_xy T, coord_xy B);
 
 double fPolar (double windSpeed, double angle);
 
+double calculateAngle(void);
+
+void setServoAngles(double angleToSail);
+
 #endif

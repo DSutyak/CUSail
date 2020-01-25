@@ -1,235 +1,184 @@
 /*
- * Test cases for sensors
+ * Main Navigation Algorithm
+ * 
+ * Initialize sensors and spawn threads to run algorithm
  */
 
-// clock and protoThreads configure
-#include "config.h"
-// threading library
-#include "pt_cornell_1_2_1.h"
+#include "config.h" // clock and protoThreads configure
+#include "pt_cornell_1_2_1.h" // threading library
 
-// sensor libraries
+////////////////////////////////////
+// graphics libraries (testing only)
+// SPI channel 1 connections to TFT
+#include "tft_master.h"
+#include "tft_gfx.h"
+// need for rand function
+#include <stdlib.h>
+////////////////////////////////////
+
 #include "sensors.h"
-#include "delay.h"
+#include "servo.h"
 #include "navigation_helper.h"
 #include "coordinates.h"
-#include "servo.h"
 
-#include <math.h>
 
-// threads
-static struct pt pt_sensor;
+// string buffer
+char buffer[60];
 
 // sensor data
 extern data_t* sensorData;
+extern int numPulses;
 
-coord_xy waypoints[];
+////////////////////////////////////
+// DAC ISR
+// A-channel, 1x, active
+#define DAC_config_chan_A 0b0011000000000000
+// B-channel, 1x, active
+#define DAC_config_chan_B 0b1011000000000000
+//== Timer 2 interrupt handler ===========================================
+volatile unsigned int DAC_data ;// output value
+volatile SpiChannel spiChn = SPI_CHANNEL2 ;	// the SPI channel to use
+volatile int spiClkDiv = 2; // 20 MHz max speed for this DAC
 
-void delay_ms(unsigned int ms) {
-    delay_us(ms * 1000);
+void __ISR(_TIMER_2_VECTOR, ipl2) Timer2Handler(void)
+{
+    mT2ClearIntFlag();
+    
+    // generate  ramp
+    // at 100 ksample/sec, 2^12 samples (4096) on one ramp up
+    // yields 100000/4096 = 24.4 Hz.
+     DAC_data = (DAC_data + 1) & 0xfff ; // for testing
+    
+    // CS low to start transaction
+     mPORTBClearBits(BIT_4); // start transaction
+    // test for ready
+     while (TxBufFullSPI2());
+     // write to spi2
+     WriteSPI2(DAC_config_chan_A | DAC_data);
+    // test for done
+    while (SPI2STATbits.SPIBUSY); // wait for end of transaction
+     // CS high
+     mPORTBSetBits(BIT_4); // end transaction
 }
 
-void delay_us(unsigned int us) {
-    us *= sys_clock / 1000000 / 2;
-    _CP0_SET_COUNT(0); // Set Core Timer count to 0
-    while (us > _CP0_GET_COUNT());
-}
+// === thread structures ============================================
+// thread control structs
+// note that UART input and output are threads
+static struct pt pt_timer;
 
-volatile int high = 0;
-void toggleLED(void);
+// system 1 second interval tick
+int sys_time_seconds ;
 
-// thread to check sensor values every 2.5s
-static PT_THREAD (protothread_timer(struct pt *pt)) {
+//TESTING
+int testAngle = 0;
+
+// === Timer Thread =================================================
+// update a 1 second tick counter
+static PT_THREAD (protothread_timer(struct pt *pt))
+{
     PT_BEGIN(pt);
-    ANSELAbits.ANSA0 = 0; // enable RB3 (pin 7) as digital
-    TRISAbits.TRISA0 = 0; // enable RB3 (pin 7) as output
-    PORTAbits.RA0 = 0; // set low
-    while(1) {
-        toggleLED();
-        PT_YIELD_TIME_msec(1000); // yield time for 2.5 seconds
-    }
-    PT_END(pt); // this will never execute
-}
+     tft_setCursor(0, 0);
+     tft_setTextColor(ILI9340_GREEN);  tft_setTextSize(1);
+     //tft_writeString("Current Wind Angle:\n");
+     //tft_writeString("Current Wind Speed:\n");
+     //tft_writeString("Pulses so far:\n");
+     tft_writeString("Testing Angle:\n");
+     //tft_writeString("Pitch, Roll, Yaw:\n");
+     // set up LED to blink
+//     mPORTASetBits(BIT_0 );	//Clear bits to ensure light is off.
+//     mPORTASetPinsDigitalOut(BIT_0 );    //Set port as output
+      while(1) {
+        // yield time 1 second
+        PT_YIELD_TIME_msec(500);
+        // draw sys_time
+        tft_fillRoundRect(0,10, 100, 14, 1, ILI9340_BLACK);// x,y,w,h,radius,color
+        tft_setCursor(0, 10);
+        tft_setTextColor(ILI9340_YELLOW); tft_setTextSize(2);
+        readAnemometer();
+        sys_time_seconds++;
+        //sprintf(buffer,"%d", (int) sensorData->wind_dir);
+        //sprintf(buffer,"%f", sensorData->wind_speed);
+        //sprintf(buffer,"%d", (int) numPulses);
+        //sprintf(buffer,"%2d, %.2f, %.2f", sensorData->sec, sensorData->roll, sensorData->boat_direction);
+        testServo(testAngle);
+        sprintf(buffer,"%d", (int) testAngle);
+        testAngle = (testAngle + 1) % 180;
+        tft_writeString(buffer);
+        // NEVER exit while
+      } // END WHILE(1)
+  PT_END(pt);
+} // timer thread
 
-void toggleLED(void) {
-    if (high == 1) {
-        high = 0;
-        PORTAbits.RA0 = 0;
-    } else {
-        high = 1;
-        PORTAbits.RA0 = 1;
-    }
-}
-
-void blinkLED(void) {
-    ANSELAbits.ANSA0 = 0; // enable RB3 (pin 7) as digital
-    TRISAbits.TRISA0 = 0; // enable RB3 (pin 7) as output
-    PORTAbits.RA0 = 0; // set low
-    int high = 0;
-    while(1) {
-        if (high == 1) {
-            high = 0;
-            PORTAbits.RA0 = 0;
-            delay_ms(1000);
-        } else {
-            high = 1;
-            PORTAbits.RA0 = 1;
-            delay_ms(1000);
-        }
-    }
-}
-
-void main(void) { 
-//    blinkLED();
-//    initSensors();
-//    initServos();
-//  
-    // turns OFF UART support and debugger pin, unless defines are set
-    PT_setup();
-
-    // setup system wide interrupts
-    INTEnableSystemMultiVectoredInt();
-    
-    // setup timer 3 to update time every ms
-    // Fpb = SYS_FREQ = 40Mhz
-    // Timer Prescale = 4
-    // PR3 = 0x270F = 9,999
-    // 1 ms = (PR3 + 1) * TMR Prescale / Fpb = (9999 + 1) * 4 / 40000000
-    CloseTimer3();
-    OpenTimer3( T3_ON | T3_PS_1_4 | T3_SOURCE_INT, 0x270F);
-    ConfigIntTimer3(T3_INT_ON | T3_INT_PRIOR_7);
-    mT3SetIntPriority(7);
-    mT3ClearIntFlag();
-    mT3IntEnable(1);
-
-    // initialize the threads
-    PT_INIT(&pt_sensor); 
+// === Main  ======================================================
+void main(void) {
+ //SYSTEMConfigPerformance(PBCLK);
   
-    // round-robin scheduler for threads
-    while (1){
-        PT_SCHEDULE(protothread_timer(&pt_sensor));
-    }
-  }
+  ANSELA = 0; ANSELB = 0; 
 
-/*
- * calculateAngle() calculates the optimal boat direction towards the nearest waypoint 
- * given wind speed, wind direction, position, direction, waypoint positions
- * TODO: check logic, test (a lot), integrate obstacle detection
- */
-double calculateAngle() {
-    // initializing variables for calculations
-    coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
-    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints); // initialize T
-    coord_xy boatTargetDifference = diff (targetPosition, boatPosition); // initialize t
-    double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
-    double boat_heading = sensorData->boat_direction; // initialize phi(b))
-    double beating_param = 10; // this can be adjusted
-    double windDirection = sensorData->wind_dir; // should probably use true wind
-    double intendedAngle = angleToTarget(boatPosition, targetPosition);
-    double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360); // finds positive angle between wind and intended path
-    double hysteresis = 1 + (beating_param / t_mag); // initialize n
-    double inverseWindAngle = angleDifference; // TODO: initialize phi(-w)?
-    double alpha = 0.0; 
-    double v_maxR = 0.0;
-    double v_maxL = 0.0;
-    double phi_bmaxR = inverseWindAngle;
-    double phi_bmaxL = inverseWindAngle;
-    double v_hyp;
-    double v_tR;
-    double v_tL;
-    double phi_bnew;
-    double delta_alpha = 5.0; // can change this
-    while (alpha < 180) {
-        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
-        v_tR = abs(v_hyp * cos((double)(((int)(inverseWindAngle + alpha))%360))); // Is this right
-        if (v_tR > v_maxR) {
-            v_maxR = v_tR;
-            phi_bmaxR = (double)(((int)(inverseWindAngle + alpha))%360);
-        }
-        alpha = alpha + delta_alpha;
-    }
-    alpha = 0;
-    while (alpha < 180) {
-        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
-        v_tL = abs(v_hyp * cos((double)(((((int)(inverseWindAngle - alpha))%360)+360)%360))); // Is this right part 2
-        if (v_tL > v_maxL) {
-            v_maxL = v_tL;
-            phi_bmaxL = (double)(((((int)(inverseWindAngle - alpha))%360)+360)%360);
-        }
-        alpha = alpha + delta_alpha;
-    }
-    if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
-        if(v_maxR * hysteresis < v_maxL) {
-            phi_bnew = phi_bmaxL;
-        }
-        else {
-            phi_bnew = phi_bmaxR;
-        }
-    }
-    else {
-        if(v_maxL * hysteresis < v_maxR) {
-            phi_bnew = phi_bmaxR;
-        }
-        else {
-            phi_bnew = phi_bmaxL;
-        }
-    }
-    // phi_bnew is angle w.r.t. wind, so needs to be converted to w.r.t. north
-    return (double)((((int)(phi_bnew + sensorData->wind_dir) % 360) + 360) % 360);
-}
+  // set up DAC on big board
+  // timer interrupt //////////////////////////
+    // Set up timer2 on,  interrupts, internal clock, prescalar 1, toggle rate
+    // at 30 MHz PB clock 60 counts is two microsec
+    // 400 is 100 ksamples/sec
+    // 2000 is 20 ksamp/sec
+    OpenTimer2(T2_ON | T2_SOURCE_INT | T2_PS_1_1, 400);
 
-/*
- * setServoAngles sets the servo angles according to angleToSail. This is mostly
- * copied from previous algorithm.
- * TODO: check logic, test
- */
-void setServoAngles(double angleToSail) {
-  
-    // calculate angle of attack for sail angle
-    double angleOfAttack;
-    if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
-        angleOfAttack = -15;
-    else
-        angleOfAttack = 15;
+    // set up the timer interrupt with a priority of 2
+    ConfigIntTimer2(T2_INT_ON | T2_INT_PRIOR_2);
+    mT2ClearIntFlag(); // and clear the interrupt flag
+
+    // SCK2 is pin 26 
+    // SDO2 (MOSI) is in PPS output group 2, could be connected to RB5 which is pin 14
+    PPSOutput(2, RPB5, SDO2);
+
+    // control CS for DAC
+    mPORTBSetPinsDigitalOut(BIT_4);
+    mPORTBSetBits(BIT_4);
+
+    // divide Fpb by 2, configure the I/O ports. Not using SS in this example
+    // 16 bit transfer CKP=1 CKE=1
+    // possibles SPI_OPEN_CKP_HIGH;   SPI_OPEN_SMP_END;  SPI_OPEN_CKE_REV
+    // For any given peripherial, you will need to match these
+    // clk divider set to 2 for 20 MHz
+    SpiChnOpen(SPI_CHANNEL2, SPI_OPEN_ON | SPI_OPEN_MODE16 | SPI_OPEN_MSTEN | SPI_OPEN_CKE_REV , 8);
+  // end DAC setup
     
-    double offset = sensorData->boat_direction - angleToSail;
-    double tail_angle = sensorData->wind_dir + offset;
-    double sail_angle = tail_angle + angleOfAttack;
+  // === config threads ==========
+  // turns OFF UART support and debugger pin, unless defines are set
+  PT_setup();
 
-    tail_angle = (double)((((int)tail_angle%360)+360)%360);
-    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+  // === setup system wide interrupts  ========
+  INTEnableSystemMultiVectoredInt();
 
-    //Convert sail and tail from wrt north to wrt boat
-    sail_angle = sail_angle - sensorData->boat_direction;
-    tail_angle = tail_angle - sensorData->boat_direction;
+  // init the threads
+  PT_INIT(&pt_timer);
 
-    // convert sail to 0-360
-    sail_angle = (double)((((int)sail_angle%360)+360)%360);
+  // init the display
+  // NOTE that this init assumes SPI channel 1 connections
+  tft_init_hw();
+  tft_begin();
+  tft_fillScreen(ILI9340_BLACK);
+  //240x320 vertical display
+  tft_setRotation(0); // Use tft_setRotation(1) for 320x240
 
-    // convert tail to -180-180
-    tail_angle = (double)((((int)tail_angle%360)+360)%360);
-    while (tail_angle> 180) {tail_angle -= 180;}
+  // seed random color
+  srand(1);
+  
+  initSensors();
+  init_servos();
+  
+  // Timer 1 interrupt for up time
+  CloseTimer1();
+  OpenTimer1( T1_ON | T1_PS_1_8 | T1_SOURCE_INT, 0x1387);
+  ConfigIntTimer1(T1_INT_ON | T1_INT_PRIOR_7);
+  mT1SetIntPriority(7);
+  mT1ClearIntFlag();
+  mT1IntEnable(1);
+  
+  // round-robin scheduler for threads
+  while (1){
+      PT_SCHEDULE(protothread_timer(&pt_timer));
+      }
+  } // main
 
-    sensorData->sailAngleBoat = sail_angle;
-    sensorData->tailAngleBoat = tail_angle;
-
-    setSailServoAngle(sail_angle);
-    setTailServoAngle(sail_angle, tail_angle);
-}
-
-/* Every 1ms, update timer */
-void __ISR( _TIMER_3_VECTOR, IPL7AUTO) T3Interrupt(void) {
-    sensorData->msec += 1;
-    if (sensorData->msec > 1000) {
-        sensorData->msec -= 1000;
-        sensorData->sec += 1;
-    }
-    if (sensorData->sec > 60) {
-        sensorData->sec -= 60;
-        sensorData->min += 1;
-    }
-    if (sensorData->min > 60) {
-        sensorData->min -= 60;
-        sensorData->hour += 1;
-    }
-    mT3ClearIntFlag();
-}
+// === end  ======================================================
