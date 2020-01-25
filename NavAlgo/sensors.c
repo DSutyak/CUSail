@@ -13,6 +13,7 @@
 #include "nmea/nmea.h"
 #include <string.h>
 #include <peripheral/legacy/i2c_legacy.h>
+//#include "i2c_helper.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
