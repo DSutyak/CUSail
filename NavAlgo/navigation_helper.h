@@ -14,6 +14,8 @@ void setOrigin(coord_t startPoint);
 /*Converts coordinate in latitude and longitude to xy*/
 coord_xy xyPoint(coord_t latlong);
 
+void navigationInit();
+
 /*finds the distance between two xy points*/
 double xyDist(coord_xy point1, coord_xy point2);
 

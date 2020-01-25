@@ -14,4 +14,6 @@ build/default/production/_ext/1472/sensors.o:  \
 ../nmea/generator.h  \
 ../nmea/parse.h  \
 ../nmea/parser.h  \
- ../nmea/context.h 
+ ../nmea/context.h  \
+../i2c_helper.h  \
+../tft_master.h 

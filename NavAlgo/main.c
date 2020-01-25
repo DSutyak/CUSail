@@ -40,7 +40,7 @@ volatile unsigned int DAC_data ;// output value
 volatile SpiChannel spiChn = SPI_CHANNEL2 ;	// the SPI channel to use
 volatile int spiClkDiv = 2; // 20 MHz max speed for this DAC
 
-void __ISR(_TIMER_2_VECTOR, ipl2) Timer2Handler(void)
+void __ISR(_TIMER_2_VECTOR, IPL2AUTO) Timer2Handler(void)
 {
     mT2ClearIntFlag();
     
@@ -87,6 +87,7 @@ static PT_THREAD (protothread_timer(struct pt *pt))
      // set up LED to blink
 //     mPORTASetBits(BIT_0 );	//Clear bits to ensure light is off.
 //     mPORTASetPinsDigitalOut(BIT_0 );    //Set port as output
+     navigationInit();
       while(1) {
         // yield time 1 second
         PT_YIELD_TIME_msec(500);
@@ -104,6 +105,7 @@ static PT_THREAD (protothread_timer(struct pt *pt))
         sprintf(buffer,"%d", (int) testAngle);
         testAngle = (testAngle + 1) % 180;
         tft_writeString(buffer);
+        nav();
         // NEVER exit while
       } // END WHILE(1)
   PT_END(pt);

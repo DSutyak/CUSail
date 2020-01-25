@@ -42,7 +42,7 @@ void readAnemometer(void);
 
 void readGPS(void);
 
-void readLIDAR(void);
+float readLIDAR(void);
 
 long msTime(void);
 

@@ -1,21 +1,25 @@
 #include <math.h>
+#include <stdlib.h>
 #include "sensors.h"
 #include "coordinates.h"
 
-coord_xy waypoints[];
+#define waypointTotal 2
 
-coord_t origin;
+coord_xy origin;
 double latOffset;
 double longOffset;
 double longScale;
+double detectionRadius = 5.0;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
-
+coord_t rawWaypoints[waypointTotal];
+coord_xy waypoints[waypointTotal];
+int currentWaypoint;
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
-    origin.latitude = (double) 0;
-    origin.longitude = (double) 0;
+    origin.x = (double) 0;
+    origin.y = (double) 0;
     longOffset = startPoint.longitude; //used to generate X coordinate
     latOffset = startPoint.latitude; //used to generate Y coordinate
     longScale = cos(latOffset * M_PI/180);  //scaling factor to account for changing distance between longitude lines
@@ -31,6 +35,20 @@ coord_xy xyPoint(coord_t latlong){
     pt.y = y;
     return pt;
 }
+
+void navigationInit() {
+    rawWaypoints[0].latitude = 42.445457;
+    rawWaypoints[0].longitude = -76.484322;
+    rawWaypoints[1].latitude = 42.444259;
+    rawWaypoints[1].longitude = -76.484435;
+    currentWaypoint = 0;
+    setOrigin(rawWaypoints[0]);
+    int i;
+    for(i = 0; i < waypointTotal; i++) {
+        waypoints[i] = xyPoint(rawWaypoints[i]); 
+    }
+}
+
 /*This function calculate (x,y) as defined in the paper "Autonomous Sailboat Navigation for Short Course Racing"*/
 coord_xy xyPoint2(coord_t latlong){
     double x = radEarth * cos(latlong.latitude - latOffset) * M_PI/180 * (latlong.longitude - longOffset);
@@ -171,7 +189,7 @@ double fPolar (double windSpeed, double angle) {
 double calculateAngle() {
     // initializing variables for calculations
     coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
-    coord_xy targetPosition = find_closest_waypoint(boatPosition, waypoints); // initialize T
+    coord_xy targetPosition = waypoints[currentWaypoint]; // initialize T
     coord_xy boatTargetDifference = diff (targetPosition, boatPosition); // initialize t
     double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
     double boat_heading = sensorData->boat_direction; // initialize phi(b))
@@ -267,4 +285,13 @@ void setServoAngles(double angleToSail) {
 
     setSailServoAngle(sail_angle);
     setTailServoAngle(sail_angle, tail_angle);
+}
+
+void nav() {
+    coord_xy pos = {sensorData->x, sensorData->y};
+    if(xyDist(pos, waypoints[currentWaypoint]) < detectionRadius) {
+        currentWaypoint = (currentWaypoint+1)%waypointTotal;
+    }
+    double nextAngle = calculateAngle();
+    setServoAngles(nextAngle);
 }

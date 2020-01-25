@@ -13,7 +13,7 @@
 #include "nmea/nmea.h"
 #include <string.h>
 #include <peripheral/legacy/i2c_legacy.h>
-//#include "i2c_helper.h"
+#include "i2c_helper.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
@@ -89,10 +89,11 @@ void initSensors(void) {
     ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
     TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output for SS
     PORTBbits.RB3 = 1; // set SS high (active low)
-//    
-//    // LiDAR (I2C)
-//    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
-//	OpenI2C1( I2C_ON, 2081);
+    
+    // LiDAR (I2C)
+    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
+	OpenI2C1( I2C_ON, 0x02C);
+    //i2c_init(0x2C, )
 //    
 //    panAngle = 0;
 //    setPanServoAngle(panAngle);
@@ -238,35 +239,16 @@ void readGPS(void) {
     sensorData->longi = info->lon;
 }
 
-void readLIDAR() {
-    // TODO set pan and tilt
-    unsigned char data[2];
-    unsigned char *readData;
-    readData = data;
+// TODO set pan and tilt as needed
+float readLIDAR() {
+    char *data;
+    data = i2c_read(DIST_LOC);
     
-    StartI2C1();
-	IdleI2C1();
-    
-    MasterWriteI2C1(0x66 | 0);
-    IdleI2C1();
-    MasterWriteI2C1(0);
-    IdleI2C1();
-    
-    RestartI2C1();
-    delay_us(10);
-    IdleI2C1();
-    MasterWriteI2C1(0x66 | 1 ); //transmit read command
-	IdleI2C1();
-    MastergetsI2C1(2, readData, 20);
-    IdleI2C1();
-    
-    StopI2C1();
-	IdleI2C1();
-    
-    // distance in cm
-    float distance = (float)((int) data[0] * 256 + (int) data[1])/100;
+    // distance in m
+    float distance = (float)(*data * 256 + *(data + 1))/100;
     
     //TODO do something with the distance/make a map
+    return distance;
 }
 
 /* return the time in milliseconds */
