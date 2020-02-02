@@ -1,6 +1,8 @@
 /* ************************************************************************** */
 /** Servo library - NEEDS MORE TESTING
 /* ************************************************************************** */
+#define _SUPPRESS_PLIB_WARNING // removes outdated plib warning
+#define _DISABLE_OPENADC10_CONFIGPORT_WARNING
 
 #include <plib.h>
 #include "servo.h"
