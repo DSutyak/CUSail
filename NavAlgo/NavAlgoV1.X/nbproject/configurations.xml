@@ -15,6 +15,7 @@
       <itemPath>../tft_gfx.h</itemPath>
       <itemPath>../tft_master.h</itemPath>
       <itemPath>../i2c_helper.h</itemPath>
+      <itemPath>../test.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -43,6 +44,7 @@
       <itemPath>../servo.c</itemPath>
       <itemPath>../tft_gfx.c</itemPath>
       <itemPath>../tft_master.c</itemPath>
+      <itemPath>../test.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

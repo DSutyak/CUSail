@@ -21,6 +21,8 @@
 #include "navigation_helper.h"
 #include "coordinates.h"
 
+#include "test.h"
+
 
 // string buffer
 char buffer[60];
@@ -83,6 +85,7 @@ static PT_THREAD (protothread_timer(struct pt *pt))
      //tft_writeString("Current Wind Speed:\n");
      //tft_writeString("Pulses so far:\n");
      tft_writeString("Testing Angle:\n");
+     //tft_writeString("LiDAR Distance:\n");
      //tft_writeString("Pitch, Roll, Yaw:\n");
      // set up LED to blink
 //     mPORTASetBits(BIT_0 );	//Clear bits to ensure light is off.
@@ -90,13 +93,12 @@ static PT_THREAD (protothread_timer(struct pt *pt))
      navigationInit();
       while(1) {
         // yield time 1 second
-        PT_YIELD_TIME_msec(500);
+        PT_YIELD_TIME_msec(2000);
         // draw sys_time
         tft_fillRoundRect(0,10, 100, 14, 1, ILI9340_BLACK);// x,y,w,h,radius,color
         tft_setCursor(0, 10);
         tft_setTextColor(ILI9340_YELLOW); tft_setTextSize(2);
-        readAnemometer();
-        sys_time_seconds++;
+        //readAnemometer();
         //sprintf(buffer,"%d", (int) sensorData->wind_dir);
         //sprintf(buffer,"%f", sensorData->wind_speed);
         //sprintf(buffer,"%d", (int) numPulses);
@@ -104,8 +106,10 @@ static PT_THREAD (protothread_timer(struct pt *pt))
         testServo(testAngle);
         sprintf(buffer,"%d", (int) testAngle);
         testAngle = (testAngle + 1) % 180;
+//        float distance = readLIDAR();
+//        sprintf(buffer,"%f\n", distance);
         tft_writeString(buffer);
-        nav();
+        //nav();
         // NEVER exit while
       } // END WHILE(1)
   PT_END(pt);

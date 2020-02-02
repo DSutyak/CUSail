@@ -10,11 +10,10 @@
 #define MAX_SERVO_DUTY 5000 // 2 ms (TODO experiment with this)
 
 void init_servos(void) {
-    int neutral = (MIN_SERVO_DUTY + MAX_SERVO_DUTY) / 2;
-    OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, neutral, neutral); // Tail Servo
-    OpenOC2(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, neutral, neutral); // Sail Servo
-    OpenOC3(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, neutral, neutral); // Pan Servo
-    OpenOC4(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, neutral, neutral); // Tilt Servo
+    OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
+    OpenOC2(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Sail Servo
+    OpenOC3(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Pan Servo
+    OpenOC4(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tilt Servo
     
     // Fpb = SYS_FREQ = 40Mhz
     // Timer Prescale = 16
@@ -23,8 +22,8 @@ void init_servos(void) {
     OpenTimer3(T3_ON | T3_SOURCE_INT | T3_PS_1_16, 49999);
     
     // set PPS to configure pins (subject to change)
-    PPSOutput(1, RPA0, OC1);    //OC1 is PPS Group 1, maps to RPA0 (pin 2)
-    PPSOutput(2, RPA1, OC2);    //OC2 is PPS Group 2, maps to RPA1 (pin 3)
+    PPSOutput(1, RPB4, OC1);    //OC1 is PPS Group 1, maps to RPB4
+    PPSOutput(2, RPB5, OC2);    //OC2 is PPS Group 2, maps to RPB5
     PPSOutput(4, RPA3, OC3);    //OC3 is PPS Group 4, maps to RPA3 (pin 10)
     PPSOutput(3, RPA2, OC4);    //OC4 is PPS Group 3, maps to RPA2 (pin 9)
 }

@@ -12,16 +12,13 @@
 #include <math.h>
 #include "nmea/nmea.h"
 #include <string.h>
-#include <peripheral/legacy/i2c_legacy.h>
 #include "i2c_helper.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
 uint32_t clock_rate = 40000000;
 
-float angleCorrection = -26; //Big sail angle correction
 float averageWeighting = 0.0625;
-
 float prevSinWind = sin(270);
 float prevCosWind = cos(270);
 float prevWindDirection = 270;
@@ -34,13 +31,6 @@ int prevPulseHr = 0;
 
 data_t* sensorData;
 
-// LiDAR stuff
-int lidarData[180];
-int panAngle;
-int tiltAngle;
-
-// TESTING
-volatile int numPulses = 0;
 
 /*sensor setup*/
 void initSensors(void) {    
@@ -83,22 +73,9 @@ void initSensors(void) {
     
     EnableADC10(); // Enable the ADC
     
-    //TODO Initialize SPI (Check this for clock rate)
-    //SpiChnOpen(SPI_CHANNEL1, SPI_OPEN_ON | SPI_OPEN_MODE16 | SPI_OPEN_MSTEN | SPI_OPEN_CKE_REV , 8);
-    //OpenSPI1(SPI_MODE8_ON|SPI_SMP_ON|MASTER_ENABLE_ON|SEC_PRESCAL_2_1|PRI_PRESCAL_4_1, SPI_ENABLE);
-    ANSELBbits.ANSB3 = 0; // enable RB3 (pin 7) as digital for SS
-    TRISBbits.TRISB3 = 0; // enable RB3 (pin 7) as output for SS
-    PORTBbits.RB3 = 1; // set SS high (active low)
-    
-    // LiDAR (I2C)
-    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 9600) - 2.
-	OpenI2C1( I2C_ON, 0x02C);
-    //i2c_init(0x2C, )
-//    
-//    panAngle = 0;
-//    setPanServoAngle(panAngle);
-//    tiltAngle = 90;
-//    setTiltServoAngle(tiltAngle);
+    // LiDAR and IMU (I2C)
+    // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 300K) - 2.
+	OpenI2C1( I2C_ON, 65);
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
@@ -140,40 +117,18 @@ void endianSwap(int8_t temp[4]) {
   temp[2] = myTemp;
 }
 
-// check this (SS, etc.)
-uint8_t readSPI(uint8_t trans) {
-    PORTBbits.RB3 = 0; // set SS low
-    delay_ms(1);
-    putcSPI1(trans);
-    uint8_t result = getcSPI1();
-    delay_ms(1);
-    PORTBbits.RB3 = 1; // set SS high
-    return result;
-}
-
 /* read from the IMU */
 void readIMU(void) {
-    uint8_t result = readSPI(0x01);
-    result = readSPI(0xF6);
-    delay_ms(1);
+    char *data;
+    data = i2c_read_imu();
     
-    //send command to read Euler angles
-    result = readSPI(0x01);
-    
-    // get status from IMU, wait until ready to transfer data
-    result = readSPI(0xFF);
-    while (result != 0x01) {
-        delay_ms(1);
-        result = readSPI(0xFF);
-    }
-    
-    // when ready, read the pitch roll and yaw as a length 12 array of bytes
     int i;
     int j;
+    int k = 0;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 4; j++) {
-            imu_data[i].b[j] = readSPI(0xFF);
-            delay_ms(1);
+            imu_data[i].b[j] = data[k];
+            k++;
         }
     }
     
@@ -203,7 +158,6 @@ void readAnemometer(void) {
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
-    //sensorData->wind_dir = angle;
     
     //get angle with respect to North
     float wind_wrtN = ((int)(angle + sensorData->sailAngleBoat))%360;
@@ -242,10 +196,10 @@ void readGPS(void) {
 // TODO set pan and tilt as needed
 float readLIDAR() {
     char *data;
-    data = i2c_read(DIST_LOC);
+    data = i2c_read_lidar();
     
     // distance in m
-    float distance = (float)(*data * 256 + *(data + 1))/100;
+    float distance = (float)(data[0] * 256 + data[1])/100;
     
     //TODO do something with the distance/make a map
     return distance;
@@ -258,7 +212,6 @@ long msTime(void) {
 
 /* on a rising edge, count that a pulse occurred, approx wind speed */
 void __ISR( _EXTERNAL_0_VECTOR, IPL7AUTO) INT0Interrupt(void) {
-    numPulses++;
     if (prevPulseMS != -1) {
         long currentTime = msTime();
         long prevTime = prevPulseMS + prevPulseS * 1000 + prevPulseMin * 60 * 1000 + prevPulseHr * 60 * 60 * 1000;
