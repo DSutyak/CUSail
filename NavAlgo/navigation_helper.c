@@ -3,8 +3,6 @@
 #include "sensors.h"
 #include "coordinates.h"
 
-#define waypointTotal 2
-
 coord_xy origin;
 double latOffset;
 double longOffset;
@@ -12,8 +10,9 @@ double longScale;
 double detectionRadius = 5.0;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
-coord_t rawWaypoints[waypointTotal];
-coord_xy waypoints[waypointTotal];
+int waypointTotal = 2;
+coord_t *rawWaypoints;
+coord_xy *waypoints;
 int currentWaypoint;
 
 /*Creates origin for XY plane and scales to meters*/
@@ -37,6 +36,8 @@ coord_xy xyPoint(coord_t latlong){
 }
 
 void navigationInit() {
+    rawWaypoints = (coord_t *) malloc(waypointTotal * sizeof(coord_t));
+    waypoints = (coord_xy *) malloc(waypointTotal * sizeof(coord_xy));
     rawWaypoints[0].latitude = 42.445457;
     rawWaypoints[0].longitude = -76.484322;
     rawWaypoints[1].latitude = 42.444259;
@@ -114,20 +115,96 @@ coord_xy middlePoint(coord_xy point1, coord_xy point2){
 float convertto360(float angle){
     return (float)((((int)angle%360)+360)%360);
 }
+/*Finds a waypoint given the bouy, the waypoint NOT USED to generate the angles provided, the rounding distance,
+ * and the clockwise and counterclockwise angles from the buoy. 
+ * Example: If you are generating the first waypoint in rounding a buoy, you will supply the buoy's coordinate,
+ * the first waypoint after the buoy is done being rounded, the rounding distance, and the two potential
+ * desired angles of entry (the angle of the vector between the preceding waypoint and the buoy +- 90).
+ * If you are generating the middle waypoint, supply buoy as target and NULL as angle2.
+ */
+coord_xy find_rounding_waypoint(coord_xy buoy, coord_xy target, int rounding_dist, double angle1, double angle2){
+    //do some trig here
+    //hypotenuse = rounding dist
+    double dx_clockwise;
+    double dy_clockwise;
+    double angle1_rad;
+    if (((int)angle1)/90 % 2 == 0){
+        angle1_rad = angle1 * M_PI / 180.0;
+        dx_clockwise = rounding_dist * sin(angle1_rad) * 180.0 /M_PI;
+        dy_clockwise = rounding_dist * cos(angle1_rad) * 180.0 /M_PI;
+    }
+    else{
+        angle1_rad = angle1 * M_PI / 180.0;
+        dx_clockwise = rounding_dist * cos(angle1_rad) * 180.0 /M_PI;
+        dy_clockwise = rounding_dist * sin(angle1_rad) * 180.0 /M_PI;
+    }
+    coord_xy clockwise_point = {buoy.x+dx_clockwise,buoy.y+dy_clockwise};
+    if (angle2 == NULL){
+        return clockwise_point;
+    }
+    
+    double angle2_rad;
+    double dx_cntrclockwise;
+    double dy_cntrclockwise;
+    
+    if (((int)angle2)/90 % 2 == 0){
+        angle2_rad = angle2 * M_PI / 180.0;
+        dx_cntrclockwise = rounding_dist * sin(angle2_rad) * 180.0 /M_PI;
+        dy_cntrclockwise = rounding_dist * cos(angle2_rad) * 180.0 /M_PI;
+    }
+    else{
+        angle2_rad = angle2 * M_PI / 180.0;
+        dx_cntrclockwise = rounding_dist * cos(angle2_rad) * 180.0 /M_PI;
+        dy_cntrclockwise = rounding_dist * sin(angle2_rad) * 180.0 /M_PI;
+    }
+    coord_xy cntrclockwise_point = {buoy.x+dx_cntrclockwise,buoy.y+dy_cntrclockwise};
+    //return point on opposite side of target, such that we go around the buoy instead of just getting close
+    if (xyDist(clockwise_point, target) >= xyDist(cntrclockwise_point, target)){
+        return clockwise_point;
+    }
+    else{
+        return cntrclockwise_point;
+    }
+}
 
-// finds closest way point to current location given array of way points
-coord_xy find_closest_waypoint(coord_xy c, coord_xy waypoints[]) {
-    double min_distance = xyDist(c, waypoints[0]);
-    coord_xy min_waypoint = waypoints[0];
+void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, int preceding_idx, int rounding_dist){
+    double prec_angle = angleToTarget(preceding_wp, buoy);
+    
+    double clockwise_start_angle = (prec_angle + 90);
+    clockwise_start_angle = clockwise_start_angle >= 360 ? clockwise_start_angle - 360 : clockwise_start_angle;
+    
+    double cntrclockwise_start_angle = (prec_angle - 90);
+    cntrclockwise_start_angle = cntrclockwise_start_angle < 0 ? clockwise_start_angle + 360 : cntrclockwise_start_angle;
+    
+    coord_xy first_point = find_rounding_waypoint(buoy, succeeding_wp, rounding_dist, clockwise_start_angle, cntrclockwise_start_angle);
+    
+    double succ_angle = angleToTarget(buoy, succeeding_wp);
+    
+    double clockwise_end_angle = (prec_angle + 90);
+    clockwise_end_angle = clockwise_start_angle >= 360 ? clockwise_start_angle - 360 : clockwise_start_angle;
+    
+    double cntrclockwise_end_angle = (prec_angle - 90);
+    cntrclockwise_end_angle = cntrclockwise_start_angle < 0 ? clockwise_start_angle + 360 : cntrclockwise_start_angle;
+    
+    coord_xy last_point = find_rounding_waypoint(buoy, succeeding_wp, rounding_dist, clockwise_end_angle, cntrclockwise_end_angle);
+    
+    double midpoint_angle = (angleToTarget(buoy, first_point) + angleToTarget(buoy, last_point))/2;
+    coord_xy mid_point = find_rounding_waypoint(buoy, buoy, rounding_dist, midpoint_angle, NULL);
+    
+    //realloc waypoint array with 3 points following preceding_idx
+    waypointTotal+=3;
+    coord_xy *new_waypoint_array = (coord_xy *) malloc((waypointTotal) * sizeof(coord_xy));
     int i;
-    for(i = 1; i < sizeof(waypoints) / sizeof(coord_xy); i++) {
-        double dist = xyDist(c, waypoints[i]);
-        if(dist < min_distance) {
-            min_distance = dist;
-            min_waypoint = waypoints[i];
+    for (i = 0; i < waypointTotal; i++){
+        new_waypoint_array[i] = waypoints[i];
+        if (i == preceding_idx){
+            new_waypoint_array[i+1] = first_point;
+            new_waypoint_array[i+2] = mid_point;
+            new_waypoint_array[i+3] = last_point;
         }
     }
-    return min_waypoint;
+    free(waypoints);
+    waypoints = new_waypoint_array;
 }
 
 char* find_point_of_sail (double angle) {
