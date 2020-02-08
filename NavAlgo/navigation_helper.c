@@ -180,11 +180,11 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
     
     double succ_angle = angleToTarget(buoy, succeeding_wp);
     
-    double clockwise_end_angle = (prec_angle + 90);
-    clockwise_end_angle = clockwise_start_angle >= 360 ? clockwise_start_angle - 360 : clockwise_start_angle;
+    double clockwise_end_angle = (succ_angle + 90);
+    clockwise_end_angle = clockwise_end_angle >= 360 ? clockwise_end_angle - 360 : clockwise_end_angle;
     
-    double cntrclockwise_end_angle = (prec_angle - 90);
-    cntrclockwise_end_angle = cntrclockwise_start_angle < 0 ? clockwise_start_angle + 360 : cntrclockwise_start_angle;
+    double cntrclockwise_end_angle = (succ_angle - 90);
+    cntrclockwise_end_angle = cntrclockwise_end_angle < 0 ? clockwise_end_angle + 360 : cntrclockwise_end_angle;
     
     coord_xy last_point = find_rounding_waypoint(buoy, succeeding_wp, rounding_dist, clockwise_end_angle, cntrclockwise_end_angle);
     
