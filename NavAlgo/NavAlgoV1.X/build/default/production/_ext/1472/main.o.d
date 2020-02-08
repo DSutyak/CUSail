@@ -8,4 +8,5 @@ build/default/production/_ext/1472/main.o:  \
  ../servo.h  \
 ../navigation_helper.h  \
 ../coordinates.h  \
+../radio.h  \
 ../test.h 

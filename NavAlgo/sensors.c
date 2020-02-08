@@ -38,7 +38,9 @@ void initSensors(void) {
     sensorData = (data_t*) malloc(sizeof(data_t));
     
     // TODO Initialize GPS (Check this)
-    //OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
+    OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
+    PPSInput(3, U1RX, RPB13);
+    PPSOutput(1, RPB3, U1TX);
     
     /* Initialize Analog Inputs for Anemometer Pins (need 2 pins) */
     ANSELA = 0; ANSELB = 0; TRISA = 0xff; // set A as input
@@ -50,7 +52,7 @@ void initSensors(void) {
     // ADC_CLK_AUTO -- Internal counter ends sampling and starts conversion (Auto convert)
     // ADC_AUTO_SAMPLING_ON -- Sampling begins immediately after last conversion completes; SAMP bit is automatically set
     // ADC_AUTO_SAMPLING_OFF -- Sampling begins with AcquireADC10();
-    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_OFF //switch to ON for multiple
+    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON //switch to ON for multiple
 
 	// ADC ref external  | disable offset test | disable scan mode | do 1 sample | use single buf | alternate mode off
 	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_OFF | ADC_SAMPLES_PER_INT_1 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
@@ -61,14 +63,14 @@ void initSensors(void) {
     #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_5 | ADC_CONV_CLK_Tcy2 //ADC_SAMPLE_TIME_15| ADC_CONV_CLK_Tcy2
 
 	// set AN11 as analog input
-    #define PARAM4	ENABLE_AN11_ANA // pin 24 (RB13)
+    #define PARAM4	ENABLE_AN0_ANA | ENABLE_AN3_ANA // pin RA1, RB0
 
 	// do not assign channels to scan
-    #define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+    #define PARAM5	SKIP_SCAN_AN11 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
     
 	// use ground as neg ref for A | use AN11 for input A     
 	// configure to sample AN11
-	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN11 ); // configure to sample AN11
+	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN0 | ADC_CH0_POS_SAMPLEA_AN3 ); // configure to sample AN0, 3
 	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using the parameters defined above
     
     EnableADC10(); // Enable the ADC
@@ -154,7 +156,6 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 // read both wind direction and wind speed
 void readAnemometer(void) {
     int adc_10 = ReadADC10(0); // wind direction?
-    AcquireADC10();
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
@@ -172,6 +173,10 @@ void readAnemometer(void) {
     
     sensorData->wind_dir = wind_wrtN;
     prevWindDirection = wind_wrtN;
+}
+
+int readEncoder(void) {
+    return ReadADC10(1);
 }
 
 void readGPS(void) {

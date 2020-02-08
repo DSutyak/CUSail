@@ -20,6 +20,7 @@
 #include "servo.h"
 #include "navigation_helper.h"
 #include "coordinates.h"
+#include "radio.h"
 
 #include "test.h"
 

@@ -8,14 +8,19 @@
 #include "servo.h"
 #include "sensors.h"
 
-#define MIN_SERVO_DUTY 2500 // 1 ms (TODO experiment with this)
-#define MAX_SERVO_DUTY 5000 // 2 ms (TODO experiment with this)
+#define MIN_SAIL_ANGLE 0
+#define MAX_SAIL_ANGLE 148
+#define MIN_SAIL_DUTY 2125 // 0.850 ms
+#define MAX_SAIL_DUTY 5875 //2.35 ms
+
+#define MIN_TAIL_ANGLE 0
+#define MAX_TAIL_ANGLE 100
+#define MIN_TAIL_DUTY 2500 // 1 ms
+#define MAX_TAIL_DUTY 5000 // 2ms
 
 void init_servos(void) {
     OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
     OpenOC2(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Sail Servo
-    OpenOC3(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Pan Servo
-    OpenOC4(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tilt Servo
     
     // Fpb = SYS_FREQ = 40Mhz
     // Timer Prescale = 16
@@ -26,20 +31,20 @@ void init_servos(void) {
     // set PPS to configure pins (subject to change)
     PPSOutput(1, RPB4, OC1);    //OC1 is PPS Group 1, maps to RPB4
     PPSOutput(2, RPB5, OC2);    //OC2 is PPS Group 2, maps to RPB5
-    PPSOutput(4, RPA3, OC3);    //OC3 is PPS Group 4, maps to RPA3 (pin 10)
-    PPSOutput(3, RPA2, OC4);    //OC4 is PPS Group 3, maps to RPA2 (pin 9)
 }
 
 double map(double value, double fromLow, double fromHigh, double toLow, double toHigh) {
     return ((toHigh - toLow) * (value - fromLow)/(fromHigh-fromLow)) + toLow;
 }
 
-// TODO Test with scope
 void testServo(int angle) {
-    SetDCOC1PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
-    SetDCOC2PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
-    SetDCOC3PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
-    SetDCOC4PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
+    if (angle <= MAX_SAIL_ANGLE && angle >= MIN_SAIL_ANGLE) {
+        SetDCOC2PWM((int) map(angle, MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+    }
+    
+    if (angle <= MAX_TAIL_ANGLE && angle >= MIN_TAIL_ANGLE) {
+        SetDCOC1PWM((int) map(angle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
+    }
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
@@ -67,37 +72,12 @@ void setTailServoAngle(double sail_angle, double tail_angle) {
         newTailAngle=map(newTailAngle,0,30,100,60);
     }
     
-    SetDCOC1PWM((int) map(newTailAngle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
+    SetDCOC1PWM((int) map(newTailAngle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
 }
 
 /* Updates servo position for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
  */
 void setSailServoAngle(double angle) {
-    double new_angle;
-    if (angle <= 90) {
-        new_angle = map(angle, 0, 90, 142, 125);
-    } else if (angle <= 180) {
-        new_angle = map(angle, 90, 180, 125, 108);
-    } else if (angle <= 270) {
-        new_angle = map(angle, 180, 270, 108, 91);
-    } else {
-        new_angle = map(angle, 270, 360, 91, 74);
-    }
-    
-    SetDCOC2PWM((int) map(new_angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
-}
-
-/* Updates servo position for inputted pan servo angle
- * Precondition: Sail Angle in 0.. 180
- */
-void setPanServoAngle(double angle) {
-    SetDCOC3PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
-}
-
-/* Updates servo position for inputted tilt servo angle
- * Precondition: Sail Angle in 0.. 180
- */
-void setTiltServoAngle(double angle) {
-    SetDCOC4PWM((int) map(angle, 0, 180, MIN_SERVO_DUTY, MAX_SERVO_DUTY));
+    SetDCOC2PWM((int) map(angle, MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
 }

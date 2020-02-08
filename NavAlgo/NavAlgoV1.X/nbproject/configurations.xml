@@ -17,6 +17,7 @@
       <itemPath>../i2c_helper.h</itemPath>
       <itemPath>../test.h</itemPath>
       <itemPath>../PID.h</itemPath>
+      <itemPath>../radio.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -47,6 +48,7 @@
       <itemPath>../tft_master.c</itemPath>
       <itemPath>../test.c</itemPath>
       <itemPath>../PID.c</itemPath>
+      <itemPath>../radio.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
