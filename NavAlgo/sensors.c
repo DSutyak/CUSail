@@ -8,11 +8,11 @@
 #include "sensors.h"
 #include "servo.h"
 #include "xc.h"
-#include "delay.h"
 #include <math.h>
-#include "nmea/nmea.h"
 #include <string.h>
+#include <stdio.h>
 #include "i2c_helper.h"
+#include "tft_master.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
@@ -29,55 +29,106 @@ int prevPulseS = 0;
 int prevPulseMin = 0;
 int prevPulseHr = 0;
 
+// UART1 for GPS
+char data[82];
+int rxIdx = 0;
+
 data_t* sensorData;
 
+//testing
+int numPulses = 0;
 
 /*sensor setup*/
 void initSensors(void) {    
     //Initialize data structure
     sensorData = (data_t*) malloc(sizeof(data_t));
     
-    // TODO Initialize GPS (Check this)
-    OpenUART1(UART_EN | UART_NO_PAR_8BIT, UART_RX_ENABLE, 9600);
-    PPSInput(3, U1RX, RPB13);
-    PPSOutput(1, RPB3, U1TX);
+    //Initialize GPS
+    // define setup Configuration 1 for OpenUARTx
+		// Module Enable 
+		// Work in IDLE mode 
+		// Communication through usual pins 
+		// Disable wake-up 
+		// Loop back disabled 
+		// Input to Capture module from ICx pin 
+		// no parity 8 bit 
+		// 1 stop bit 
+		// IRDA encoder and decoder disabled 
+		// CTS and RTS pins are disabled 
+		// UxRX idle state is '1' 
+		// 16x baud clock - normal speed
+	#define config1 	UART_EN | UART_IDLE_CON | UART_RX_TX | UART_DIS_WAKE | UART_DIS_LOOPBACK | UART_DIS_ABAUD | UART_NO_PAR_8BIT | UART_1STOPBIT | UART_IRDA_DIS | UART_DIS_BCLK_CTS_RTS| UART_NORMAL_RX | UART_BRGH_SIXTEEN
+	
+	// define setup Configuration 2 for OpenUARTx
+		// IrDA encoded UxTX idle state is '0'
+		// Enable UxRX pin
+		// Disable UxTX pin
+		// Interrupt on transfer of every character to TSR 
+		// Interrupt on every char received
+		// Disable 9-bit address detect
+		// Rx Buffer Over run status bit clear
+	#define config2		UART_TX_PIN_LOW | UART_RX_ENABLE | UART_TX_DISABLE | UART_INT_TX | UART_INT_RX_CHAR | UART_ADR_DETECT_DIS | UART_RX_OVERRUN_CLEAR
+
+	// Open UART1 with config1 and config2
+	OpenUART1( config1, config2, clock_rate/16/9600-1);
+		
+	// Configure UART1 RX Interrupt with priority 2
+    IFS1bits.U1EIF = 0;
+    IFS1bits.U1RXIF = 0;
+    IFS1bits.U1TXIF = 0;
+    IPC8bits.U1IP = 2;
+    IPC8bits.U1IS = 2;
+    IEC1bits.U1RXIE = 1;
+    IEC1bits.U1TXIE = 0;
+    
+	//ConfigIntUART1(UART_INT_PR2 | UART_RX_INT_EN);
+    PPSInput(3, U1RX, RPA4);
     
     /* Initialize Analog Inputs for Anemometer Pins (need 2 pins) */
-    ANSELA = 0; ANSELB = 0; TRISA = 0xff; // set A as input
+    ANSELA = 0; ANSELB = 0; // set A as input
     
-    CloseADC10();	// ensure the ADC is off before setting the configuration
+// the ADC ///////////////////////////////////////
+    // configure and enable the ADC
+	CloseADC10();	// ensure the ADC is off before setting the configuration
 
 	// define setup parameters for OpenADC10
 	// Turn module on | ouput in integer | trigger mode auto | enable autosample
     // ADC_CLK_AUTO -- Internal counter ends sampling and starts conversion (Auto convert)
     // ADC_AUTO_SAMPLING_ON -- Sampling begins immediately after last conversion completes; SAMP bit is automatically set
     // ADC_AUTO_SAMPLING_OFF -- Sampling begins with AcquireADC10();
-    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON //switch to ON for multiple
+    #define PARAM1  ADC_FORMAT_INTG16 | ADC_CLK_AUTO | ADC_AUTO_SAMPLING_ON //
 
+	// define setup parameters for OpenADC10
 	// ADC ref external  | disable offset test | disable scan mode | do 1 sample | use single buf | alternate mode off
-	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_OFF | ADC_SAMPLES_PER_INT_1 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
-	
+	#define PARAM2  ADC_VREF_AVDD_AVSS | ADC_OFFSET_CAL_DISABLE | ADC_SCAN_ON | ADC_SAMPLES_PER_INT_2 | ADC_ALT_BUF_OFF | ADC_ALT_INPUT_OFF
+        //
+	// Define setup parameters for OpenADC10
     // use peripherial bus clock | set sample time | set ADC clock divider
     // ADC_CONV_CLK_Tcy2 means divide CLK_PB by 2 (max speed)
     // ADC_SAMPLE_TIME_5 seems to work with a source resistance < 1kohm
-    #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_5 | ADC_CONV_CLK_Tcy2 //ADC_SAMPLE_TIME_15| ADC_CONV_CLK_Tcy2
+    #define PARAM3 ADC_CONV_CLK_PB | ADC_SAMPLE_TIME_15 | ADC_CONV_CLK_Tcy 
 
-	// set AN11 as analog input
-    #define PARAM4	ENABLE_AN0_ANA | ENABLE_AN3_ANA // pin RA1, RB0
+	// define setup parameters for OpenADC10
+	// set AN11 and  as analog inputs
+	#define PARAM4	ENABLE_AN11_ANA | ENABLE_AN5_ANA // 
 
-	// do not assign channels to scan
-    #define PARAM5	SKIP_SCAN_AN11 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN4 | SKIP_SCAN_AN5 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
-    
-	// use ground as neg ref for A | use AN11 for input A     
-	// configure to sample AN11
-	SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF | ADC_CH0_POS_SAMPLEA_AN0 | ADC_CH0_POS_SAMPLEA_AN3 ); // configure to sample AN0, 3
+	// define setup parameters for OpenADC10
+    // DO not skip the channels you want to scan
+    // do not specify channels  5 and 11
+	#define PARAM5	SKIP_SCAN_AN0 | SKIP_SCAN_AN1 | SKIP_SCAN_AN2 | SKIP_SCAN_AN3 | SKIP_SCAN_AN4 | SKIP_SCAN_AN6 | SKIP_SCAN_AN7 | SKIP_SCAN_AN8 | SKIP_SCAN_AN9 | SKIP_SCAN_AN10 | SKIP_SCAN_AN12 | SKIP_SCAN_AN13 | SKIP_SCAN_AN14 | SKIP_SCAN_AN15
+
+	// use ground as neg ref for A 
+    // actual channel number is specified by the scan list
+    SetChanADC10( ADC_CH0_NEG_SAMPLEA_NVREF); // 
 	OpenADC10( PARAM1, PARAM2, PARAM3, PARAM4, PARAM5 ); // configure ADC using the parameters defined above
-    
-    EnableADC10(); // Enable the ADC
+
+	EnableADC10(); // Enable the ADC
+  ///////////////////////////////////////////////////////
+
     
     // LiDAR and IMU (I2C)
     // Enable I2C1, BRG = (Fpb 40MHz / 2 / baudrate 300K) - 2.
-	OpenI2C1( I2C_ON, 65);
+	OpenI2C1( I2C_ON, 0x0C2); //65 gives 300K, this is 9600
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
@@ -121,7 +172,7 @@ void endianSwap(int8_t temp[4]) {
 
 /* read from the IMU */
 void readIMU(void) {
-    char *data;
+    unsigned char *data;
     data = i2c_read_imu();
     
     int i;
@@ -141,7 +192,7 @@ void readIMU(void) {
     }
     
     // update sensorData
-    sensorData->boat_direction =  ((imu_data[1].fval)*(180/M_PI));
+    sensorData->boat_direction = ((imu_data[1].fval)*(180/M_PI));
     if (sensorData->boat_direction < 0) {
         sensorData->boat_direction += 360;
     }
@@ -155,7 +206,7 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 
 // read both wind direction and wind speed
 void readAnemometer(void) {
-    int adc_10 = ReadADC10(0); // wind direction?
+    int adc_10 = ReadADC10(0);
     
     int angle = mapInt(adc_10, 0, 1023, 0, 360);
     angle = angle % 360;
@@ -179,34 +230,89 @@ int readEncoder(void) {
     return ReadADC10(1);
 }
 
-void readGPS(void) {
-    int count = -1;
-    char buffer[80];
-    while (DataRdyUART1()) {
-        buffer[count++] = ReadUART1();
+void checkSentence() {
+    static char lat[20];
+    static char longi[20];
+    
+    int latIdx = 0;
+    int longIdx = 0;
+    
+    int east = -1;
+    int north = 1;
+    
+    int valid = 0;
+    
+    // only parse GPGLL sentences (for now)
+    if (data[0] == '$' && data[1] == 'G' && data[2] == 'P' && data[3] == 'G' && 
+            data[4] == 'L' && data[5] == 'L') {
+        int fieldNum = 0; // keep track of how many fields have been parsed
+        int i = 6;
+        int done = 0;
+        
+        while (i < 82 && done == 0) {
+            i++;
+            if (data[i] == ',') {
+                fieldNum++;
+            } else if (fieldNum == 0) {
+                lat[latIdx] = data[i];
+                latIdx++;
+            } else if (fieldNum == 1) {
+                north = (data[i] == 'N') ? 1 : -1;
+            } else if (fieldNum == 2) {
+                longi[longIdx] = data[i];
+                longIdx++;
+            } else if (fieldNum == 3) {
+                east = (data[i] == 'E') ? 1 : -1;
+            } else if (fieldNum == 5 && data[i] == 'A') {
+                valid = 1;
+            }
+        }
+        
+        if (valid) {
+            char lat_deg[2], longi_deg[3], lat_min[10], longi_min[10];
+            
+            lat_deg[0] = lat[0];
+            lat_deg[1] = lat[1];
+            longi_deg[0] = longi[0];
+            longi_deg[1] = longi[1];
+            longi_deg[2] = longi[2];
+            int idx = 0;
+            while (idx < 10) {
+                lat_min[idx] = lat[idx+2];
+                longi_min[idx] = longi[idx+3];
+                idx++;
+            }
+            
+            double lat_dd, longi_dd, lat_mm, longi_mm;
+            lat_dd = atof(lat_deg);
+            longi_dd = atof(longi_deg);
+            lat_mm = atof(lat_min);
+            longi_mm = atof(longi_min);
+            
+            sensorData->lat = north * (lat_dd + lat_mm/60.0);
+            sensorData->longi = east * (longi_dd + longi_mm/60.0);
+        }
     }
-    nmeaINFO *info;
-    nmeaPARSER *parser;
-
-    nmea_zero_INFO(info);
-    nmea_parser_init(parser);
-    
-    nmea_parse(parser, buffer, (int)strlen(buffer), info);
-    nmea_parser_destroy(parser);
-    
-    sensorData->lat = info->lat;
-    sensorData->longi = info->lon;
 }
 
-// TODO set pan and tilt as needed
 float readLIDAR() {
-    char *data;
-    data = i2c_read_lidar();
+    // average three measurements to reduce finickiness
+    unsigned char *data1;
+    data1 = i2c_read_lidar();
+    
+    unsigned char *data2;
+    data2 = i2c_read_lidar();
+    
+    unsigned char *data3;
+    data3 = i2c_read_lidar();
     
     // distance in m
-    float distance = (float)(data[0] * 256 + data[1])/100;
+    float distance1 = (float)(data1[0] * 256 + data1[1])/100;
+    float distance2 = (float)(data2[0] * 256 + data2[1])/100;
+    float distance3 = (float)(data3[0] * 256 + data3[1])/100;
     
-    //TODO do something with the distance/make a map
+    float distance = (distance1 + distance2 + distance3) / 3;
+    
     return distance;
 }
 
@@ -217,10 +323,13 @@ long msTime(void) {
 
 /* on a rising edge, count that a pulse occurred, approx wind speed */
 void __ISR( _EXTERNAL_0_VECTOR, IPL7AUTO) INT0Interrupt(void) {
-    if (prevPulseMS != -1) {
-        long currentTime = msTime();
-        long prevTime = prevPulseMS + prevPulseS * 1000 + prevPulseMin * 60 * 1000 + prevPulseHr * 60 * 60 * 1000;
+    long currentTime = msTime();
+    long prevTime = prevPulseMS + prevPulseS * 1000 + prevPulseMin * 60 * 1000 + prevPulseHr * 60 * 60 * 1000;
+    int thresshold = 10; // simulate filter for noise
     
+    if (prevPulseMS != -1 && currentTime - prevTime > thresshold) {
+        numPulses++; // testing purposes
+            
         float deltaT = (currentTime - prevTime) / 1000.0; // time difference in seconds
     
         float speed = 2 * 2.25 / deltaT; // get time in mph
@@ -229,11 +338,13 @@ void __ISR( _EXTERNAL_0_VECTOR, IPL7AUTO) INT0Interrupt(void) {
         sensorData->wind_speed = speed;
     }
     
-    // update the previous pulse
-    prevPulseMS = sensorData->msec;
-    prevPulseS = sensorData->sec;
-    prevPulseMin = sensorData->min;
-    prevPulseHr = sensorData->hour;
+    if (prevPulseMS == -1 || currentTime - prevTime > thresshold) {
+        // update the previous pulse
+        prevPulseMS = sensorData->msec;
+        prevPulseS = sensorData->sec;
+        prevPulseMin = sensorData->min;
+        prevPulseHr = sensorData->hour;
+    }
     
     mINT0ClearIntFlag();
 }
@@ -255,4 +366,37 @@ void __ISR( _TIMER_1_VECTOR, IPL7AUTO) T1Interrupt(void) {
     }
     
     mT1ClearIntFlag();
+}
+
+// UART 1 interrupt handler
+// it is set at priority level 2
+void __ISR(_UART1_VECTOR, IPL2AUTO) IntUart1Handler(void)
+{
+	// Is this an RX interrupt?
+	if(IFS1bits.U1RXIF)
+	{
+        while (DataRdyUART1()) {
+            char in = (char) ReadUART1();
+        
+            if (in == '$') {
+                rxIdx = 0;
+                data[rxIdx] = in;
+            } else if (rxIdx > 0 && (in == '\r' || in == '\n' || in == '*')) {
+                checkSentence();
+                rxIdx = 82;
+            } else if (rxIdx < 82) {
+                rxIdx++;
+                data[rxIdx] = in;
+            }
+        }
+		
+        // Clear the RX interrupt Flag
+	    IFS1bits.U1RXIF = 0;
+	}
+
+	// We don't care about TX interrupt
+	if (IFS1bits.U1TXIF)
+	{
+		IFS1bits.U1TXIF = 0;
+	}
 }

@@ -4,12 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>../config.h</itemPath>
-      <itemPath>../pt_cornell_1_2_1.h</itemPath>
       <itemPath>../sensors.h</itemPath>
-      <itemPath>../delay.h</itemPath>
       <itemPath>../coordinates.h</itemPath>
-      <itemPath>../nmea/nmea.h</itemPath>
       <itemPath>../servo.h</itemPath>
       <itemPath>../navigation_helper.h</itemPath>
       <itemPath>../tft_gfx.h</itemPath>
@@ -18,6 +14,8 @@
       <itemPath>../test.h</itemPath>
       <itemPath>../PID.h</itemPath>
       <itemPath>../radio.h</itemPath>
+      <itemPath>../pt_cornell_1_2_1.h</itemPath>
+      <itemPath>../config.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -26,29 +24,17 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="NMEA" projectFiles="true">
-        <itemPath>../nmea/context.c</itemPath>
-        <itemPath>../nmea/generate.c</itemPath>
-        <itemPath>../nmea/generator.c</itemPath>
-        <itemPath>../nmea/gmath.c</itemPath>
-        <itemPath>../nmea/info.c</itemPath>
-        <itemPath>../nmea/parse.c</itemPath>
-        <itemPath>../nmea/parser.c</itemPath>
-        <itemPath>../nmea/sentence.c</itemPath>
-        <itemPath>../nmea/time.c</itemPath>
-        <itemPath>../nmea/tok.c</itemPath>
-      </logicalFolder>
       <itemPath>../main.c</itemPath>
       <itemPath>../sensors.c</itemPath>
       <itemPath>../coordinates.c</itemPath>
       <itemPath>../navigation_helper.c</itemPath>
-      <itemPath>../delay.c</itemPath>
       <itemPath>../servo.c</itemPath>
       <itemPath>../tft_gfx.c</itemPath>
       <itemPath>../tft_master.c</itemPath>
       <itemPath>../test.c</itemPath>
       <itemPath>../PID.c</itemPath>
       <itemPath>../radio.c</itemPath>
+      <itemPath>../navtest.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -241,6 +227,7 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="memories.configurationmemory" value="true"/>
         <property key="memories.dataflash" value="true"/>
         <property key="memories.eeprom" value="true"/>

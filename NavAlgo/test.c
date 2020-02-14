@@ -25,15 +25,15 @@ char* testLidar() {
   return buffer;
 }
 
-/**
- * Latitude and longitude
- */
-char* testGPS() {
-  static char buffer[60];
-  readGPS();
-  sprintf(buffer,"lat: %d, long: %d", sensorData->lat, sensorData->longi);
-  return buffer;
-}
+///**
+// * Latitude and longitude
+// */
+//char* testGPS() {
+//  static char buffer[60];
+//  readGPS();
+//  sprintf(buffer,"lat: %d, long: %d", sensorData->lat, sensorData->longi);
+//  return buffer;
+//}
 
 /**
  * Pitch, roll, and yaw (boat heading)

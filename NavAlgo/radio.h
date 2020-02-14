@@ -7,4 +7,6 @@
 
 void initRadio(void);
 
+void transmitString(char *data);
+
 #endif
