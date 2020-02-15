@@ -4,4 +4,5 @@ build/default/production/_ext/1472/navtest.o:  \
  ../servo.h  \
 ../navigation_helper.h  \
 ../coordinates.h  \
-../radio.h 
+../radio.h  \
+ ../tft_master.h 
