@@ -1,7 +1,25 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "sensors.h"
 #include "coordinates.h"
+
+//a struct containing the information on any loops we want in our waypoints
+typedef struct {
+    //index of the waypoint at which the loop begins
+    int start;
+    //index of the waypoint at which the loop ends
+    int end;
+    //pointer to a function that returns true if we loop and false if not
+    //must take no arguments and return a boolean
+    bool (*condition)(void);
+} loop;
+
+//a struct to generate a linked list of loops in the case we need multiple
+typedef struct{
+    loop data;
+    struct loop_node *next;
+} loop_node;
 
 coord_xy origin;
 double latOffset;
@@ -10,10 +28,13 @@ double longScale;
 double detectionRadius = 5.0;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
+
+//change this based on the number of waypoints you have
 int waypointTotal = 2;
 coord_t *rawWaypoints;
 coord_xy *waypoints;
 int currentWaypoint;
+loop_node waypoint_loops = {{NULL, NULL, NULL}, NULL};
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t startPoint){
@@ -203,6 +224,14 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
             new_waypoint_array[i+3] = last_point;
         }
     }
+    loop_node *front = &waypoint_loops;
+    do{
+        if (front->data.start <= preceding_idx && front->data.end > preceding_idx){
+            front->data.end += 3;
+        }
+        front = front->next;
+    } while(front != NULL);
+    
     free(waypoints);
     waypoints = new_waypoint_array;
 }
@@ -364,10 +393,46 @@ void setServoAngles(double angleToSail) {
     setTailServoAngle(sail_angle, tail_angle);
 }
 
+void add_waypoint_loop(int start, int end, bool (*condition)(void)){
+    if (waypoint_loops.data.start == NULL){
+        waypoint_loops.data.start = start;
+        waypoint_loops.data.end = end;
+        waypoint_loops.data.condition = condition;
+        waypoint_loops.next = NULL;
+    }
+//    TODO: evaluate whether or not the memory stuff here actually works
+    else {
+        loop_node *front = &waypoint_loops;
+        while(front->next != NULL){
+            front = front->next;
+        }
+        loop_node next_loop = {{start, end, condition}, NULL};
+        front->next = &next_loop;
+    }
+}
+
+int check_loops(){
+    if(waypoint_loops.data.start == NULL){
+        return (currentWaypoint+1 == waypointTotal)? currentWaypoint : currentWaypoint + 1;
+    }
+    
+    loop_node *front = &waypoint_loops;
+    do{
+        if(currentWaypoint == front->data.end){
+            if (front->data.condition()){
+                return front->data.start;
+            }
+        }
+        front = front->next;
+    }while(front != NULL);
+    
+    return (currentWaypoint+1 == waypointTotal)? currentWaypoint : currentWaypoint + 1;
+}
+
 void nav() {
     coord_xy pos = {sensorData->x, sensorData->y};
     if(xyDist(pos, waypoints[currentWaypoint]) < detectionRadius) {
-        currentWaypoint = (currentWaypoint+1)%waypointTotal;
+        currentWaypoint = check_loops();
     }
     double nextAngle = calculateAngle();
     setServoAngles(nextAngle);
