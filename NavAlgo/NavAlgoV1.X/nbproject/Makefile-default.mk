@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../main.c ../sensors.c ../coordinates.c ../navigation_helper.c ../servo.c ../tft_gfx.c ../tft_master.c ../test.c ../PID.c ../radio.c ../navtest.c
+SOURCEFILES_QUOTED_IF_SPACED=../main.c ../sensors.c ../coordinates.c ../navigation_helper.c ../servo.c ../test.c ../PID.c ../radio.c ../navtest.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/sensors.o ${OBJECTDIR}/_ext/1472/coordinates.o ${OBJECTDIR}/_ext/1472/navigation_helper.o ${OBJECTDIR}/_ext/1472/servo.o ${OBJECTDIR}/_ext/1472/tft_gfx.o ${OBJECTDIR}/_ext/1472/tft_master.o ${OBJECTDIR}/_ext/1472/test.o ${OBJECTDIR}/_ext/1472/PID.o ${OBJECTDIR}/_ext/1472/radio.o ${OBJECTDIR}/_ext/1472/navtest.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/sensors.o.d ${OBJECTDIR}/_ext/1472/coordinates.o.d ${OBJECTDIR}/_ext/1472/navigation_helper.o.d ${OBJECTDIR}/_ext/1472/servo.o.d ${OBJECTDIR}/_ext/1472/tft_gfx.o.d ${OBJECTDIR}/_ext/1472/tft_master.o.d ${OBJECTDIR}/_ext/1472/test.o.d ${OBJECTDIR}/_ext/1472/PID.o.d ${OBJECTDIR}/_ext/1472/radio.o.d ${OBJECTDIR}/_ext/1472/navtest.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/sensors.o ${OBJECTDIR}/_ext/1472/coordinates.o ${OBJECTDIR}/_ext/1472/navigation_helper.o ${OBJECTDIR}/_ext/1472/servo.o ${OBJECTDIR}/_ext/1472/test.o ${OBJECTDIR}/_ext/1472/PID.o ${OBJECTDIR}/_ext/1472/radio.o ${OBJECTDIR}/_ext/1472/navtest.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/sensors.o.d ${OBJECTDIR}/_ext/1472/coordinates.o.d ${OBJECTDIR}/_ext/1472/navigation_helper.o.d ${OBJECTDIR}/_ext/1472/servo.o.d ${OBJECTDIR}/_ext/1472/test.o.d ${OBJECTDIR}/_ext/1472/PID.o.d ${OBJECTDIR}/_ext/1472/radio.o.d ${OBJECTDIR}/_ext/1472/navtest.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/sensors.o ${OBJECTDIR}/_ext/1472/coordinates.o ${OBJECTDIR}/_ext/1472/navigation_helper.o ${OBJECTDIR}/_ext/1472/servo.o ${OBJECTDIR}/_ext/1472/tft_gfx.o ${OBJECTDIR}/_ext/1472/tft_master.o ${OBJECTDIR}/_ext/1472/test.o ${OBJECTDIR}/_ext/1472/PID.o ${OBJECTDIR}/_ext/1472/radio.o ${OBJECTDIR}/_ext/1472/navtest.o
+OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/sensors.o ${OBJECTDIR}/_ext/1472/coordinates.o ${OBJECTDIR}/_ext/1472/navigation_helper.o ${OBJECTDIR}/_ext/1472/servo.o ${OBJECTDIR}/_ext/1472/test.o ${OBJECTDIR}/_ext/1472/PID.o ${OBJECTDIR}/_ext/1472/radio.o ${OBJECTDIR}/_ext/1472/navtest.o
 
 # Source Files
-SOURCEFILES=../main.c ../sensors.c ../coordinates.c ../navigation_helper.c ../servo.c ../tft_gfx.c ../tft_master.c ../test.c ../PID.c ../radio.c ../navtest.c
+SOURCEFILES=../main.c ../sensors.c ../coordinates.c ../navigation_helper.c ../servo.c ../test.c ../PID.c ../radio.c ../navtest.c
 
 
 
@@ -137,18 +137,6 @@ ${OBJECTDIR}/_ext/1472/servo.o: ../servo.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
 	
-${OBJECTDIR}/_ext/1472/tft_gfx.o: ../tft_gfx.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_gfx.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_gfx.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/tft_gfx.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/tft_gfx.o.d" -o ${OBJECTDIR}/_ext/1472/tft_gfx.o ../tft_gfx.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
-	
-${OBJECTDIR}/_ext/1472/tft_master.o: ../tft_master.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_master.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_master.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/tft_master.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/tft_master.o.d" -o ${OBJECTDIR}/_ext/1472/tft_master.o ../tft_master.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
-	
 ${OBJECTDIR}/_ext/1472/test.o: ../test.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/test.o.d 
@@ -203,18 +191,6 @@ ${OBJECTDIR}/_ext/1472/servo.o: ../servo.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/servo.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/servo.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/servo.o.d" -o ${OBJECTDIR}/_ext/1472/servo.o ../servo.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
-	
-${OBJECTDIR}/_ext/1472/tft_gfx.o: ../tft_gfx.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_gfx.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_gfx.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/tft_gfx.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/tft_gfx.o.d" -o ${OBJECTDIR}/_ext/1472/tft_gfx.o ../tft_gfx.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
-	
-${OBJECTDIR}/_ext/1472/tft_master.o: ../tft_master.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_master.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/tft_master.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/tft_master.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -MMD -MF "${OBJECTDIR}/_ext/1472/tft_master.o.d" -o ${OBJECTDIR}/_ext/1472/tft_master.o ../tft_master.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O1  -mdfp=${DFP_DIR}
 	
 ${OBJECTDIR}/_ext/1472/test.o: ../test.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 

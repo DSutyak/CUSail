@@ -5,4 +5,4 @@ build/default/production/_ext/1472/navtest.o:  \
 ../navigation_helper.h  \
 ../coordinates.h  \
 ../radio.h  \
- ../tft_master.h 
+../delay.h 

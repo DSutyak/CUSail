@@ -8,14 +8,14 @@
       <itemPath>../coordinates.h</itemPath>
       <itemPath>../servo.h</itemPath>
       <itemPath>../navigation_helper.h</itemPath>
-      <itemPath>../tft_gfx.h</itemPath>
-      <itemPath>../tft_master.h</itemPath>
       <itemPath>../i2c_helper.h</itemPath>
       <itemPath>../test.h</itemPath>
       <itemPath>../PID.h</itemPath>
       <itemPath>../radio.h</itemPath>
       <itemPath>../pt_cornell_1_2_1.h</itemPath>
       <itemPath>../config.h</itemPath>
+      <itemPath>../delay.h</itemPath>
+      <itemPath>../navtest.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -29,8 +29,6 @@
       <itemPath>../coordinates.c</itemPath>
       <itemPath>../navigation_helper.c</itemPath>
       <itemPath>../servo.c</itemPath>
-      <itemPath>../tft_gfx.c</itemPath>
-      <itemPath>../tft_master.c</itemPath>
       <itemPath>../test.c</itemPath>
       <itemPath>../PID.c</itemPath>
       <itemPath>../radio.c</itemPath>

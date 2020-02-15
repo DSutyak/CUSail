@@ -13,6 +13,8 @@
 #include "navigation_helper.h"
 #include "coordinates.h"
 #include "radio.h"
+#include "navtest.h"
+#include "delay.h"
 
 
 // string buffer
@@ -25,6 +27,17 @@ extern data_t* sensorData;
 // thread control structs
 // note that UART input and output are threads
 static struct pt pt_sail;
+
+// delay function implementation (needs config file)
+void delay_ms(unsigned int ms) {
+    delay_us(ms * 1000);
+}
+
+void delay_us(unsigned int us) {
+    us *= sys_clock / 1000000 / 2;
+    _CP0_SET_COUNT(0); // Set Core Timer count to 0
+    while (us > _CP0_GET_COUNT());
+}
 
 // === Sail Thread =================================================
 // read from IMU, Anemometer, then calculate servo angles
@@ -61,8 +74,8 @@ void main(void) {
   // init the threads
   PT_INIT(&pt_sail);
   
-  initSensors();
-  initServos();
+//  initSensors();
+//  initServos();
   initRadio();
  
   // Timer 1 interrupt for up time
@@ -73,10 +86,11 @@ void main(void) {
   mT1ClearIntFlag();
   mT1IntEnable(1);
   
-  // round-robin scheduler for threads
-  while (1){
-      PT_SCHEDULE(protothread_sail(&pt_sail));
-      }
+  testAllOff();
+//  // round-robin scheduler for threads
+//  while (1){
+//      PT_SCHEDULE(protothread_sail(&pt_sail));
+//      }
   } // main
 
 // === end  ======================================================

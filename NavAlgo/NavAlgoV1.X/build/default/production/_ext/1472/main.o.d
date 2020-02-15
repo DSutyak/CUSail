@@ -7,5 +7,5 @@ build/default/production/_ext/1472/main.o:  \
 ../navigation_helper.h  \
  ../coordinates.h  \
 ../radio.h  \
-../navtest.c  \
-../tft_master.h 
+../navtest.h  \
+../delay.h 
