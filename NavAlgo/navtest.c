@@ -104,34 +104,44 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=0; // test case 1
+    nav();
 
-    /*
+    
     sensorData->lat=42.444259;
     sensorData->longi=-76.484435;
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=60; // test case 2
+    nav();
+    
     sensorData->lat=42.444259;
     sensorData->longi=-76.484435;
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=120; // test case 3
+    nav();
+    
     sensorData->lat=42.444259
     sensorData->longi=-76.484435
     sensorData->boat_direction=0
     sensorData->wind_speed=5
     sensorData->wind_dir=180 // test case 4
+    nav();
+    
     sensorData->lat=42.444259
     sensorData->longi=-76.484435
     sensorData->boat_direction=0
     sensorData->wind_speed=5
     sensorData->wind_dir=240 // test case 5
+    nav():
+        
     sensorData->lat=42.444259
     sensorData->longi=-76.484435
     sensorData->boat_direction=0
     sensorData->wind_speed=5
     sensorData->wind_dir=300 // test case 6
-    */
+    nav();
+    
     
     while(1) {
         //PT_YIELD_TIME_msec(2000);
