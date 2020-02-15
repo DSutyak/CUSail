@@ -370,5 +370,8 @@ void nav() {
         currentWaypoint = (currentWaypoint+1)%waypointTotal;
     }
     double nextAngle = calculateAngle();
-    setServoAngles(nextAngle);
+    static char buffR[20];
+    sprintf(buffR, "angle: %f\n", nextAngle);
+    transmitString(buffR);
+    // setServoAngles(nextAngle);
 }
