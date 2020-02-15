@@ -140,6 +140,7 @@ void testGPSOn() {
     
     while(1) {
         //PT_YIELD_TIME_msec(2000);
+        checkSentence();
         nav();
     }
 }
