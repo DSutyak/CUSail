@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "sensors.h"
 #include "coordinates.h"
+#include <stdio.h>
 
 //a struct containing the information on any loops we want in our waypoints
 typedef struct {

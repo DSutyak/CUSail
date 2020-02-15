@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "i2c_helper.h"
-#include "tft_master.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
