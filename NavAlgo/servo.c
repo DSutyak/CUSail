@@ -1,5 +1,5 @@
 /* ************************************************************************** */
-/** Servo library - NEEDS MORE TESTING
+/** Servo library
 /* ************************************************************************** */
 #define _SUPPRESS_PLIB_WARNING // removes outdated plib warning
 #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
@@ -18,7 +18,7 @@
 #define MIN_TAIL_DUTY 2500 // 1 ms
 #define MAX_TAIL_DUTY 5000 // 2ms
 
-void init_servos(void) {
+void initServos(void) {
     OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
     OpenOC2(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Sail Servo
     

@@ -5,7 +5,7 @@
 #ifndef _SERVO_H    /* Guard against multiple inclusion */
 #define _SERVO_H
 
-void init_servos(void);
+void initServos(void);
 
 void setTailServoAngle(double sail_angle, double tail_angle);
 

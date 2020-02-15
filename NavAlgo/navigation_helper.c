@@ -29,6 +29,7 @@ double detectionRadius = 5.0;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
 
+
 //change this based on the number of waypoints you have
 int waypointTotal = 2;
 coord_t *rawWaypoints;
@@ -224,6 +225,7 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
             new_waypoint_array[i+3] = last_point;
         }
     }
+
     loop_node *front = &waypoint_loops;
     do{
         if (front->data.start <= preceding_idx && front->data.end > preceding_idx){
@@ -232,6 +234,7 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
         front = front->next;
     } while(front != NULL);
     
+
     free(waypoints);
     waypoints = new_waypoint_array;
 }
@@ -435,5 +438,8 @@ void nav() {
         currentWaypoint = check_loops();
     }
     double nextAngle = calculateAngle();
-    setServoAngles(nextAngle);
+    static char buffR[20];
+    sprintf(buffR, "angle: %f\n", nextAngle);
+    transmitString(buffR);
+    // setServoAngles(nextAngle);
 }
