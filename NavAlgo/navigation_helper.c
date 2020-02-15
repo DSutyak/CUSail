@@ -374,5 +374,5 @@ void nav() {
     static char buffR[20];
     sprintf(buffR, "angle: %f\n", nextAngle);
     transmitString(buffR);
-    // setServoAngles(nextAngle);
+    setServoAngles(nextAngle);
 }
