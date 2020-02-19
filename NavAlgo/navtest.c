@@ -18,17 +18,15 @@
 #include <string.h>
 #include <stdio.h>
 #include "delay.h"
-//#include "main.c"
 
 uint32_t clock = 40000000;
 
 void testAllOff() {
-    
-    initSensors(); // initializing data as 0s, servos, nav algo
+    transmitString("Disabling Interrupts...\n");
     IEC1bits.U1RXIE = 0;
     mINT0IntEnable(0);
     
-    initServos();
+    transmitString("Initializing Navigation...\n");
     navigationInit();
     
     sensorData->boat_direction = 30; 
@@ -37,6 +35,7 @@ void testAllOff() {
     sensorData->lat=42.444259;
     sensorData->longi=-76.484435;
 
+    transmitString("Test Case 1: ");
     nav(); // run test case 1
     
     sensorData->boat_direction = 0; 
@@ -45,6 +44,7 @@ void testAllOff() {
     sensorData->lat=42.444254;
     sensorData->longi=-76.48266;
 
+    transmitString("Test Case 2: ");
     nav(); // run test case 2
     
     sensorData->boat_direction = 90; 
@@ -53,6 +53,7 @@ void testAllOff() {
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
 
+    transmitString("Test Case 3: ");
     nav(); // run test case 3
     
     sensorData->boat_direction = 30; 
@@ -61,6 +62,7 @@ void testAllOff() {
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
 
+    transmitString("Test Case 4: ");
     nav(); // run test case 4
     
     sensorData->boat_direction = 60; 
@@ -69,15 +71,22 @@ void testAllOff() {
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
 
+    transmitString("Test Case 5: ");
     nav(); // run test case 5
+    
+    transmitString("Finished test cases...\n");
+    
+    while(1) {
+        delay_ms(2000); // idle forever
+    }
 }
 
 void testIMUOn() {
-    initSensors();
+    transmitString("Disabling Interrupts...\n");
     IEC1bits.U1RXIE = 0;
     mINT0IntEnable(0);
     
-    initServos();
+    transmitString("Initializing Navigation...\n");
     navigationInit();
     
     /*testing gps code*/
@@ -89,14 +98,20 @@ void testIMUOn() {
     while(1) {
         delay_ms(2000);
         readIMU();
+        
+        char buffer[80];
+        sprintf(buffer, "roll: %f, pitch: %f, yaw: %f\n", sensorData->roll, sensorData->pitch, sensorData->boat_direction);
+        transmitString(buffer);
+        
         nav();
     }    
 }
 
 void testGPSOn() {
-    initSensors(); // initializing data as 0s, servos, nav algo, gps
+    transmitString("Disabling Interrupts...\n");
     mINT0IntEnable(0);
-    initServos();
+    
+    transmitString("Initializing Navigation...\n");
     navigationInit();
     
     /*testing gps code*/
@@ -106,16 +121,21 @@ void testGPSOn() {
     
     while(1) {
         delay_ms(2000);
-        checkSentence();
+        
+        char buffer[80];
+        sprintf(buffer, "lat: %f, long: %f\n", sensorData->lat, sensorData->longi);
+        transmitString(buffer);
+        
         nav();
     }
 }
 
 void testAnemometerOn() {
-    
-    initSensors(); // initializing data as 0s, servos, nav algo, anemometer
+    transmitString("Disabling Interrupts...\n");
     IEC1bits.U1RXIE = 0;
-    initServos();
+    mINT0IntEnable(0);
+    
+    transmitString("Initializing Navigation...\n");
     navigationInit();
     
     /*testing anemometer code*/
@@ -124,6 +144,8 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=0; 
+    
+    transmitString("Test Case 1: ");
     nav();      // test case 1
 
     
@@ -132,6 +154,8 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=60; 
+    
+    transmitString("Test Case 2: ");
     nav();      // test case 2
     
     sensorData->lat=42.444259;
@@ -139,6 +163,8 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=120; 
+    
+    transmitString("Test Case 3: ");
     nav();      // test case 3
     
     sensorData->lat=42.444259;
@@ -146,6 +172,8 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=180; 
+    
+    transmitString("Test Case 4: ");
     nav();      // test case 4
     
     sensorData->lat=42.444259;
@@ -153,6 +181,8 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=240;
+    
+    transmitString("Test Case 5: ");
     nav();      // test case 5
         
     sensorData->lat=42.444259;
@@ -160,27 +190,49 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=300;
+    
+    transmitString("Test Case 6: ");
     nav();      // test case 6
     
+    transmitString("Enabling Speed Interrupt...\n");
+    mINT0IntEnable(1);
     
     while(1) {
         delay_ms(2000);
         readAnemometer();
+        
+        char buffer[80];
+        sprintf(buffer, "direction: %f, speed %f\n", sensorData->wind_dir, sensorData->wind_speed);
+        transmitString(buffer);
+        
         nav();
     }
 }
 
 void testEverythingOn() {
-    initSensors();
-    initServos();
+    transmitString("Initializing Navigation...\n");
     navigationInit();
     
     while(1) {
         delay_ms(2000);
+        readIMU();
+        readAnemometer();
+        
+        char buffer[200];
+        sprintf(buffer, "pitch: %f, roll: %f, yaw: %f\nlat: %f, long: %f\ndir: %f, speed: %f\n", sensorData->pitch, sensorData->roll, sensorData->boat_direction, sensorData->lat, sensorData->longi, sensorData->wind_dir, sensorData->wind_speed);
+        transmitString(buffer);
+        
         nav();
     }
 }
 
 void testLidarOn() {
-    
+    while(1) {
+        delay_ms(2000);
+        
+        float distance = readLIDAR();
+        char buffer[60];
+        sprintf(buffer, "distance: %f\n", distance);
+        transmitString(buffer);
+    }
 } // obstacle detection unimplemented

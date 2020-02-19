@@ -1,5 +1,7 @@
 /* ************************************************************************** */
 /** Servo library
+ *  Sail Servo - D954SW
+ *  Tail Servo - Traxxas 2056
 /* ************************************************************************** */
 #define _SUPPRESS_PLIB_WARNING // removes outdated plib warning
 #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
@@ -14,9 +16,9 @@
 #define MAX_SAIL_DUTY 5875 //2.35 ms
 
 #define MIN_TAIL_ANGLE 0
-#define MAX_TAIL_ANGLE 100
-#define MIN_TAIL_DUTY 2500 // 1 ms
-#define MAX_TAIL_DUTY 5000 // 2ms
+#define MAX_TAIL_ANGLE 60
+#define MIN_TAIL_DUTY 2145 // 0.858 ms
+#define MAX_TAIL_DUTY 4175 // 1.67 ms
 
 void initServos(void) {
     OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo

@@ -74,8 +74,8 @@ void main(void) {
   // init the threads
   PT_INIT(&pt_sail);
   
-//  initSensors();
-//  initServos();
+  initSensors();
+  initServos();
   initRadio();
  
   // Timer 1 interrupt for up time
@@ -86,8 +86,16 @@ void main(void) {
   mT1ClearIntFlag();
   mT1IntEnable(1);
   
+  // test bench
+  transmitString("Starting test...\n");
   testAllOff();
-//  // round-robin scheduler for threads
+  //testIMUOn();
+  //testGPSOn();
+  //testAnemometerOn();
+  //testEverythingOn();
+  //testLidarOn();
+  
+  // round-robin scheduler for threads
 //  while (1){
 //      PT_SCHEDULE(protothread_sail(&pt_sail));
 //      }

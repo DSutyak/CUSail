@@ -48,8 +48,8 @@ void initRadio(void) {
     IEC1bits.U2RXIE = 1;
     IEC1bits.U2TXIE = 0;
     
-    PPSInput (2, U2RX, RPA1); //Assign U2RX to pin RPB11
-    PPSOutput(4, RPA3, U2TX); //Assign U2TX to pin RPB10
+    PPSInput (2, U2RX, RPA1); //Assign U2RX
+    PPSOutput(4, RPA3, U2TX); //Assign U2TX
 }
 
 void transmitString(char *data) {

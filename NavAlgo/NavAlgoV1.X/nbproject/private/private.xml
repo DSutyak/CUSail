@@ -4,10 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/sensors.c</file>
+            <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/navtest.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/navigation_helper.c</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/sensors.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/main.c</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/radio.c</file>
+            <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/delay.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/radio.h</file>
             <file>file:/C:/Microchip/Projects/CUSail/NavAlgo/navtest.c</file>
         </group>
