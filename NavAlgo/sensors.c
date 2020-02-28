@@ -232,9 +232,9 @@ int readEncoder(void) {
 }
 
 void convertLLtoXY(void) {
-    coord_t ll;
-    ll.latitude = sensorData->lat;
-    ll.longitude = sensorData->longi;
+    coord_t *ll;
+    ll->latitude = sensorData->lat;
+    ll->longitude = sensorData->longi;
     
     coord_xy *xy = xyPoint(ll);
     sensorData->x = xy->x;
