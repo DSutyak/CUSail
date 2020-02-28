@@ -50,10 +50,11 @@ static PT_THREAD (protothread_sail(struct pt *pt))
         PT_YIELD_TIME_msec(2000);
         
         // test transmit to "radio"
-        //static char buffR[20];
-        //sprintf(buffR, "uptime: %d\n", sensorData->sec);
-        //transmitString(buffR);
-        
+//        static char buffR[20];
+//        sprintf(buffR, "uptime: %d\n", sensorData->sec);
+//        transmitString(buffR);
+        readAnemometer();
+        readIMU();
         nav();
     } // END WHILE(1)
     PT_END(pt);
@@ -88,7 +89,6 @@ void main(void) {
   // test bench
   transmitString("Starting test...\n");
   testAllOff();
-  //while(1);
   //testIMUOn();
   //testGPSOn();
   //testAnemometerOn();
@@ -96,9 +96,9 @@ void main(void) {
   //testLidarOn();
   
   // round-robin scheduler for threads
-//  while (1){
-//      PT_SCHEDULE(protothread_sail(&pt_sail));
-//  }
+  while (1){
+      PT_SCHEDULE(protothread_sail(&pt_sail));
+  }
 } // main
 
 // === end  ======================================================

@@ -54,9 +54,11 @@ void testServo(int angle) {
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
- * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
+ * Precondition: Sail Angle in [0, 74] or [286, 360] w.r.t boat, 
+ * Tail Angle in -180.. 180 w.r.t boat
+ * Only tail angles within [-30, 30] are actually attainable
  */
-void setTailServoAngle(double sail_angle, double tail_angle) {
+double setTailServoAngle(double sail_angle, double tail_angle) {
     double s_angle = sail_angle;
     if (s_angle > 180){ //convert sail angle to -180.. 180
         s_angle -= 360;
@@ -71,32 +73,36 @@ void setTailServoAngle(double sail_angle, double tail_angle) {
         newTailAngle -= 360;
     }
     
-    //map to servo commands
-    int midpoint = (MIN_TAIL_ANGLE + MAX_TAIL_ANGLE)/2;
-    if (newTailAngle <= 0 ) {
-        newTailAngle=map(newTailAngle,-30,0,MAX_TAIL_ANGLE,midpoint);
-    } else if (newTailAngle > 0 ) {
-        newTailAngle=map(newTailAngle,0,30,midpoint,MIN_TAIL_ANGLE);
+    if (newTailAngle < -30.0) {
+        newTailAngle = -30.0;
+    } else if (newTailAngle > 30.0) {
+        newTailAngle = 30.0;
     }
     
-    if (newTailAngle < MIN_TAIL_ANGLE) {
-        SetDCOC1PWM(MIN_TAIL_ANGLE); // get as close as possible
-    } else if (newTailAngle > MAX_TAIL_ANGLE) {
-        SetDCOC1PWM(MAX_TAIL_ANGLE); // get as close as possible
-    } else {
-        SetDCOC1PWM((int) map(newTailAngle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
-    }
+    int actualTailAngle = (int) map(newTailAngle, -30, 30, MAX_TAIL_ANGLE, MIN_TAIL_ANGLE);
+    SetDCOC1PWM((int) map(actualTailAngle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
+
+    return newTailAngle + s_angle; // return to wrt boat
 }
 
 /* Updates servo position for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
+ * Only angles within [0, 74] or [286, 360] are attainable
+ * Returns the angle that was actually set
  */
-void setSailServoAngle(double angle) {
-    if (angle < MIN_SAIL_ANGLE) {
-        SetDCOC2PWM(MIN_SAIL_ANGLE); // get as close as possible
-    } else if (angle > MAX_SAIL_ANGLE) {
-        SetDCOC2PWM(MAX_SAIL_ANGLE); // get as close as possible
+double setSailServoAngle(double angle) {
+    if (angle >= 180 && angle < 286) {
+        SetDCOC2PWM(MAX_SAIL_DUTY);
+        return 286;
+    } else if (angle < 180 && angle > 74) {
+        SetDCOC2PWM(MIN_SAIL_DUTY);
+    } else if (angle >= 0 && angle <= 74) {
+        int newAngle = (int) map(angle, 0, 74, 74, 0); // wrt servo frame
+        SetDCOC2PWM((int) map(newAngle, 0, 148, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+        return angle;
     } else {
-        SetDCOC2PWM((int) map(angle, MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+        int newAngle = (int) map(angle, 286, 360, 148, 74);
+        SetDCOC2PWM((int) map(newAngle, 0, 148, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+        return angle;
     }
 }

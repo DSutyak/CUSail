@@ -423,11 +423,11 @@ void setServoAngles(double angleToSail) {
     tail_angle = (double)((((int)tail_angle%360)+360)%360);
     while (tail_angle> 180) {tail_angle -= 180;}
 
-    sensorData->sailAngleBoat = sail_angle;
-    sensorData->tailAngleBoat = tail_angle;
-
-    setSailServoAngle(sail_angle);
-    setTailServoAngle(sail_angle, tail_angle);
+    double set_sail_angle = setSailServoAngle(sail_angle);
+    double set_tail_angle = setTailServoAngle(set_sail_angle, tail_angle);
+    
+    sensorData->sailAngleBoat = set_sail_angle;
+    sensorData->tailAngleBoat = set_tail_angle;
 }
 
 void add_waypoint_loop(int start, int end, bool (*condition)(void)){

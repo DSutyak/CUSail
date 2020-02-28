@@ -7,9 +7,9 @@
 
 void initServos(void);
 
-void setTailServoAngle(double sail_angle, double tail_angle);
+double setTailServoAngle(double sail_angle, double tail_angle);
 
-void setSailServoAngle(double angle);
+double setSailServoAngle(double angle);
 
 void testServo(int angle);
 
