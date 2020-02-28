@@ -8,8 +8,8 @@
 
 typedef struct dataStructure {
   float boat_direction; //Boat direction w.r.t North (IMU)
-  float sailAngleBoat; //Sail angle for use of finding wind wrt boat
-  float tailAngleBoat; //Tail angle for use of finding wind wrt boat
+  float sailAngleBoat; //Sail angle wrt boat for use of finding wind wrt boat
+  float tailAngleBoat; //Tail angle wrt boat for use of finding wind wrt boat
   float pitch; // (IMU)
   float roll; // (IMU)
   float wind_dir; // Wind direction w.r.t North

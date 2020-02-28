@@ -355,6 +355,7 @@ double calculateAngle() {
         }
         alpha = alpha + delta_alpha;
     }
+    
     alpha = 0;
     while (alpha < 180) {
         v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
@@ -365,6 +366,7 @@ double calculateAngle() {
         }
         alpha = alpha + delta_alpha;
     }
+    
     if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
         if(v_maxR * hysteresis < v_maxL) {
             phi_bnew = phi_bmaxL;
@@ -382,7 +384,7 @@ double calculateAngle() {
         }
     }
     
-    free(boatTargetDifference);
+    free(boatTargetDifference); // malloc in diff
     
     // phi_bnew is angle w.r.t. wind, so needs to be converted to w.r.t. north
     return (double)((((int)(phi_bnew + sensorData->wind_dir) % 360) + 360) % 360);
@@ -394,13 +396,14 @@ double calculateAngle() {
  * TODO: check logic, test
  */
 void setServoAngles(double angleToSail) {
-  
     // calculate angle of attack for sail angle
     double angleOfAttack;
-    if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
+    if(sensorData->wind_dir < 180) {
+        // based on previous algorithm and Wikipedia, 15 degrees is critical angle of attack
         angleOfAttack = -15;
-    else
+    } else {
         angleOfAttack = 15;
+    }
     
     double offset = sensorData->boat_direction - angleToSail;
     double tail_angle = sensorData->wind_dir + offset;
@@ -413,10 +416,10 @@ void setServoAngles(double angleToSail) {
     sail_angle = sail_angle - sensorData->boat_direction;
     tail_angle = tail_angle - sensorData->boat_direction;
 
-    // convert sail to 0-360
+    // convert sail to 0-360 (actual range is 0-148)
     sail_angle = (double)((((int)sail_angle%360)+360)%360);
 
-    // convert tail to -180-180
+    // convert tail to -180-180 (actual range is -30-30)
     tail_angle = (double)((((int)tail_angle%360)+360)%360);
     while (tail_angle> 180) {tail_angle -= 180;}
 

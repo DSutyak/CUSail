@@ -133,8 +133,8 @@ void initSensors(void) {
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
-    sensorData->sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
-    sensorData->tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
+    sensorData->sailAngleBoat = 0; //Sail angle wrt boat for use of finding wind wrt N
+    sensorData->tailAngleBoat = 0; //Tail angle wrt boat for use of finding wind wrt N
     sensorData->pitch = 0;
     sensorData->roll = 0;
     sensorData->wind_dir = 0; // Wind direction w.r.t North
