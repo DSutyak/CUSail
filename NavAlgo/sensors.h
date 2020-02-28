@@ -5,14 +5,6 @@
 // structs for storing the sensor data
 #ifndef sensor_h
 #define sensor_h
-typedef struct date {
-  int year;
-  int month;
-  int day;
-  int hour;
-  int minute;
-  int seconds;
-} date_t;
 
 typedef struct dataStructure {
   float boat_direction; //Boat direction w.r.t North (IMU)
@@ -35,6 +27,8 @@ typedef struct dataStructure {
 extern data_t* sensorData; //Defines the boat's state, in type data_t
 
 void initSensors(void);
+
+void convertLLtoXY(void);
 
 void readIMU(void);
 

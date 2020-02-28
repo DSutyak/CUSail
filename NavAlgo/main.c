@@ -49,7 +49,6 @@ static PT_THREAD (protothread_sail(struct pt *pt))
         // yield time 2 seconds - this is the quickest we can transmit uart
         PT_YIELD_TIME_msec(2000);
         
-        //readIMU();
         // test transmit to "radio"
         static char buffR[20];
         sprintf(buffR, "uptime: %d\n", sensorData->sec);

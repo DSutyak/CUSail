@@ -48,13 +48,13 @@ void setOrigin(coord_t startPoint){
 }
 
 /*Converts coordinate in latitude and longitude to xy*/
-coord_xy xyPoint(coord_t latlong){
+coord_xy* xyPoint(coord_t latlong){
     double x = (latlong.longitude - longOffset) * longScale * latToMeter;
     double y = (latlong.latitude - latOffset) * latToMeter;
     
-    coord_xy pt;
-    pt.x = x;
-    pt.y = y;
+    coord_xy *pt = malloc(sizeof(coord_xy));
+    pt->x = x;
+    pt->y = y;
     return pt;
 }
 
@@ -69,7 +69,9 @@ void navigationInit() {
     setOrigin(rawWaypoints[0]);
     int i;
     for(i = 0; i < waypointTotal; i++) {
-        waypoints[i] = xyPoint(rawWaypoints[i]); 
+        coord_xy *pt = xyPoint(rawWaypoints[i]);
+        waypoints[i] = *pt;
+        free(pt);
     }
 }
 

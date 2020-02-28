@@ -34,6 +34,7 @@ void testAllOff() {
     sensorData->wind_speed = 5;
     sensorData->lat=42.444259;
     sensorData->longi=-76.484435;
+    convertLLtoXY();
 
     transmitString("Test Case 1: ");
     nav(); // run test case 1
@@ -43,6 +44,7 @@ void testAllOff() {
     sensorData->wind_speed = 5;
     sensorData->lat=42.444254;
     sensorData->longi=-76.48266;
+    convertLLtoXY();
 
     transmitString("Test Case 2: ");
     nav(); // run test case 2
@@ -52,6 +54,7 @@ void testAllOff() {
     sensorData->wind_speed = 5;
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
+    convertLLtoXY();
 
     transmitString("Test Case 3: ");
     nav(); // run test case 3
@@ -61,6 +64,7 @@ void testAllOff() {
     sensorData->wind_speed = 5;
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
+    convertLLtoXY();
 
     transmitString("Test Case 4: ");
     nav(); // run test case 4
@@ -70,6 +74,7 @@ void testAllOff() {
     sensorData->wind_speed = 5;
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
+    convertLLtoXY();
 
     transmitString("Test Case 5: ");
     nav(); // run test case 5
@@ -89,11 +94,12 @@ void testIMUOn() {
     transmitString("Initializing Navigation...\n");
     navigationInit();
     
-    /*testing gps code*/
+    /*testing imu code*/
     sensorData->wind_dir = 30;
     sensorData->wind_speed = 5;
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;
+    convertLLtoXY();
     
     while(1) {
         delay_ms(2000);
@@ -144,16 +150,17 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=0; 
+    convertLLtoXY();
     
     transmitString("Test Case 1: ");
     nav();      // test case 1
 
-    
     sensorData->lat=42.444259;
     sensorData->longi=-76.484435;
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=60; 
+    convertLLtoXY();
     
     transmitString("Test Case 2: ");
     nav();      // test case 2
@@ -163,6 +170,7 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=120; 
+    convertLLtoXY();
     
     transmitString("Test Case 3: ");
     nav();      // test case 3
@@ -172,6 +180,7 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=180; 
+    convertLLtoXY();
     
     transmitString("Test Case 4: ");
     nav();      // test case 4
@@ -181,6 +190,7 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=240;
+    convertLLtoXY();
     
     transmitString("Test Case 5: ");
     nav();      // test case 5
@@ -190,6 +200,7 @@ void testAnemometerOn() {
     sensorData->boat_direction=0;
     sensorData->wind_speed=5;
     sensorData->wind_dir=300;
+    convertLLtoXY();
     
     transmitString("Test Case 6: ");
     nav();      // test case 6

@@ -12,7 +12,7 @@
 void setOrigin(coord_t startPoint);
 
 /*Converts coordinate in latitude and longitude to xy*/
-coord_xy xyPoint(coord_t latlong);
+coord_xy *xyPoint(coord_t latlong);
 
 void navigationInit();
 

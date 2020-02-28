@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "i2c_helper.h"
+#include "coordinates.h"
+#include "navigation_helper.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
@@ -229,6 +231,17 @@ int readEncoder(void) {
     return ReadADC10(1);
 }
 
+void convertLLtoXY(void) {
+    coord_t ll;
+    ll.latitude = sensorData->lat;
+    ll.longitude = sensorData->longi;
+    
+    coord_xy *xy = xyPoint(ll);
+    sensorData->x = xy->x;
+    sensorData->y = xy->y;
+    free(xy);
+}
+
 void checkSentence() {
     static char lat[20];
     static char longi[20];
@@ -290,6 +303,7 @@ void checkSentence() {
             
             sensorData->lat = north * (lat_dd + lat_mm/60.0);
             sensorData->longi = east * (longi_dd + longi_mm/60.0);
+            convertLLtoXY();
         }
     }
 }
