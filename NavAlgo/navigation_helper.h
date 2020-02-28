@@ -8,6 +8,15 @@
 #ifndef NAV_HELPER_H    /* Guard against multiple inclusion */
 #define NAV_HELPER_H
 
+typedef struct navigationDataStructure {
+    float distToWaypoint; // distance to the next waypoint
+    float angleToWaypoint; // angle to the next waypoint
+    int currentWaypoint; // index of current waypoint
+} nav_t;
+
+extern nav_t *navData;
+extern coord_xy *waypoints;
+
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t *startPoint);
 
@@ -41,7 +50,7 @@ double calculate_vmg (double angleToTarget, double boatSpeed);
 
 double true_wind (double windAngle, double windSpeed, double boatSpeed);
 
-coord_xy * diff(coord_xy T, coord_xy B);
+coord_xy * diff(coord_xy *T, coord_xy *B);
 
 double fPolar (double windSpeed, double angle);
 

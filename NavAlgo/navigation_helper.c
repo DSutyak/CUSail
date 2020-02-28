@@ -4,6 +4,8 @@
 #include "sensors.h"
 #include "coordinates.h"
 #include <stdio.h>
+#include "navigation_helper.h"
+#include "radio.h"
 
 //a struct containing the information on any loops we want in our waypoints
 typedef struct {
@@ -35,8 +37,9 @@ const int radEarth = 6371000;
 int waypointTotal = 2;
 coord_t *rawWaypoints;
 coord_xy *waypoints;
-int currentWaypoint;
 loop_node waypoint_loops = {{NULL, NULL, NULL}, NULL};
+
+nav_t *navData;
 
 /*Creates origin for XY plane and scales to meters*/
 void setOrigin(coord_t *startPoint){
@@ -59,13 +62,17 @@ coord_xy * xyPoint(coord_t *latlong){
 }
 
 void navigationInit() {
+    navData = malloc(sizeof(nav_t));
+    navData->currentWaypoint = 0;
+    navData->distToWaypoint = -1;
+    navData->angleToWaypoint = -1;
+    
     rawWaypoints = (coord_t *) malloc(waypointTotal * sizeof(coord_t));
     waypoints = (coord_xy *) malloc(waypointTotal * sizeof(coord_xy));
     rawWaypoints[0].latitude = 42.445457;
     rawWaypoints[0].longitude = -76.484322;
     rawWaypoints[1].latitude = 42.444259;
     rawWaypoints[1].longitude = -76.484435;
-    currentWaypoint = 0;
     setOrigin(&rawWaypoints[0]);
     int i;
     for(i = 0; i < waypointTotal; i++) {
@@ -321,15 +328,17 @@ double calculateAngle() {
     boatPosition->x = sensorData->x;
     boatPosition->y = sensorData->y; // initialize B
     
-    coord_xy *targetPosition = &waypoints[currentWaypoint];  // initialize T    
+    coord_xy *targetPosition = &waypoints[navData->currentWaypoint];  // initialize T    
     coord_xy *boatTargetDifference = diff(targetPosition, boatPosition); // initialize t
     double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
+    navData->distToWaypoint = t_mag; // data for GUI
     
     double boat_heading = sensorData->boat_direction; // initialize phi(b))
     double beating_param = 10; // this can be adjusted
     double windDirection = sensorData->wind_dir; // should probably use true wind
     
     double intendedAngle = angleToTarget(boatPosition, targetPosition);
+    navData->angleToWaypoint = intendedAngle; // data for GUI
     // finds positive angle between wind and intended path
     double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360);
     double hysteresis = 1 + (beating_param / t_mag); // initialize n
@@ -450,12 +459,12 @@ void add_waypoint_loop(int start, int end, bool (*condition)(void)){
 
 int check_loops(){
     if(waypoint_loops.data.start == NULL){
-        return (currentWaypoint+1 == waypointTotal)? currentWaypoint : currentWaypoint + 1;
+        return (navData->currentWaypoint+1 == waypointTotal)? navData->currentWaypoint : navData->currentWaypoint + 1;
     }
     
     loop_node *front = &waypoint_loops;
     do{
-        if(currentWaypoint == front->data.end){
+        if(navData->currentWaypoint == front->data.end){
             if (front->data.condition()){
                 return front->data.start;
             }
@@ -463,7 +472,7 @@ int check_loops(){
         front = front->next;
     }while(front != NULL);
     
-    return (currentWaypoint+1 == waypointTotal)? currentWaypoint : currentWaypoint + 1;
+    return (navData->currentWaypoint+1 == waypointTotal)? navData->currentWaypoint : navData->currentWaypoint + 1;
 }
 
 void nav() {
@@ -471,12 +480,13 @@ void nav() {
     pos->x = sensorData->x;
     pos-> y = sensorData->y;
     
-    if(xyDist(pos, &waypoints[currentWaypoint]) < detectionRadius) {
-        currentWaypoint = check_loops();
+    if(xyDist(pos, &waypoints[navData->currentWaypoint]) < detectionRadius) {
+        navData->currentWaypoint = check_loops();
     }
     double nextAngle = calculateAngle();
     static char buffR[20];
     sprintf(buffR, "angle: %f\n", nextAngle);
     transmitString(buffR);
     setServoAngles(nextAngle);
+    //printData();
 }

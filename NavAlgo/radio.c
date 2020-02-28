@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "tft_master.h"
 #include "sensors.h"
+#include "navigation_helper.h"
 
 uint32_t clock_rt = 40000000;
 
@@ -57,39 +58,60 @@ void transmitString(char *data) {
     putsUART2(data);
 }
 
-//void printData(void) {
-//  transmitString("----------NAVIGATION----------\n");
-//  
-//  char buffer[80];
-//  
-//  sprintf(buffer, "Y position: %.10f\n", sensorData->y);
-//  transmitString(buffer);
-//  sprintf(buffer, "X position: %.10f\n", sensorData->x);
-//  transmitString(buffer);
-//
-//  sprintf(buffer, "latitude: %.10f\n", sensorData->lat);
-//  transmitString(buffer);
-//  sprintf(buffer, "longitude: %.10f\n", sensorData->longi);
-//  transmitString(buffer);
-//
-//
-//  Serial1.print("Wind w.r.t North: "); Serial1.println(nc.wind_direction);
-//  Serial1.print("Boat direction: "); Serial1.println(bc.boat_direction);
-//  Serial1.print("Distance to Waypoint: "); Serial1.println(nc.normal_distance);
-//  Serial1.print("Angle to Waypoint: "); Serial1.println(nc.angle_to_waypoint);
-//  Serial1.print("Roll: "); Serial1.println(sensorData.roll);
-//  Serial1.print("Pitch: "); Serial1.println(sensorData.pitch);
-//
-//  Serial1.print("Next Waypoint #:");
-//  Serial1.println(nc.current_wp);
-//  Serial1.print("Next Waypoint X: ");
-//  Serial1.println(waypoint_array[nc.current_wp].x,10);
-//  Serial1.print("Next Waypoint Y: ");
-//  Serial1.println(waypoint_array[nc.current_wp].y,10);
-//
-//  Serial1.print("Sail angle: ");   Serial1.println(bc.sail_angle);
-//  Serial1.print("Tail angle: ");   Serial1.println(bc.tail_angle);
-//}
+void printData(void) {
+    char buffer[80];
+    transmitString("----------NAVIGATION----------\n");
+    
+    sprintf(buffer, "Y position: %.10f\n", sensorData->y);
+    transmitString(buffer);
+    sprintf(buffer, "X position: %.10f\n", sensorData->x);
+    transmitString(buffer);
+    
+    sprintf(buffer, "latitude: %.10f\n", sensorData->lat);
+    transmitString(buffer);
+    sprintf(buffer, "longitude: %.10f\n", sensorData->longi);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Wind w.r.t North: %f\n", sensorData->wind_dir);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Boat direction: %f\n", sensorData->boat_direction);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Distance to Waypoint: %f\n", navData->distToWaypoint);
+    transmitString(buffer);
+    sprintf(buffer, "Angle to Waypoint: %f\n", navData->angleToWaypoint);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Roll: %f\n", sensorData->roll);
+    transmitString(buffer);
+    sprintf(buffer, "Pitch: %f\n", sensorData->pitch);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Next Waypoint #:%d\n", navData->currentWaypoint);
+    transmitString(buffer);
+    sprintf(buffer, "Next Waypoint X: %.10f\n", waypoints[navData->currentWaypoint].x);
+    transmitString(buffer);
+    sprintf(buffer, "Next Waypoint Y: %.10f\n", waypoints[navData->currentWaypoint].y);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Sail angle: %f\n", sensorData->sailAngleBoat);
+    transmitString(buffer);
+    sprintf(buffer, "Tail angle: %f\n", sensorData->tailAngleBoat);
+    transmitString(buffer);
+}
+
+void printHitWaypointData(void) {
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("----------\n");
+  transmitString("REACHED WAYPOINT!\n");
+  transmitString("----------\n");
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("\n");
+}
 
 // UART 2 interrupt handler
 // it is set at priority level 2

@@ -9,4 +9,8 @@ void initRadio(void);
 
 void transmitString(char *data);
 
+void printData(void);
+
+void printHitWaypointData(void);
+
 #endif
