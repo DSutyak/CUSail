@@ -80,7 +80,6 @@ void testAllOff() {
     nav(); // run test case 5
     
     transmitString("Finished test cases...\n");
-    
     while(1) {
         delay_ms(2000); // idle forever
     }
