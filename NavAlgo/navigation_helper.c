@@ -259,6 +259,10 @@ double fPolar (double windSpeed, double angle) {
         return 0;
 }
 
+double angleDiff (double angle1, double angle2) {
+    return min(360 - abs(angle1 - angle2), abs(angle1 - angle2));
+}
+
 /*
  * calculateAngle() calculates the optimal boat direction towards the nearest waypoint 
  * given wind speed, wind direction, position, direction, waypoint positions
@@ -266,43 +270,44 @@ double fPolar (double windSpeed, double angle) {
  */
 double calculateAngle() {
     // initializing variables for calculations
-    coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize B
-    coord_xy targetPosition = waypoints[currentWaypoint]; // initialize T
-    coord_xy boatTargetDifference = diff (targetPosition, boatPosition); // initialize t
-    double t_mag = xyDist(boatPosition, targetPosition); // initialize magnitude of t
-    double boat_heading = sensorData->boat_direction; // initialize phi(b))
+    coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize boat position
+    coord_xy targetPosition = waypoints[currentWaypoint]; // initialize target position
+    double t_mag = xyDist(boatPosition, targetPosition); // initialize distance from boat to target
+    double boat_heading = sensorData->boat_direction; // initialize boat's direction
     double beating_param = 10; // this can be adjusted
-    double windDirection = sensorData->wind_dir; // should probably use true wind
-    double intendedAngle = angleToTarget(boatPosition, targetPosition);
-    double angleDifference = (double)(((((int)(windDirection - intendedAngle)) % 360) + 360) % 360); // finds positive angle between wind and intended path
+    double windDirection = sensorData->wind_dir; // initialize wind direction
+    double intendedAngle = angleToTarget(boatPosition, targetPosition); // initialize angle we want to sail at
+    double inverseWindAngle = angleDiff(windDirection, intendedAngle); // finds positive angle between wind and intended path
     double hysteresis = 1 + (beating_param / t_mag); // initialize n
-    double inverseWindAngle = angleDifference; // TODO: initialize phi(-w)?
     double alpha = 0.0; 
     double v_maxR = 0.0;
     double v_maxL = 0.0;
-    double phi_bmaxR = inverseWindAngle;
-    double phi_bmaxL = inverseWindAngle;
+    double phi_bmaxR = intendedAngle;
+    double phi_bmaxL = intendedAngle;
     double v_hyp;
     double v_tR;
     double v_tL;
+    double angle_hyp;
     double phi_bnew;
     double delta_alpha = 5.0; // can change this
     while (alpha < 180) {
-        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle + alpha));
-        v_tR = abs(v_hyp * cos((double)(((int)(inverseWindAngle + alpha))%360))); // Is this right
+        angle_hyp = intendedAngle + alpha;
+        v_hyp = fPolar (sensorData->wind_speed, angleDiff(windDirection, angle_hyp));
+        v_tR = abs(v_hyp / cos(angle_diff(angle_hyp, intendedAngle))); // Is this right
         if (v_tR > v_maxR) {
             v_maxR = v_tR;
-            phi_bmaxR = (double)(((int)(inverseWindAngle + alpha))%360);
+            phi_bmaxR = intendedAngle;
         }
         alpha = alpha + delta_alpha;
     }
     alpha = 0;
     while (alpha < 180) {
-        v_hyp = fPolar (sensorData->wind_speed, (inverseWindAngle - alpha));
-        v_tL = abs(v_hyp * cos((double)(((((int)(inverseWindAngle - alpha))%360)+360)%360))); // Is this right part 2
+        angle_hyp = intendedAngle - alpha;
+        v_hyp = fPolar (sensorData->wind_speed, angleDiff(windDirection, angle_hyp));
+        v_tL = abs(v_hyp / cos(angle_diff(angle_hyp, intendedAngle))); // Is this right
         if (v_tL > v_maxL) {
             v_maxL = v_tL;
-            phi_bmaxL = (double)(((((int)(inverseWindAngle - alpha))%360)+360)%360);
+            phi_bmaxL = intendedAngle;
         }
         alpha = alpha + delta_alpha;
     }
@@ -322,8 +327,7 @@ double calculateAngle() {
             phi_bnew = phi_bmaxL;
         }
     }
-    // phi_bnew is angle w.r.t. wind, so needs to be converted to w.r.t. north
-    return (double)((((int)(phi_bnew + sensorData->wind_dir) % 360) + 360) % 360);
+    return phi_bnew;
 }
 
 /*
