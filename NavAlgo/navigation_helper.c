@@ -19,9 +19,9 @@ typedef struct {
 } loop;
 
 //a struct to generate a linked list of loops in the case we need multiple
-typedef struct{
+typedef struct loop_node_t {
     loop data;
-    struct loop_node *next;
+    struct loop_node_t *next;
 } loop_node;
 
 coord_xy *origin;
