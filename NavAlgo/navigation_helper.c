@@ -1,71 +1,103 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "sensors.h"
 #include "coordinates.h"
 #include <stdio.h>
+#include "navigation_helper.h"
+#include "radio.h"
 
-coord_xy origin;
+//a struct containing the information on any loops we want in our waypoints
+typedef struct {
+    //index of the waypoint at which the loop begins
+    int start;
+    //index of the waypoint at which the loop ends
+    int end;
+    //pointer to a function that returns true if we loop and false if not
+    //must take no arguments and return a boolean
+    bool (*condition)(void);
+} loop;
+
+//a struct to generate a linked list of loops in the case we need multiple
+typedef struct loop_node_t {
+    loop data;
+    struct loop_node_t *next;
+} loop_node;
+
+coord_xy *origin;
 double latOffset;
 double longOffset;
 double longScale;
 double detectionRadius = 5.0;
 const int latToMeter = 111318; //Conversion factor from latitude/longitude to meters
 const int radEarth = 6371000;
+
+
+//change this based on the number of waypoints you have
 int waypointTotal = 2;
 coord_t *rawWaypoints;
 coord_xy *waypoints;
-int currentWaypoint;
+loop_node waypoint_loops = {{NULL, NULL, NULL}, NULL};
+
+nav_t *navData;
 
 /*Creates origin for XY plane and scales to meters*/
-void setOrigin(coord_t startPoint){
-    origin.x = (double) 0;
-    origin.y = (double) 0;
-    longOffset = startPoint.longitude; //used to generate X coordinate
-    latOffset = startPoint.latitude; //used to generate Y coordinate
+void setOrigin(coord_t *startPoint){
+    origin->x = (double) 0;
+    origin->y = (double) 0;
+    longOffset = startPoint->longitude; //used to generate X coordinate
+    latOffset = startPoint->latitude; //used to generate Y coordinate
     longScale = cos(latOffset * M_PI/180);  //scaling factor to account for changing distance between longitude lines
 }
 
-/*Converts coordinate in latitude and longitude to xy*/
-coord_xy xyPoint(coord_t latlong){
-    double x = (latlong.longitude - longOffset) * longScale * latToMeter;
-    double y = (latlong.latitude - latOffset) * latToMeter;
+/*Converts coordinate in latitude and longitude to xy (pt is the return pointer) */
+void xyPoint(coord_xy *pt, coord_t *latlong){
+    double x = (latlong->longitude - longOffset) * longScale * latToMeter;
+    double y = (latlong->latitude - latOffset) * latToMeter;
     
-    coord_xy pt;
-    pt.x = x;
-    pt.y = y;
-    return pt;
+    pt->x = x;
+    pt->y = y;
 }
 
 void navigationInit() {
+    navData = (nav_t *) malloc(sizeof(nav_t));
+    navData->currentWaypoint = 0;
+    navData->distToWaypoint = 0;
+    navData->angleToWaypoint = 0;
+  
     rawWaypoints = (coord_t *) malloc(waypointTotal * sizeof(coord_t));
     waypoints = (coord_xy *) malloc(waypointTotal * sizeof(coord_xy));
     rawWaypoints[0].latitude = 42.445457;
     rawWaypoints[0].longitude = -76.484322;
     rawWaypoints[1].latitude = 42.444259;
     rawWaypoints[1].longitude = -76.484435;
-    currentWaypoint = 0;
-    setOrigin(rawWaypoints[0]);
+    
+    origin = (coord_xy *) malloc(sizeof(coord_xy));
+    setOrigin(&rawWaypoints[0]);
+    
     int i;
     for(i = 0; i < waypointTotal; i++) {
-        waypoints[i] = xyPoint(rawWaypoints[i]); 
+        coord_xy pt;
+        xyPoint(&pt, &rawWaypoints[i]);
+        waypoints[i] = pt;
     }
 }
 
-/*This function calculate (x,y) as defined in the paper "Autonomous Sailboat Navigation for Short Course Racing"*/
-coord_xy xyPoint2(coord_t latlong){
-    double x = radEarth * cos(latlong.latitude - latOffset) * M_PI/180 * (latlong.longitude - longOffset);
-    double y = radEarth * M_PI/180 * (latlong.latitude - latOffset);
+/* This function calculate (x,y) as defined in the paper "Autonomous Sailboat 
+ * Navigation for Short Course Racing"
+ */
+void xyPoint2(coord_xy *pt2, coord_t *latlong){
+    double x = radEarth * cos(latlong->latitude - latOffset) * M_PI/180 * (latlong->longitude - longOffset);
+    double y = radEarth * M_PI/180 * (latlong->latitude - latOffset);
     
-    coord_xy pt2;
-    pt2.x = x;
-    pt2.y = y;
-    return pt2;
+    pt2->x = x;
+    pt2->y = y;
 }
 
 /*finds the distance between two xy points*/
-double xyDist(coord_xy point1, coord_xy point2){
-    double dx = point1.x - point2.x;
-    double dy = point1.y - point2.y;
+double xyDist(coord_xy *point1, coord_xy *point2){
+    double dx = point1->x - point2->x;
+    double dy = point1->y - point2->y;
     return sqrt(dx * dx + dy * dy);
 }
 
@@ -73,9 +105,9 @@ double xyDist(coord_xy point1, coord_xy point2){
 //return xyDist({sensorData.x,sensorData.y},wayPoints[wpNum]);
 
 /*Returns angle (with respect to North) between two global coordinates.*/
-float angleToTarget(coord_xy coord1, coord_xy coord2){
+float angleToTarget(coord_xy *coord1, coord_xy *coord2){
     coord_xy newC1 = {0.0,10.0};
-    coord_xy newC2 = {coord2.x - coord1.x, coord2.y - coord1.y};
+    coord_xy newC2 = {coord2->x - coord1->x, coord2->y - coord1->y};
     double dot = newC1.x * newC2.x + newC1.y * newC2.y;
     double det = newC1.y * newC2.x - newC2.y * newC1.x;
     double angle = atan2(det, dot) * 180/M_PI;
@@ -86,9 +118,9 @@ float angleToTarget(coord_xy coord1, coord_xy coord2){
 }
 
 /*Calculates slope between point1 and point2, designed for use with tacking boundaries */
-float xySlope(coord_xy point1, coord_xy point2){
-    double dx = point1.x - point2.x;
-    double dy = point1.y - point2.y;
+float xySlope(coord_xy *point1, coord_xy *point2){
+    double dx = point1->x - point2->x;
+    double dy = point1->y - point2->y;
     int sign = 1;
     if (fabs(dx) < 0.0000001)
     {
@@ -100,16 +132,14 @@ float xySlope(coord_xy point1, coord_xy point2){
     return dy/dx;
 }
 
-coord_xy middlePoint(coord_xy point1, coord_xy point2){
-    double xdis= (point1.x - point2.x)/2;
-    double ydis= (point1.y - point2.y)/2;
-    double pointx= point1.x-xdis;
-    double pointy = point1.y-ydis;
+void middlePoint(coord_xy *midpt, coord_xy *point1, coord_xy *point2){
+    double xdis= (point1->x - point2->x)/2.0;
+    double ydis= (point1->y - point2->y)/2.0;
+    double pointx= point1->x-xdis;
+    double pointy = point1->y-ydis;
     
-    coord_xy pt;
-    pt.x = pointx;
-    pt.y = pointy;
-    return pt;
+    midpt->x = pointx;
+    midpt->y = pointy;
 }
 
 // converts an angle to a 0-360 range
@@ -122,8 +152,9 @@ float convertto360(float angle){
  * the first waypoint after the buoy is done being rounded, the rounding distance, and the two potential
  * desired angles of entry (the angle of the vector between the preceding waypoint and the buoy +- 90).
  * If you are generating the middle waypoint, supply buoy as target and NULL as angle2.
+ * pt is the pointer of the coord_xy to be returned
  */
-coord_xy find_rounding_waypoint(coord_xy buoy, coord_xy target, int rounding_dist, double angle1, double angle2){
+void find_rounding_waypoint(coord_xy *pt, coord_xy *buoy, coord_xy *target, int rounding_dist, double angle1, double angle2){
     //do some trig here
     //hypotenuse = rounding dist
     double dx_clockwise;
@@ -139,9 +170,13 @@ coord_xy find_rounding_waypoint(coord_xy buoy, coord_xy target, int rounding_dis
         dx_clockwise = rounding_dist * cos(angle1_rad) * 180.0 /M_PI;
         dy_clockwise = rounding_dist * sin(angle1_rad) * 180.0 /M_PI;
     }
-    coord_xy clockwise_point = {buoy.x+dx_clockwise,buoy.y+dy_clockwise};
+    
+    coord_xy clockwise_point = {buoy->x+dx_clockwise, buoy->y+dy_clockwise};
+    
     if (angle2 == NULL){
-        return clockwise_point;
+        pt->x = clockwise_point.x;
+        pt->y = clockwise_point.y;
+        return;
     }
     
     double angle2_rad;
@@ -158,17 +193,23 @@ coord_xy find_rounding_waypoint(coord_xy buoy, coord_xy target, int rounding_dis
         dx_cntrclockwise = rounding_dist * cos(angle2_rad) * 180.0 /M_PI;
         dy_cntrclockwise = rounding_dist * sin(angle2_rad) * 180.0 /M_PI;
     }
-    coord_xy cntrclockwise_point = {buoy.x+dx_cntrclockwise,buoy.y+dy_cntrclockwise};
+    
+    coord_xy cntrclockwise_point = {buoy->x+dx_cntrclockwise, buoy->y+dy_cntrclockwise};
+    
     //return point on opposite side of target, such that we go around the buoy instead of just getting close
-    if (xyDist(clockwise_point, target) >= xyDist(cntrclockwise_point, target)){
-        return clockwise_point;
+    if (xyDist(&clockwise_point, target) >= xyDist(&cntrclockwise_point, target)){
+        pt->x = clockwise_point.x;
+        pt->y = clockwise_point.y;
+        return;
     }
-    else{
-        return cntrclockwise_point;
+    else {
+        pt->x = cntrclockwise_point.x;
+        pt->y = cntrclockwise_point.y;
+        return;
     }
 }
 
-void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, int preceding_idx, int rounding_dist){
+void round_buoy(coord_xy *buoy, coord_xy *preceding_wp, coord_xy *succeeding_wp, int preceding_idx, int rounding_dist){
     double prec_angle = angleToTarget(preceding_wp, buoy);
     
     double clockwise_start_angle = (prec_angle + 90);
@@ -177,7 +218,8 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
     double cntrclockwise_start_angle = (prec_angle - 90);
     cntrclockwise_start_angle = cntrclockwise_start_angle < 0 ? clockwise_start_angle + 360 : cntrclockwise_start_angle;
     
-    coord_xy first_point = find_rounding_waypoint(buoy, succeeding_wp, rounding_dist, clockwise_start_angle, cntrclockwise_start_angle);
+    coord_xy first_point;
+    find_rounding_waypoint(&first_point, buoy, succeeding_wp, rounding_dist, clockwise_start_angle, cntrclockwise_start_angle);
     
     double succ_angle = angleToTarget(buoy, succeeding_wp);
     
@@ -187,10 +229,12 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
     double cntrclockwise_end_angle = (succ_angle - 90);
     cntrclockwise_end_angle = cntrclockwise_end_angle < 0 ? clockwise_end_angle + 360 : cntrclockwise_end_angle;
     
-    coord_xy last_point = find_rounding_waypoint(buoy, succeeding_wp, rounding_dist, clockwise_end_angle, cntrclockwise_end_angle);
+    coord_xy last_point;
+    find_rounding_waypoint(&last_point, buoy, succeeding_wp, rounding_dist, clockwise_end_angle, cntrclockwise_end_angle);
     
-    double midpoint_angle = (angleToTarget(buoy, first_point) + angleToTarget(buoy, last_point))/2;
-    coord_xy mid_point = find_rounding_waypoint(buoy, buoy, rounding_dist, midpoint_angle, NULL);
+    double midpoint_angle = (angleToTarget(buoy, &first_point) + angleToTarget(buoy, &last_point))/2;
+    coord_xy mid_point;
+    find_rounding_waypoint(&mid_point, buoy, buoy, rounding_dist, midpoint_angle, NULL);
     
     //realloc waypoint array with 3 points following preceding_idx
     waypointTotal+=3;
@@ -204,6 +248,16 @@ void round_buoy(coord_xy buoy, coord_xy preceding_wp, coord_xy succeeding_wp, in
             new_waypoint_array[i+3] = last_point;
         }
     }
+
+    loop_node *front = &waypoint_loops;
+    do{
+        if (front->data.start <= preceding_idx && front->data.end > preceding_idx){
+            front->data.end += 3;
+        }
+        front = front->next;
+    } while(front != NULL);
+    
+
     free(waypoints);
     waypoints = new_waypoint_array;
 }
@@ -241,11 +295,9 @@ double true_wind (double windAngle, double windSpeed, double boatSpeed) {
             sqrt(windSpeed * windSpeed + boatSpeed * boatSpeed + 2 * windSpeed * boatSpeed * cos(windAngle))));
 }
 
-coord_xy diff (coord_xy T, coord_xy B) {
-    coord_xy pt;
-    pt.x = T.x - B.x;
-    pt.y = T.y - B.y;
-    return pt;
+void diff(coord_xy *d, coord_xy *T, coord_xy *B) {
+    d->x = T->x - B->x;
+    d->y = T->y - B->y;
 }
 /*For angles between 43 and 151 degrees
  the constant "1.397" was calculated by taking the average over the interval
@@ -271,14 +323,18 @@ double angleDiff (double angle1, double angle2) {
 double calculateAngle() {
     // initializing variables for calculations
     coord_xy boatPosition = {sensorData->x, sensorData->y}; // initialize boat position
-    coord_xy targetPosition = waypoints[currentWaypoint]; // initialize target position
-    double t_mag = xyDist(boatPosition, targetPosition); // initialize distance from boat to target
+    coord_xy *targetPosition = &waypoints[navData->currentWaypoint];  // initialize T  
+    double t_mag = xyDist(&boatPosition, targetPosition); // initialize distance from boat to target
     double boat_heading = sensorData->boat_direction; // initialize boat's direction
     double beating_param = 10; // this can be adjusted
     double windDirection = sensorData->wind_dir; // initialize wind direction
-    double intendedAngle = angleToTarget(boatPosition, targetPosition); // initialize angle we want to sail at
+    double intendedAngle = angleToTarget(&boatPosition, targetPosition);
     double inverseWindAngle = angleDiff(windDirection, intendedAngle); // finds positive angle between wind and intended path
     double hysteresis = 1 + (beating_param / t_mag); // initialize n
+
+    navData->distToWaypoint = t_mag; // data for GUI
+    navData->angleToWaypoint = intendedAngle; // data for GUI
+    
     double alpha = 0.0; 
     double v_maxR = 0.0;
     double v_maxL = 0.0;
@@ -290,6 +346,7 @@ double calculateAngle() {
     double angle_hyp;
     double phi_bnew;
     double delta_alpha = 5.0; // can change this
+    
     while (alpha < 180) {
         angle_hyp = intendedAngle + alpha;
         v_hyp = fPolar (sensorData->wind_speed, angleDiff(windDirection, angle_hyp));
@@ -300,6 +357,7 @@ double calculateAngle() {
         }
         alpha = alpha + delta_alpha;
     }
+    
     alpha = 0;
     while (alpha < 180) {
         angle_hyp = intendedAngle - alpha;
@@ -311,6 +369,7 @@ double calculateAngle() {
         }
         alpha = alpha + delta_alpha;
     }
+    
     if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
         if(v_maxR * hysteresis < v_maxL) {
             phi_bnew = phi_bmaxL;
@@ -336,13 +395,14 @@ double calculateAngle() {
  * TODO: check logic, test
  */
 void setServoAngles(double angleToSail) {
-  
     // calculate angle of attack for sail angle
     double angleOfAttack;
-    if(sensorData->wind_dir < 180) // based on previous algorithm and also Wikipedia, 15 degrees is critical angle of attack
+    if(sensorData->wind_dir < 180) {
+        // based on previous algorithm and Wikipedia, 15 degrees is critical angle of attack
         angleOfAttack = -15;
-    else
+    } else {
         angleOfAttack = 15;
+    }
     
     double offset = sensorData->boat_direction - angleToSail;
     double tail_angle = sensorData->wind_dir + offset;
@@ -355,28 +415,66 @@ void setServoAngles(double angleToSail) {
     sail_angle = sail_angle - sensorData->boat_direction;
     tail_angle = tail_angle - sensorData->boat_direction;
 
-    // convert sail to 0-360
+    // convert sail to 0-360 (actual range is 0-148)
     sail_angle = (double)((((int)sail_angle%360)+360)%360);
 
-    // convert tail to -180-180
+    // convert tail to -180-180 (actual range is -30-30)
     tail_angle = (double)((((int)tail_angle%360)+360)%360);
     while (tail_angle> 180) {tail_angle -= 180;}
 
-    sensorData->sailAngleBoat = sail_angle;
-    sensorData->tailAngleBoat = tail_angle;
+    double set_sail_angle = setSailServoAngle(sail_angle);
+    double set_tail_angle = setTailServoAngle(set_sail_angle, tail_angle);
+    
+    sensorData->sailAngleBoat = set_sail_angle;
+    sensorData->tailAngleBoat = set_tail_angle;
+}
 
-    setSailServoAngle(sail_angle);
-    setTailServoAngle(sail_angle, tail_angle);
+void add_waypoint_loop(int start, int end, bool (*condition)(void)){
+    if (waypoint_loops.data.start == NULL){
+        waypoint_loops.data.start = start;
+        waypoint_loops.data.end = end;
+        waypoint_loops.data.condition = condition;
+        waypoint_loops.next = NULL;
+    }
+//    TODO: evaluate whether or not the memory stuff here actually works
+    else {
+        loop_node *front = &waypoint_loops;
+        while(front->next != NULL){
+            front = front->next;
+        }
+        loop_node next_loop = {{start, end, condition}, NULL};
+        front->next = &next_loop;
+    }
+}
+
+int check_loops(){
+    if(waypoint_loops.data.start == NULL){
+        return (navData->currentWaypoint+1 == waypointTotal)? navData->currentWaypoint : navData->currentWaypoint + 1;
+    }
+    
+    loop_node *front = &waypoint_loops;
+    do{
+        if(navData->currentWaypoint == front->data.end){
+            if (front->data.condition()){
+                return front->data.start;
+            }
+        }
+        front = front->next;
+    }while(front != NULL);
+    
+    return (navData->currentWaypoint+1 == waypointTotal)? navData->currentWaypoint : navData->currentWaypoint + 1;
 }
 
 void nav() {
     coord_xy pos = {sensorData->x, sensorData->y};
-    if(xyDist(pos, waypoints[currentWaypoint]) < detectionRadius) {
-        currentWaypoint = (currentWaypoint+1)%waypointTotal;
+    
+    if(xyDist(&pos, &waypoints[navData->currentWaypoint]) < detectionRadius) {
+        navData->currentWaypoint = check_loops();
     }
     double nextAngle = calculateAngle();
     static char buffR[20];
     sprintf(buffR, "angle: %f\n", nextAngle);
     transmitString(buffR);
     setServoAngles(nextAngle);
+    //printData();
 }

@@ -7,6 +7,8 @@
 #include <plib.h>
 #include <stdio.h>
 #include "tft_master.h"
+#include "sensors.h"
+#include "navigation_helper.h"
 
 uint32_t clock_rt = 40000000;
 
@@ -48,12 +50,67 @@ void initRadio(void) {
     IEC1bits.U2RXIE = 1;
     IEC1bits.U2TXIE = 0;
     
-    PPSInput (2, U2RX, RPA1); //Assign U2RX to pin RPB11
-    PPSOutput(4, RPA3, U2TX); //Assign U2TX to pin RPB10
+    PPSInput (2, U2RX, RPA1); //Assign U2RX
+    PPSOutput(4, RPA3, U2TX); //Assign U2TX
 }
 
 void transmitString(char *data) {
     putsUART2(data);
+}
+
+void printData(void) {
+    char buffer[80];
+    transmitString("----------NAVIGATION----------\n");
+    
+    sprintf(buffer, "Y position: %.10f\n", sensorData->y);
+    transmitString(buffer);
+    sprintf(buffer, "X position: %.10f\n", sensorData->x);
+    transmitString(buffer);
+    
+    sprintf(buffer, "latitude: %.10f\n", sensorData->lat);
+    transmitString(buffer);
+    sprintf(buffer, "longitude: %.10f\n", sensorData->longi);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Wind w.r.t North: %f\n", sensorData->wind_dir);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Boat direction: %f\n", sensorData->boat_direction);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Distance to Waypoint: %f\n", navData->distToWaypoint);
+    transmitString(buffer);
+    sprintf(buffer, "Angle to Waypoint: %f\n", navData->angleToWaypoint);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Roll: %f\n", sensorData->roll);
+    transmitString(buffer);
+    sprintf(buffer, "Pitch: %f\n", sensorData->pitch);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Next Waypoint #:%d\n", navData->currentWaypoint);
+    transmitString(buffer);
+    sprintf(buffer, "Next Waypoint X: %.10f\n", waypoints[navData->currentWaypoint].x);
+    transmitString(buffer);
+    sprintf(buffer, "Next Waypoint Y: %.10f\n", waypoints[navData->currentWaypoint].y);
+    transmitString(buffer);
+    
+    sprintf(buffer, "Sail angle: %f\n", sensorData->sailAngleBoat);
+    transmitString(buffer);
+    sprintf(buffer, "Tail angle: %f\n", sensorData->tailAngleBoat);
+    transmitString(buffer);
+}
+
+void printHitWaypointData(void) {
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("----------\n");
+  transmitString("REACHED WAYPOINT!\n");
+  transmitString("----------\n");
+  transmitString("\n");
+  transmitString("\n");
+  transmitString("\n");
 }
 
 // UART 2 interrupt handler

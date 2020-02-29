@@ -49,13 +49,13 @@ static PT_THREAD (protothread_sail(struct pt *pt))
         // yield time 2 seconds - this is the quickest we can transmit uart
         PT_YIELD_TIME_msec(2000);
         
-        //readIMU();
         // test transmit to "radio"
-        static char buffR[20];
-        sprintf(buffR, "uptime: %d\n", sensorData->sec);
-        transmitString(buffR);
-        
-        //nav();
+//        static char buffR[20];
+//        sprintf(buffR, "uptime: %d\n", sensorData->sec);
+//        transmitString(buffR);
+        readAnemometer();
+        readIMU();
+        nav();
     } // END WHILE(1)
     PT_END(pt);
 } // sail thread
@@ -74,8 +74,8 @@ void main(void) {
   // init the threads
   PT_INIT(&pt_sail);
   
-//  initSensors();
-//  initServos();
+  initSensors();
+  initServos();
   initRadio();
  
   // Timer 1 interrupt for up time
@@ -86,11 +86,19 @@ void main(void) {
   mT1ClearIntFlag();
   mT1IntEnable(1);
   
+  // test bench
+  transmitString("Starting test...\n");
   testAllOff();
-//  // round-robin scheduler for threads
-//  while (1){
-//      PT_SCHEDULE(protothread_sail(&pt_sail));
-//      }
-  } // main
+  //testIMUOn();
+  //testGPSOn();
+  //testAnemometerOn();
+  //testEverythingOn();
+  //testLidarOn();
+  
+  // round-robin scheduler for threads
+  while (1){
+      PT_SCHEDULE(protothread_sail(&pt_sail));
+  }
+} // main
 
 // === end  ======================================================

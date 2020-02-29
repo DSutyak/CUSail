@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "i2c_helper.h"
+#include "coordinates.h"
+#include "navigation_helper.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
@@ -131,8 +133,8 @@ void initSensors(void) {
   
     // initialize sensorData
     sensorData->boat_direction = 0; //Boat direction w.r.t North
-    sensorData->sailAngleBoat = 0; //Sail angle for use of finding wind wrt N
-    sensorData->tailAngleBoat = 0; //Tail angle for use of finding wind wrt N
+    sensorData->sailAngleBoat = 0; //Sail angle wrt boat for use of finding wind wrt N
+    sensorData->tailAngleBoat = 0; //Tail angle wrt boat for use of finding wind wrt N
     sensorData->pitch = 0;
     sensorData->roll = 0;
     sensorData->wind_dir = 0; // Wind direction w.r.t North
@@ -229,6 +231,15 @@ int readEncoder(void) {
     return ReadADC10(1);
 }
 
+void convertLLtoXY(void) {
+    coord_t ll = {sensorData->lat, sensorData->longi};
+    
+    coord_xy xy;
+    xyPoint(&xy, &ll);
+    sensorData->x = xy.x;
+    sensorData->y = xy.y;
+}
+
 void checkSentence() {
     static char lat[20];
     static char longi[20];
@@ -290,6 +301,7 @@ void checkSentence() {
             
             sensorData->lat = north * (lat_dd + lat_mm/60.0);
             sensorData->longi = east * (longi_dd + longi_mm/60.0);
+            convertLLtoXY();
         }
     }
 }

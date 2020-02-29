@@ -1,5 +1,7 @@
 /* ************************************************************************** */
 /** Servo library
+ *  Sail Servo - D954SW
+ *  Tail Servo - Traxxas 2056
 /* ************************************************************************** */
 #define _SUPPRESS_PLIB_WARNING // removes outdated plib warning
 #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
@@ -14,9 +16,9 @@
 #define MAX_SAIL_DUTY 5875 //2.35 ms
 
 #define MIN_TAIL_ANGLE 0
-#define MAX_TAIL_ANGLE 100
-#define MIN_TAIL_DUTY 2500 // 1 ms
-#define MAX_TAIL_DUTY 5000 // 2ms
+#define MAX_TAIL_ANGLE 60
+#define MIN_TAIL_DUTY 2145 // 0.858 ms
+#define MAX_TAIL_DUTY 4175 // 1.67 ms
 
 void initServos(void) {
     OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
@@ -31,6 +33,10 @@ void initServos(void) {
     // set PPS to configure pins (subject to change)
     PPSOutput(1, RPB4, OC1);    //OC1 is PPS Group 1, maps to RPB4
     PPSOutput(2, RPB5, OC2);    //OC2 is PPS Group 2, maps to RPB5
+    
+    // set servos to neutral (middle) angle
+    SetDCOC1PWM((MIN_TAIL_DUTY + MAX_TAIL_DUTY)/2);
+    SetDCOC2PWM((MIN_SAIL_DUTY + MAX_SAIL_DUTY)/2);
 }
 
 double map(double value, double fromLow, double fromHigh, double toLow, double toHigh) {
@@ -48,9 +54,11 @@ void testServo(int angle) {
 }
 
 /* Returns servo command tail servo for inputted sail angle and tail angle
- * Precondition: Sail Angle in 0.. 360 w.r.t boat, Tail Angle in -180.. 180 w.r.t boat
+ * Precondition: Sail Angle in [0, 74] or [286, 360] w.r.t boat, 
+ * Tail Angle in -180.. 180 w.r.t boat
+ * Only tail angles within [-30, 30] are actually attainable
  */
-void setTailServoAngle(double sail_angle, double tail_angle) {
+double setTailServoAngle(double sail_angle, double tail_angle) {
     double s_angle = sail_angle;
     if (s_angle > 180){ //convert sail angle to -180.. 180
         s_angle -= 360;
@@ -59,25 +67,42 @@ void setTailServoAngle(double sail_angle, double tail_angle) {
     double newTailAngle = tail_angle - s_angle; //calculate position of tail with respect to sail
     
     //make sure tail angle is in range -180.. 180
-    if(newTailAngle<-180){
-        newTailAngle+=360;
-    } else if (newTailAngle>180) {
-        newTailAngle-=360;
+    if (newTailAngle < -180) {
+        newTailAngle += 360;
+    } else if (newTailAngle > 180) {
+        newTailAngle -= 360;
     }
     
-    //map to servo commands
-    if (newTailAngle <= 0 ) {
-        newTailAngle=map(newTailAngle,-30,0,160,100);
-    } else if (newTailAngle > 0 ) {
-        newTailAngle=map(newTailAngle,0,30,100,60);
+    if (newTailAngle < -30.0) {
+        newTailAngle = -30.0;
+    } else if (newTailAngle > 30.0) {
+        newTailAngle = 30.0;
     }
     
-    SetDCOC1PWM((int) map(newTailAngle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
+    int actualTailAngle = (int) map(newTailAngle, -30, 30, MAX_TAIL_ANGLE, MIN_TAIL_ANGLE);
+    SetDCOC1PWM((int) map(actualTailAngle, MIN_TAIL_ANGLE, MAX_TAIL_ANGLE, MIN_TAIL_DUTY, MAX_TAIL_DUTY));
+
+    return newTailAngle + s_angle; // return to wrt boat
 }
 
 /* Updates servo position for inputted sail angle
  * Precondition: Sail Angle in 0.. 360 w.r.t boat
+ * Only angles within [0, 74] or [286, 360] are attainable
+ * Returns the angle that was actually set
  */
-void setSailServoAngle(double angle) {
-    SetDCOC2PWM((int) map(angle, MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+double setSailServoAngle(double angle) {
+    if (angle >= 180 && angle < 286) {
+        SetDCOC2PWM(MAX_SAIL_DUTY);
+        return 286;
+    } else if (angle < 180 && angle > 74) {
+        SetDCOC2PWM(MIN_SAIL_DUTY);
+    } else if (angle >= 0 && angle <= 74) {
+        int newAngle = (int) map(angle, 0, 74, 74, 0); // wrt servo frame
+        SetDCOC2PWM((int) map(newAngle, 0, 148, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+        return angle;
+    } else {
+        int newAngle = (int) map(angle, 286, 360, 148, 74);
+        SetDCOC2PWM((int) map(newAngle, 0, 148, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
+        return angle;
+    }
 }
