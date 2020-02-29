@@ -79,6 +79,16 @@ void testAllOff() {
     transmitString("Test Case 5: ");
     nav(); // run test case 5
     
+    sensorData->boat_direction = 60; 
+    sensorData->wind_dir = 320;
+    sensorData->wind_speed = 5;
+    sensorData->lat=42.444612;
+    sensorData->longi=-76.483492;
+    convertLLtoXY();
+
+    transmitString("Test Case 6: ");
+    nav(); // run test case 6
+    
     transmitString("Finished test cases...\n");
     while(1) {
         delay_ms(2000); // idle forever
@@ -94,7 +104,7 @@ void testIMUOn() {
     navigationInit();
     
     /*testing imu code*/
-    sensorData->wind_dir = 30;
+    sensorData->wind_dir = 320;
     sensorData->wind_speed = 5;
     sensorData->lat=42.444612;
     sensorData->longi=-76.483492;

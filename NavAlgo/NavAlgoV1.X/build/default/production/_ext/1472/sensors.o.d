@@ -4,4 +4,5 @@ build/default/production/_ext/1472/sensors.o:  \
  ../servo.h  \
 ../i2c_helper.h  \
 ../coordinates.h  \
-../navigation_helper.h 
+../navigation_helper.h  \
+ ../radio.h 

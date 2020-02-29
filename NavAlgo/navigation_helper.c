@@ -305,14 +305,15 @@ void diff(coord_xy *d, coord_xy *T, coord_xy *B) {
  defined in "Autonomous Sailboat Navigation for Short Course Racing"
  We used their numbers, so these values are NOT empirically optimized for our boat*/
 double fPolar (double windSpeed, double angle) {
-    if (43 < angle < 151 || 209 < angle < 317)
+    if ((20.0 < angle && angle < 160.0) || ((200.0 < angle) && (angle < 340.0))) {
          return windSpeed * 1.397 ; // TODO: Polar diagram
-    else 
-        return 0;
+    }
+    else {
+        return 0;}
 }
 
 double angleDiff (double angle1, double angle2) {
-    return min(360 - abs(angle1 - angle2), abs(angle1 - angle2));
+    return min(360 - abs((int)(angle1 - angle2)%360), abs((int)(angle1 - angle2)%360));
 }
 
 /*
@@ -350,10 +351,10 @@ double calculateAngle() {
     while (alpha < 180) {
         angle_hyp = intendedAngle + alpha;
         v_hyp = fPolar (sensorData->wind_speed, angleDiff(windDirection, angle_hyp));
-        v_tR = abs(v_hyp / cos(angle_diff(angle_hyp, intendedAngle))); // Is this right
+        v_tR = abs(v_hyp * cos(angleDiff(angle_hyp, intendedAngle))); // Is this right
         if (v_tR > v_maxR) {
             v_maxR = v_tR;
-            phi_bmaxR = intendedAngle;
+            phi_bmaxR = angle_hyp;
         }
         alpha = alpha + delta_alpha;
     }
@@ -362,15 +363,15 @@ double calculateAngle() {
     while (alpha < 180) {
         angle_hyp = intendedAngle - alpha;
         v_hyp = fPolar (sensorData->wind_speed, angleDiff(windDirection, angle_hyp));
-        v_tL = abs(v_hyp / cos(angle_diff(angle_hyp, intendedAngle))); // Is this right
+        v_tL = abs(v_hyp * cos(angleDiff(angle_hyp, intendedAngle))); // Is this right
         if (v_tL > v_maxL) {
             v_maxL = v_tL;
-            phi_bmaxL = intendedAngle;
+            phi_bmaxL = angle_hyp;
         }
         alpha = alpha + delta_alpha;
     }
     
-    if (abs((int)(phi_bmaxR - boat_heading)) < abs((int)(phi_bmaxL - boat_heading))) {
+    if (angleDiff(phi_bmaxR, boat_heading) < angleDiff(phi_bmaxL, boat_heading)) {
         if(v_maxR * hysteresis < v_maxL) {
             phi_bnew = phi_bmaxL;
         }
@@ -386,7 +387,11 @@ double calculateAngle() {
             phi_bnew = phi_bmaxL;
         }
     }
-    return phi_bnew;
+    return (double)((int)phi_bnew % 360);
+    
+    static char buffR[20];
+    sprintf(buffR, "angle: %f\n", phi_bnew);
+    transmitString(buffR);
 }
 
 /*

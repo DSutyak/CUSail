@@ -14,6 +14,7 @@
 #include "i2c_helper.h"
 #include "coordinates.h"
 #include "navigation_helper.h"
+#include "radio.h"
 
 
 // system clock rate (as defined in config.h) is 40MHz
@@ -228,6 +229,7 @@ void readAnemometer(void) {
 }
 
 int readEncoder(void) {
+    int adc_10 = ReadADC10(1);
     return ReadADC10(1);
 }
 

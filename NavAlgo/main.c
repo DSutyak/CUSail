@@ -88,9 +88,9 @@ void main(void) {
   
   // test bench
   transmitString("Starting test...\n");
-  testAllOff();
-  //testIMUOn();
-  //testGPSOn();
+  //testAllOff();
+  // testIMUOn();
+  testGPSOn();
   //testAnemometerOn();
   //testEverythingOn();
   //testLidarOn();
