@@ -206,6 +206,10 @@ int mapInt(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
     return ((toHigh - toLow) * (value - fromLow)/(fromHigh-fromLow)) + toLow;
 }
 
+double mapDouble(int value, double fromLow, double fromHigh, double toLow, double toHigh) {
+    return ((toHigh - toLow) * ((double) value - fromLow)/(fromHigh-fromLow)) + toLow;
+}
+
 // read both wind direction and wind speed
 void readAnemometer(void) {
     int adc_10 = ReadADC10(0);
@@ -230,7 +234,7 @@ void readAnemometer(void) {
 
 int readEncoder(void) {
     int adc_10 = ReadADC10(1);
-    return ReadADC10(1);
+    return mapDouble(adc_10, 0.0, 1023.0, 0.0, 359.9);
 }
 
 void convertLLtoXY(void) {

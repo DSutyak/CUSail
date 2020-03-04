@@ -124,7 +124,7 @@ double setSailServoAngle(double angle) {
     // get within 2 degrees of where you want to be, or give up after 10 attempts
     while (attempts > 0 && fabs(error) > 2.0) {
         delay_ms(100); // wait for the servo to move
-        double newAngle = setAngle + error;
+        double newAngle = setAngle + p * error;
         setAngle = setSailPWM(newAngle);
         realAngle = readEncoder();
         error = setAngle - realAngle;
