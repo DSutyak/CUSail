@@ -7,8 +7,10 @@
 #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
 
 #include <plib.h>
+#include <math.h>
 #include "servo.h"
 #include "sensors.h"
+#include "delay.h"
 
 #define MIN_SAIL_ANGLE 0
 #define MAX_SAIL_ANGLE 148
@@ -19,6 +21,8 @@
 #define MAX_TAIL_ANGLE 60
 #define MIN_TAIL_DUTY 2145 // 0.858 ms
 #define MAX_TAIL_DUTY 4175 // 1.67 ms
+
+double p = 0.2; // proportional error for P control
 
 void initServos(void) {
     OpenOC1(OC_ON | OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE, 0, 0); // Tail Servo
@@ -85,12 +89,10 @@ double setTailServoAngle(double sail_angle, double tail_angle) {
     return newTailAngle + s_angle; // return to wrt boat
 }
 
-/* Updates servo position for inputted sail angle
- * Precondition: Sail Angle in 0.. 360 w.r.t boat
- * Only angles within [0, 74] or [286, 360] are attainable
- * Returns the angle that was actually set
+/* 
+ * Sets the PWM of the sail servo
  */
-double setSailServoAngle(double angle) {
+double setSailPWM(double angle) {
     if (angle >= 180 && angle < 286) {
         SetDCOC2PWM(MAX_SAIL_DUTY);
         return 286;
@@ -105,4 +107,30 @@ double setSailServoAngle(double angle) {
         SetDCOC2PWM((int) map(newAngle, 0, 148, MIN_SAIL_DUTY, MAX_SAIL_DUTY));
         return angle;
     }
+}
+
+/* 
+ * Updates servo position for inputted sail angle
+ * Precondition: Sail Angle in 0.. 360 w.r.t boat
+ * Only angles within [0, 74] or [286, 360] are attainable
+ * Returns the angle that was actually set
+ */
+double setSailServoAngle(double angle) {
+    double setAngle = setSailPWM(angle);
+    double realAngle = readEncoder();
+    double error = setAngle - realAngle;
+    int attempts = 10;
+    
+    // get within 2 degrees of where you want to be, or give up after 10 attempts
+    while (attempts > 0 && fabs(error) > 2.0) {
+        delay_ms(100); // wait for the servo to move
+        double newAngle = setAngle + error;
+        setAngle = setSailPWM(newAngle);
+        realAngle = readEncoder();
+        error = setAngle - realAngle;
+        
+        attempts--;
+    }
+    
+    return setAngle;
 }

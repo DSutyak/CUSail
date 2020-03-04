@@ -14,25 +14,24 @@
 # You can invoke make with the values of the macros:
 # $ makeMP_CC="/opt/microchip/mplabc30/v3.30c/bin/pic30-gcc" ...  
 #
-SHELL=cmd.exe
-PATH_TO_IDE_BIN=C:/Microchip/mplab_platform/platform/../mplab_ide/modules/../../bin/
+PATH_TO_IDE_BIN=/Applications/microchip/mplabx/v5.30/mplab_platform/platform/../mplab_ide/modules/../../bin/
 # Adding MPLAB X bin directory to path.
-PATH:=C:/Microchip/mplab_platform/platform/../mplab_ide/modules/../../bin/:$(PATH)
+PATH:=/Applications/microchip/mplabx/v5.30/mplab_platform/platform/../mplab_ide/modules/../../bin/:$(PATH)
 # Path to java used to run MPLAB X when this makefile was created
-MP_JAVA_PATH="C:\Microchip\sys\java\jre1.8.0_181/bin/"
+MP_JAVA_PATH="/Applications/microchip/mplabx/v5.30/sys/java/jre1.8.0_181.jre/Contents/Home/bin/"
 OS_CURRENT="$(shell uname -s)"
-MP_CC="C:\Microchip\xc32\v2.30\bin\xc32-gcc.exe"
-MP_CPPC="C:\Microchip\xc32\v2.30\bin\xc32-g++.exe"
+MP_CC="/Applications/microchip/xc32/v2.40/bin/xc32-gcc"
+MP_CPPC="/Applications/microchip/xc32/v2.40/bin/xc32-g++"
 # MP_BC is not defined
-MP_AS="C:\Microchip\xc32\v2.30\bin\xc32-as.exe"
-MP_LD="C:\Microchip\xc32\v2.30\bin\xc32-ld.exe"
-MP_AR="C:\Microchip\xc32\v2.30\bin\xc32-ar.exe"
-DEP_GEN=${MP_JAVA_PATH}java -jar "C:/Microchip/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
-MP_CC_DIR="C:\Microchip\xc32\v2.30\bin"
-MP_CPPC_DIR="C:\Microchip\xc32\v2.30\bin"
+MP_AS="/Applications/microchip/xc32/v2.40/bin/xc32-as"
+MP_LD="/Applications/microchip/xc32/v2.40/bin/xc32-ld"
+MP_AR="/Applications/microchip/xc32/v2.40/bin/xc32-ar"
+DEP_GEN=${MP_JAVA_PATH}java -jar "/Applications/microchip/mplabx/v5.30/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
+MP_CC_DIR="/Applications/microchip/xc32/v2.40/bin"
+MP_CPPC_DIR="/Applications/microchip/xc32/v2.40/bin"
 # MP_BC_DIR is not defined
-MP_AS_DIR="C:\Microchip\xc32\v2.30\bin"
-MP_LD_DIR="C:\Microchip\xc32\v2.30\bin"
-MP_AR_DIR="C:\Microchip\xc32\v2.30\bin"
+MP_AS_DIR="/Applications/microchip/xc32/v2.40/bin"
+MP_LD_DIR="/Applications/microchip/xc32/v2.40/bin"
+MP_AR_DIR="/Applications/microchip/xc32/v2.40/bin"
 # MP_BC_DIR is not defined
-DFP_DIR="C:/Microchip/packs/Microchip/PIC32MX_DFP/1.1.215"
+DFP_DIR="/Applications/microchip/mplabx/v5.30/packs/Microchip/PIC32MX_DFP/1.1.215"

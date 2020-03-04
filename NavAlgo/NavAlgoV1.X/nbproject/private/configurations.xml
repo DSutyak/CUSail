@@ -5,7 +5,7 @@
   <confs>
     <conf name="default" type="2">
       <platformToolSN>:=MPLABComm-USB-Microchip:=&lt;vid>04D8:=&lt;pid>8107:=&lt;rev>0002:=&lt;man>Microchip Technology Incorporated:=&lt;prod>Microstick II SK:=&lt;sn>BUR151977051:=&lt;drv>x:=&lt;xpt>h:=end</platformToolSN>
-      <languageToolchainDir>C:\Microchip\xc32\v2.30\bin</languageToolchainDir>
+      <languageToolchainDir>/Applications/microchip/xc32/v2.40/bin</languageToolchainDir>
       <mdbdebugger version="1">
         <placeholder1>place holder 1</placeholder1>
         <placeholder2>place holder 2</placeholder2>
