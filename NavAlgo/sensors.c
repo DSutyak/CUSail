@@ -142,6 +142,7 @@ void initSensors(void) {
     sensorData->wind_speed = 0;
     sensorData->x = 0; // X-coord of current global position;
     sensorData->y = 0; // Y-coord of current global position;
+    sensorData->fix = 0; // 1 is GPS is now sending data
     sensorData->lat=0;
     sensorData->longi=0;
     sensorData->msec = 0;
@@ -244,6 +245,7 @@ void convertLLtoXY(void) {
     xyPoint(&xy, &ll);
     sensorData->x = xy.x;
     sensorData->y = xy.y;
+    sensorData->fix = 1;
 }
 
 void checkSentence() {

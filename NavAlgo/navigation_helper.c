@@ -471,15 +471,18 @@ int check_loops(){
 }
 
 void nav() {
-    coord_xy pos = {sensorData->x, sensorData->y};
+    // only execute if the GPS is getting data
+    if (sensorData->fix) {
+        coord_xy pos = {sensorData->x, sensorData->y};
     
-    if(xyDist(&pos, &waypoints[navData->currentWaypoint]) < detectionRadius) {
-        navData->currentWaypoint = check_loops();
+        if(xyDist(&pos, &waypoints[navData->currentWaypoint]) < detectionRadius) {
+            navData->currentWaypoint = check_loops();
+        }
+        double nextAngle = calculateAngle();
+        static char buffR[20];
+        sprintf(buffR, "angle: %f\n", nextAngle);
+        transmitString(buffR);
+        setServoAngles(nextAngle);
+        //printData();
     }
-    double nextAngle = calculateAngle();
-    static char buffR[20];
-    sprintf(buffR, "angle: %f\n", nextAngle);
-    transmitString(buffR);
-    setServoAngles(nextAngle);
-    //printData();
 }

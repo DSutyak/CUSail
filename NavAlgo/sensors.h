@@ -16,6 +16,7 @@ typedef struct dataStructure {
   volatile float wind_speed;
   double x;
   double y;
+  int fix;
   double lat;
   double longi;
   int msec;
