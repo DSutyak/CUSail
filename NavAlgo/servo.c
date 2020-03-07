@@ -22,6 +22,7 @@
 #define MIN_TAIL_DUTY 2145 // 0.858 ms
 #define MAX_TAIL_DUTY 4175 // 1.67 ms
 
+int useEncoder = 0; // TODO add encoder to test bench
 double p = 0.2; // proportional error for P control
 
 void initServos(void) {
@@ -117,19 +118,22 @@ double setSailPWM(double angle) {
  */
 double setSailServoAngle(double angle) {
     double setAngle = setSailPWM(angle);
-    double realAngle = readEncoder();
-    double error = setAngle - realAngle;
-    int attempts = 10;
     
-    // get within 2 degrees of where you want to be, or give up after 10 attempts
-    while (attempts > 0 && fabs(error) > 2.0) {
-        delay_ms(100); // wait for the servo to move
-        double newAngle = setAngle + p * error;
-        setAngle = setSailPWM(newAngle);
-        realAngle = readEncoder();
-        error = setAngle - realAngle;
+    if (useEncoder) {
+        double realAngle = readEncoder();
+        double error = setAngle - realAngle;
+        int attempts = 10;
+    
+        // get within 2 degrees of where you want to be, or give up after 10 attempts
+        while (attempts > 0 && fabs(error) > 2.0) {
+            delay_ms(100); // wait for the servo to move
+            double newAngle = setAngle + p * error;
+            setAngle = setSailPWM(newAngle);
+            realAngle = readEncoder();
+            error = setAngle - realAngle;
         
-        attempts--;
+            attempts--;
+        }
     }
     
     return setAngle;
