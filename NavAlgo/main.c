@@ -90,9 +90,9 @@ void main(void) {
   transmitString("Starting test...\n");
   //testAllOff();
   // testIMUOn();
-  testGPSOn();
+  //testGPSOn();
   //testAnemometerOn();
-  //testEverythingOn();
+  testEverythingOn();
   //testLidarOn();
   
   // round-robin scheduler for threads

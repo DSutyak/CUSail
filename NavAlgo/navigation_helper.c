@@ -67,10 +67,10 @@ void navigationInit() {
   
     rawWaypoints = (coord_t *) malloc(waypointTotal * sizeof(coord_t));
     waypoints = (coord_xy *) malloc(waypointTotal * sizeof(coord_xy));
-    rawWaypoints[0].latitude = 42.445457;
-    rawWaypoints[0].longitude = -76.484322;
-    rawWaypoints[1].latitude = 42.444259;
-    rawWaypoints[1].longitude = -76.484435;
+    rawWaypoints[0].latitude = 42.444736;
+    rawWaypoints[0].longitude = -76.483802;
+    rawWaypoints[1].latitude = 42.444596;
+    rawWaypoints[1].longitude = -76.483486;
     
     origin = (coord_xy *) malloc(sizeof(coord_xy));
     setOrigin(&rawWaypoints[0]);
@@ -79,7 +79,8 @@ void navigationInit() {
     for(i = 0; i < waypointTotal; i++) {
         coord_xy pt;
         xyPoint(&pt, &rawWaypoints[i]);
-        waypoints[i] = pt;
+        waypoints[i].x = pt.x;
+        waypoints[i].y = pt.y;
     }
 }
 
@@ -476,13 +477,18 @@ void nav() {
         coord_xy pos = {sensorData->x, sensorData->y};
     
         if(xyDist(&pos, &waypoints[navData->currentWaypoint]) < detectionRadius) {
+            printHitWaypointData();
             navData->currentWaypoint = check_loops();
+        } else {
+            static char buffR[80];
+            sprintf(buffR, "waypoint x: %f, y: %f\n", waypoints[navData->currentWaypoint].x, waypoints[navData->currentWaypoint].y);
+            transmitString(buffR);
         }
         double nextAngle = calculateAngle();
-        static char buffR[20];
-        sprintf(buffR, "angle: %f\n", nextAngle);
-        transmitString(buffR);
+//        static char buffR[20];
+//        sprintf(buffR, "angle: %f\n", nextAngle);
+//        transmitString(buffR);
         setServoAngles(nextAngle);
-        //printData();
+        printData();
     }
 }

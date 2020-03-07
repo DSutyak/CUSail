@@ -138,7 +138,7 @@ void testGPSOn() {
         delay_ms(2000);
         
         char buffer[80];
-        sprintf(buffer, "lat: %f, long: %f\n", sensorData->lat, sensorData->longi);
+        sprintf(buffer, "x: %f, y: %f\n", sensorData->x, sensorData->y);
         transmitString(buffer);
         
         nav();

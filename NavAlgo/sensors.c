@@ -285,32 +285,56 @@ void checkSentence() {
                 valid = 1;
             }
         }
+    } else if (data[0] == '$' && data[1] == 'G' && (data[2] == 'P' || data[2] == 'N') && data[3] == 'G' && 
+            data[4] == 'G' && data[5] == 'A' && data[19] != '*') {
+        int fieldNum = 0; // keep track of how many fields have been parsed
+        int i = 6;
+        int done = 0;
         
-        if (valid) {
-            char lat_deg[2], longi_deg[3], lat_min[10], longi_min[10];
-            
-            lat_deg[0] = lat[0];
-            lat_deg[1] = lat[1];
-            longi_deg[0] = longi[0];
-            longi_deg[1] = longi[1];
-            longi_deg[2] = longi[2];
-            int idx = 0;
-            while (idx < 10) {
-                lat_min[idx] = lat[idx+2];
-                longi_min[idx] = longi[idx+3];
-                idx++;
+        while (i < 82 && done == 0) {
+            i++;
+            if (data[i] == ',') {
+                fieldNum++;
+            } else if (fieldNum == 1) {
+                lat[latIdx] = data[i];
+                latIdx++;
+            } else if (fieldNum == 2) {
+                north = (data[i] == 'N') ? 1 : -1;
+            } else if (fieldNum == 3) {
+                longi[longIdx] = data[i];
+                longIdx++;
+            } else if (fieldNum == 4) {
+                east = (data[i] == 'E') ? 1 : -1;
+            } else if (fieldNum == 5 && data[i] != '0') {
+                valid = 1;
             }
-            
-            double lat_dd, longi_dd, lat_mm, longi_mm;
-            lat_dd = atof(lat_deg);
-            longi_dd = atof(longi_deg);
-            lat_mm = atof(lat_min);
-            longi_mm = atof(longi_min);
-            
-            sensorData->lat = north * (lat_dd + lat_mm/60.0);
-            sensorData->longi = east * (longi_dd + longi_mm/60.0);
-            convertLLtoXY();
         }
+    }
+    
+    if (valid) {
+        char lat_deg[2], longi_deg[3], lat_min[10], longi_min[10];
+            
+        lat_deg[0] = lat[0];
+        lat_deg[1] = lat[1];
+        longi_deg[0] = longi[0];
+        longi_deg[1] = longi[1];
+        longi_deg[2] = longi[2];
+        int idx = 0;
+        while (idx < 10) {
+            lat_min[idx] = lat[idx+2];
+            longi_min[idx] = longi[idx+3];
+            idx++;
+        }
+            
+        double lat_dd, longi_dd, lat_mm, longi_mm;
+        lat_dd = atof(lat_deg);
+        longi_dd = atof(longi_deg);
+        lat_mm = atof(lat_min);
+        longi_mm = atof(longi_min);
+            
+        sensorData->lat = north * (lat_dd + lat_mm/60.0);
+        sensorData->longi = east * (longi_dd + longi_mm/60.0);
+        convertLLtoXY();
     }
 }
 
